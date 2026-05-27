@@ -479,27 +479,27 @@ Page content: shows `selectedCar.brand`, `selectedCar.model`, `selectedCar.produ
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint` exits 0
-- [x] 2.2 Build passes: `npm run build` exits 0
+- [x] 2.1 Lint passes: `npm run lint` exits 0 — b66a9bc
+- [x] 2.2 Build passes: `npm run build` exits 0 — b66a9bc
 
 #### Manual
 
-- [x] 2.3 `/cars` loads without errors; shows empty state
-- [x] 2.4 Adding a car creates it in the list; newly added car is auto-selected
-- [x] 2.5 Editing a car updates the list
-- [x] 2.6 Deleting a car shows confirmation dialog; confirming removes it
-- [x] 2.7 Selecting a car highlights it and sets the cookie
-- [x] 2.8 Unauthenticated `/cars` redirects to `/auth/signin`
+- [x] 2.3 `/cars` loads without errors; shows empty state — b66a9bc
+- [x] 2.4 Adding a car creates it in the list; newly added car is auto-selected — b66a9bc
+- [x] 2.5 Editing a car updates the list — b66a9bc
+- [x] 2.6 Deleting a car shows confirmation dialog; confirming removes it — b66a9bc
+- [x] 2.7 Selecting a car highlights it and sets the cookie — b66a9bc
+- [x] 2.8 Unauthenticated `/cars` redirects to `/auth/signin` — b66a9bc
 
 ### Phase 3: Dashboard integration
 
 #### Automated
 
-- [ ] 3.1 Lint passes: `npm run lint` exits 0
-- [ ] 3.2 Build passes: `npm run build` exits 0
+- [x] 3.1 Lint passes: `npm run lint` exits 0
+- [x] 3.2 Build passes: `npm run build` exits 0
 
 #### Manual
 
-- [ ] 3.3 Visiting `/dashboard` with no cars → redirects to `/cars`
-- [ ] 3.4 Visiting `/dashboard` with a selected car → shows car brand, model, year
-- [ ] 3.5 Stale cookie (car deleted) → `/dashboard` redirects to `/cars`
+- [x] 3.3 Visiting `/dashboard` with no cars → redirects to `/cars`
+- [x] 3.4 Visiting `/dashboard` with a selected car → shows car brand, model, year
+- [x] 3.5 Stale cookie (car deleted) → `/dashboard` redirects to `/cars`

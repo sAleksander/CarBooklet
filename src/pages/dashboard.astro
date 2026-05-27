@@ -1,7 +1,20 @@
 ---
 import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { getCarById } from "@/lib/services/cars";
 
-const { user } = Astro.locals;
+const { user, selectedCarId } = Astro.locals;
+
+if (!selectedCarId) {
+  return Astro.redirect("/cars");
+}
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const selectedCar = supabase ? await getCarById(supabase, selectedCarId) : null;
+
+if (!selectedCar) {
+  return Astro.redirect("/cars");
+}
 ---
 
 <Layout title="Dashboard">
@@ -13,7 +26,19 @@ const { user } = Astro.locals;
       <p class="text-blue-100/80">
         Welcome, <span class="font-semibold text-white">{user?.email}</span>
       </p>
-      <p class="mt-2 text-sm text-blue-100/50">This page is only for authenticated users.</p>
+      <div class="mt-4 rounded-lg border border-white/10 bg-white/5 px-6 py-4">
+        <p class="text-lg font-semibold text-white">
+          {selectedCar.brand}
+          {selectedCar.model}
+        </p>
+        <p class="text-sm text-blue-100/60">{selectedCar.production_year}</p>
+      </div>
+      <a
+        href="/cars"
+        class="mt-4 inline-block text-sm text-blue-200/70 underline-offset-2 hover:text-blue-200 hover:underline"
+      >
+        Change car
+      </a>
       <form method="POST" action="/api/auth/signout" class="mt-6">
         <button
           type="submit"
