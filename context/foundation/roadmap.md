@@ -29,7 +29,7 @@ CarBooklet replaces the physical car service booklet — always missing when nee
 
 | ID   | Change ID               | Outcome (user can …)                                                               | Prerequisites    | PRD refs                                        | Status   |
 | ---- | ----------------------- | ---------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------- | -------- |
-| F-01 | cars-schema             | (foundation) cars table + RLS live in Supabase                                    | —                | FR-002, FR-009                                  | ready    |
+| F-01 | cars-schema             | (foundation) cars table + RLS live in Supabase                                    | —                | FR-002, FR-009                                  | done     |
 | F-02 | entries-schema          | (foundation) entries table + RLS + FK to cars live                                | F-01             | FR-003, FR-005, FR-006, FR-007, FR-008          | proposed |
 | F-03 | ai-integration-scaffold | (foundation) OpenRouter client + SSE streaming verified on Cloudflare Workers      | —                | FR-010, FR-011, NFR: visible AI response feedback | ready  |
 | S-01 | car-management          | add, view, and remove their cars; multiple cars supported                          | F-01             | FR-001, FR-002, FR-009                          | proposed |
@@ -211,4 +211,6 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends here when a change matching a roadmap item is archived.)
+| ID   | Change ID   | Outcome                                        | Shipped     | Commits             |
+| ---- | ----------- | ---------------------------------------------- | ----------- | ------------------- |
+| F-01 | cars-schema | cars table + RLS + TypeScript types live       | 2026-05-27  | b7df5ef, 6bca689    |
