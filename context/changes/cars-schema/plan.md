@@ -185,22 +185,22 @@ This is the first application-level migration. The `supabase/migrations/` direct
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db push` exits 0
-- [x] 1.2 Build still passes: `npm run build` exits 0
+- [x] 1.1 Migration applies cleanly: `npx supabase db push` exits 0 — b7df5ef
+- [x] 1.2 Build still passes: `npm run build` exits 0 — b7df5ef
 
 #### Manual
 
-- [x] 1.3 Studio shows `public.cars` with 13 columns
-- [x] 1.4 Studio shows 4 RLS policies on `cars`
-- [x] 1.5 `SELECT * FROM public.cars` returns empty set without error
-- [x] 1.6 INSERT without auth context is rejected by RLS
+- [x] 1.3 Studio shows `public.cars` with 13 columns — b7df5ef
+- [x] 1.4 Studio shows 4 RLS policies on `cars` — b7df5ef
+- [x] 1.5 `SELECT * FROM public.cars` returns empty set without error — b7df5ef
+- [x] 1.6 INSERT without auth context is rejected by RLS — b7df5ef
 
 ### Phase 2: TypeScript Type Definition
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint` exits 0
+- [x] 2.1 Lint passes: `npm run lint` exits 0
 
 #### Manual
 
-- [ ] 2.2 `import type { Car, EngineType } from '@/types'` resolves without error
+- [x] 2.2 `import type { Car, EngineType } from '@/types'` resolves without error
