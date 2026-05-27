@@ -61,6 +61,6 @@ Single SQL migration file in dependency order (enum → table → RLS → polici
 
 ## Success Criteria (Summary)
 
-- `npx supabase db push` exits 0 and the `cars` table appears in Studio with 4 RLS policies
+- `npx supabase migration up` exits 0 and the `cars` table appears in Studio with 4 RLS policies
 - An unauthenticated INSERT is rejected by RLS
 - `npm run lint` exits 0 with `Car` and `EngineType` importable via `@/types`

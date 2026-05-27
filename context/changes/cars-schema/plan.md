@@ -113,7 +113,7 @@ CREATE TRIGGER cars_updated_at
 
 #### Automated Verification:
 
-- Migration applies cleanly: `npx supabase db push` exits 0 with no errors
+- Migration applies cleanly: `npx supabase migration up` exits 0 with no errors
 - Build still passes: `npm run build` exits 0 (schema addition must not break anything)
 
 #### Manual Verification:
@@ -121,7 +121,7 @@ CREATE TRIGGER cars_updated_at
 - Supabase Studio (http://localhost:54323) → Table Editor shows `public.cars` with 13 columns
 - Studio → Authentication → Policies shows 4 policies on `cars` table
 - Studio SQL editor: `SELECT * FROM public.cars;` returns empty result set (no error)
-- Studio SQL editor: INSERT without `auth.uid()` context is rejected by RLS (expected error: "new row violates row-level security policy")
+- Studio SQL editor: INSERT without `auth.uid()` context is blocked. Studio runs as `postgres` superuser (bypasses RLS), so the actual error is a FK constraint violation (23503 — random UUID not in `auth.users`). This is expected. Authoritative RLS verification is the 4 policies visible in Authentication → Policies; real per-user enforcement fires in S-01 via anon-key client requests.
 
 **Implementation Note**: After this phase and all automated verification passes, pause for manual confirmation that the Studio checks pass before proceeding to Phase 2.
 
@@ -162,10 +162,10 @@ Create `src/types.ts` with the `Car` interface and `EngineType` union type match
 ### Manual Testing Steps:
 
 1. Ensure local Supabase is running: `npx supabase start`
-2. Apply the migration: `npx supabase db push`
+2. Apply the migration: `npx supabase migration up`
 3. Open Studio at http://localhost:54323 → Table Editor → confirm `cars` exists with 13 columns
 4. Open Studio → Authentication → Policies → confirm 4 policies on `cars`
-5. In Studio SQL editor, run: `INSERT INTO public.cars (brand, model, production_year, engine_type, engine_capacity, engine_power, user_id) VALUES ('Renault', 'Clio II', '2001', 'gas', '1.2L', '75hp', gen_random_uuid());` — confirm RLS rejects it
+5. In Studio SQL editor, run: `INSERT INTO public.cars (brand, model, production_year, engine_type, engine_capacity, engine_power, user_id) VALUES ('Renault', 'Clio II', '2001', 'gas', '1.2L', '75hp', gen_random_uuid());` — expect a FK constraint error (23503), not an RLS error. Studio runs as superuser and bypasses RLS; confirm the 4 policies exist in Authentication → Policies instead.
 6. Run `npm run lint` — confirm no TypeScript errors on the new types file
 
 ## Migration Notes
@@ -185,7 +185,7 @@ This is the first application-level migration. The `supabase/migrations/` direct
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase db push` exits 0 — b7df5ef
+- [x] 1.1 Migration applies cleanly: `npx supabase migration up` exits 0 — b7df5ef
 - [x] 1.2 Build still passes: `npm run build` exits 0 — b7df5ef
 
 #### Manual
