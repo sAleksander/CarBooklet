@@ -2,7 +2,7 @@
 change_id: car-management
 roadmap_id: S-01
 title: "Car management — add, view, edit, remove, select"
-status: implementing
+status: implemented
 created: 2026-05-27
 updated: 2026-05-27
 prd_refs:

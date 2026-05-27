@@ -495,11 +495,11 @@ Page content: shows `selectedCar.brand`, `selectedCar.model`, `selectedCar.produ
 
 #### Automated
 
-- [x] 3.1 Lint passes: `npm run lint` exits 0
-- [x] 3.2 Build passes: `npm run build` exits 0
+- [x] 3.1 Lint passes: `npm run lint` exits 0 — afd2b4f
+- [x] 3.2 Build passes: `npm run build` exits 0 — afd2b4f
 
 #### Manual
 
-- [x] 3.3 Visiting `/dashboard` with no cars → redirects to `/cars`
-- [x] 3.4 Visiting `/dashboard` with a selected car → shows car brand, model, year
-- [x] 3.5 Stale cookie (car deleted) → `/dashboard` redirects to `/cars`
+- [x] 3.3 Visiting `/dashboard` with no cars → redirects to `/cars` — afd2b4f
+- [x] 3.4 Visiting `/dashboard` with a selected car → shows car brand, model, year — afd2b4f
+- [x] 3.5 Stale cookie (car deleted) → `/dashboard` redirects to `/cars` — afd2b4f
