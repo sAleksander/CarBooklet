@@ -463,33 +463,33 @@ Page content: shows `selectedCar.brand`, `selectedCar.model`, `selectedCar.produ
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint` exits 0
-- [x] 1.2 Build passes: `npm run build` exits 0
+- [x] 1.1 Lint passes: `npm run lint` exits 0 — 224789c
+- [x] 1.2 Build passes: `npm run build` exits 0 — 224789c
 
 #### Manual
 
-- [x] 1.3 `GET /api/cars` returns `{ cars: [] }` for authenticated user with no cars
-- [x] 1.4 `POST /api/cars` creates a car and returns `{ car: { id, brand, ... } }`
-- [x] 1.5 `POST /api/cars/[id]/select` sets `selected_car_id` cookie (visible in DevTools)
-- [x] 1.6 `DELETE /api/cars/[id]` clears `selected_car_id` cookie when deleted car was selected
-- [x] 1.7 Routing smoke test: both PATCH `/api/cars/[id]` and POST `/api/cars/[id]/select` respond without 404 on `npm run dev`
-- [x] 1.8 `PATCH /api/cars/[id]` updates a car field and returns `{ car: { id, brand, ... } }`
+- [x] 1.3 `GET /api/cars` returns `{ cars: [] }` for authenticated user with no cars — 224789c
+- [x] 1.4 `POST /api/cars` creates a car and returns `{ car: { id, brand, ... } }` — 224789c
+- [x] 1.5 `POST /api/cars/[id]/select` sets `selected_car_id` cookie (visible in DevTools) — 224789c
+- [x] 1.6 `DELETE /api/cars/[id]` clears `selected_car_id` cookie when deleted car was selected — 224789c
+- [x] 1.7 Routing smoke test: both PATCH `/api/cars/[id]` and POST `/api/cars/[id]/select` respond without 404 on `npm run dev` — 224789c
+- [x] 1.8 `PATCH /api/cars/[id]` updates a car field and returns `{ car: { id, brand, ... } }` — 224789c
 
 ### Phase 2: Car management UI
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint` exits 0
-- [ ] 2.2 Build passes: `npm run build` exits 0
+- [x] 2.1 Lint passes: `npm run lint` exits 0
+- [x] 2.2 Build passes: `npm run build` exits 0
 
 #### Manual
 
-- [ ] 2.3 `/cars` loads without errors; shows empty state
-- [ ] 2.4 Adding a car creates it in the list; newly added car is auto-selected
-- [ ] 2.5 Editing a car updates the list
-- [ ] 2.6 Deleting a car shows confirmation dialog; confirming removes it
-- [ ] 2.7 Selecting a car highlights it and sets the cookie
-- [ ] 2.8 Unauthenticated `/cars` redirects to `/auth/signin`
+- [x] 2.3 `/cars` loads without errors; shows empty state
+- [x] 2.4 Adding a car creates it in the list; newly added car is auto-selected
+- [x] 2.5 Editing a car updates the list
+- [x] 2.6 Deleting a car shows confirmation dialog; confirming removes it
+- [x] 2.7 Selecting a car highlights it and sets the cookie
+- [x] 2.8 Unauthenticated `/cars` redirects to `/auth/signin`
 
 ### Phase 3: Dashboard integration
 

@@ -1,0 +1,14 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import CarList from "@/components/cars/CarList";
+import { createClient } from "@/lib/supabase";
+import { getCars } from "@/lib/services/cars";
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+const cars = supabase ? await getCars(supabase) : [];
+const { selectedCarId } = Astro.locals;
+---
+
+<Layout title="My Cars">
+  <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} />
+</Layout>
