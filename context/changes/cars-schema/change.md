@@ -2,9 +2,10 @@
 change_id: cars-schema
 roadmap_id: F-01
 title: "Cars data schema — Supabase migration + RLS"
-status: implementing
+status: implemented
 created: 2026-05-27
 updated: 2026-05-27
+implemented: 2026-05-27
 prd_refs:
   - FR-002
   - FR-009

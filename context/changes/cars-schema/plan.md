@@ -199,8 +199,8 @@ This is the first application-level migration. The `supabase/migrations/` direct
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint` exits 0
+- [x] 2.1 Lint passes: `npm run lint` exits 0 — 6bca689
 
 #### Manual
 
-- [x] 2.2 `import type { Car, EngineType } from '@/types'` resolves without error
+- [x] 2.2 `import type { Car, EngineType } from '@/types'` resolves without error — 6bca689
