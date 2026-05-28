@@ -376,8 +376,8 @@ S-06 (deadline dashboard) will query `inspection_entries.next_inspection_date` a
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint` exits 0
+- [x] 2.1 Lint passes: `npm run lint` exits 0 — e013642
 
 #### Manual
 
-- [x] 2.2 `import type { Entry, RepairEntry, ... }` resolves without error
+- [x] 2.2 `import type { Entry, RepairEntry, ... }` resolves without error — e013642
