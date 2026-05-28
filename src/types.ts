@@ -27,3 +27,71 @@ export interface CarFormData {
   engine_code?: string | null;
   vin_number?: string | null;
 }
+
+// ─── Entry types ──────────────────────────────────────────────────────────────
+
+export type EntryType = "repair" | "oil_change" | "inspection" | "insurance";
+
+interface BaseEntry {
+  id: string;
+  car_id: string;
+  user_id: string;
+  conducted_at: string;
+  mileage: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface RepairEntry extends BaseEntry {
+  entry_type: "repair";
+  description: string;
+  cause: string | null;
+}
+
+export interface OilChangeEntry extends BaseEntry {
+  entry_type: "oil_change";
+  oil_details: string | null;
+}
+
+export interface InspectionEntry extends BaseEntry {
+  entry_type: "inspection";
+  result: string | null;
+  next_inspection_date: string | null;
+}
+
+export interface InsuranceEntry extends BaseEntry {
+  entry_type: "insurance";
+  insurer: string | null;
+  policy_start_date: string | null;
+  renewal_date: string;
+}
+
+export type Entry = RepairEntry | OilChangeEntry | InspectionEntry | InsuranceEntry;
+
+export interface RepairEntryFormData {
+  conducted_at: string;
+  mileage?: number | null;
+  description: string;
+  cause?: string | null;
+}
+
+export interface OilChangeEntryFormData {
+  conducted_at: string;
+  mileage?: number | null;
+  oil_details?: string | null;
+}
+
+export interface InspectionEntryFormData {
+  conducted_at: string;
+  mileage?: number | null;
+  result?: string | null;
+  next_inspection_date?: string | null;
+}
+
+export interface InsuranceEntryFormData {
+  conducted_at: string;
+  mileage?: number | null;
+  insurer?: string | null;
+  policy_start_date?: string | null;
+  renewal_date: string;
+}

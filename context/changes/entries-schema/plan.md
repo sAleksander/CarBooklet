@@ -363,21 +363,21 @@ S-06 (deadline dashboard) will query `inspection_entries.next_inspection_date` a
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly: `npx supabase migration up` exits 0
-- [x] 1.2 Build still passes: `npm run build` exits 0
+- [x] 1.1 Migration applies cleanly: `npx supabase migration up` exits 0 — 50d1e4c
+- [x] 1.2 Build still passes: `npm run build` exits 0 — 50d1e4c
 
 #### Manual
 
-- [x] 1.3 Studio shows all four entry tables with correct columns
-- [x] 1.4 Studio shows 16 RLS policies (4 per table)
-- [x] 1.5 SELECT from each table returns empty set without error
+- [x] 1.3 Studio shows all four entry tables with correct columns — 50d1e4c
+- [x] 1.4 Studio shows 16 RLS policies (4 per table) — 50d1e4c
+- [x] 1.5 SELECT from each table returns empty set without error — 50d1e4c
 
 ### Phase 2: TypeScript Type Definitions
 
 #### Automated
 
-- [ ] 2.1 Lint passes: `npm run lint` exits 0
+- [x] 2.1 Lint passes: `npm run lint` exits 0
 
 #### Manual
 
-- [ ] 2.2 `import type { Entry, RepairEntry, ... }` resolves without error
+- [x] 2.2 `import type { Entry, RepairEntry, ... }` resolves without error
