@@ -30,7 +30,7 @@ CarBooklet replaces the physical car service booklet — always missing when nee
 | ID   | Change ID               | Outcome (user can …)                                                               | Prerequisites    | PRD refs                                        | Status   |
 | ---- | ----------------------- | ---------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------- | -------- |
 | F-01 | cars-schema             | (foundation) cars table + RLS live in Supabase                                    | —                | FR-002, FR-009                                  | done     |
-| F-02 | entries-schema          | (foundation) entries table + RLS + FK to cars live                                | F-01             | FR-003, FR-005, FR-006, FR-007, FR-008          | proposed |
+| F-02 | entries-schema          | (foundation) entries table + RLS + FK to cars live                                | F-01             | FR-003, FR-005, FR-006, FR-007, FR-008          | done     |
 | F-03 | ai-integration-scaffold | (foundation) OpenRouter client + SSE streaming verified on Cloudflare Workers      | —                | FR-010, FR-011, NFR: visible AI response feedback | ready  |
 | S-01 | car-management          | add, view, and remove their cars; multiple cars supported                          | F-01             | FR-001, FR-002, FR-009                          | done     |
 | S-02 | ai-car-chat             | ask the AI about their car; AI responds with model knowledge and visible streaming | F-01, F-03, S-01 | US-01, FR-010, FR-011                           | proposed |
@@ -87,7 +87,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Entry schema shape — single entries table with entry_type enum + type-specific nullable columns vs. separate tables per entry type. Owner: user. Block: no (decide when planning F-02; a single table with type-specific columns is the simplest v1 default).
 - **Risk:** Inspection and insurance date fields must be first-class date columns, not buried in a JSONB blob, because FR-012 dashboard queries them directly. Avoid a generic blob-first schema design.
-- **Status:** proposed
+- **Status:** done
 
 ### F-03: AI integration scaffold
 
@@ -214,4 +214,5 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | ID   | Change ID   | Outcome                                        | Shipped     | Commits             |
 | ---- | ----------- | ---------------------------------------------- | ----------- | ------------------- |
 | F-01 | cars-schema    | cars table + RLS + TypeScript types live                                | 2026-05-27 | b7df5ef, 6bca689                    |
+| F-02 | entries-schema | 4 entry tables + RLS + FK to cars + TypeScript types live               | 2026-05-28 | 50d1e4c, e013642, 72c4c1e, 12d349f |
 | S-01 | car-management | add, view, edit, delete, select cars; dashboard shows selected car      | 2026-05-27 | 224789c, b66a9bc, afd2b4f, 14affa2 |
