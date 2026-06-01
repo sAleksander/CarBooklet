@@ -3,7 +3,7 @@ project: CarBooklet
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-05-27
+updated: 2026-06-01
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -31,7 +31,7 @@ CarBooklet replaces the physical car service booklet — always missing when nee
 | ---- | ----------------------- | ---------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------- | -------- |
 | F-01 | cars-schema             | (foundation) cars table + RLS live in Supabase                                    | —                | FR-002, FR-009                                  | done     |
 | F-02 | entries-schema          | (foundation) entries table + RLS + FK to cars live                                | F-01             | FR-003, FR-005, FR-006, FR-007, FR-008          | done     |
-| F-03 | ai-integration-scaffold | (foundation) OpenRouter client + SSE streaming verified on Cloudflare Workers      | —                | FR-010, FR-011, NFR: visible AI response feedback | ready  |
+| F-03 | ai-integration-scaffold | (foundation) OpenRouter client + SSE streaming verified on Cloudflare Workers      | —                | FR-010, FR-011, NFR: visible AI response feedback | done   |
 | S-01 | car-management          | add, view, and remove their cars; multiple cars supported                          | F-01             | FR-001, FR-002, FR-009                          | done     |
 | S-02 | ai-car-chat             | ask the AI about their car; AI responds with model knowledge and visible streaming | F-01, F-03, S-01 | US-01, FR-010, FR-011                           | proposed |
 | S-03 | repair-entry-logging    | log a repair entry (date, description, cause/context)                              | F-02, S-01       | FR-003                                          | proposed |
@@ -101,7 +101,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - OpenRouter SDK ESM compatibility — `infrastructure.md` documents a CJS/ESM runtime trap on Cloudflare Workers; verify any OpenRouter or AI SDK dependency is ESM-compatible before wiring. Owner: user. Block: no (verifiable locally before S-02 begins).
 - **Risk:** SSE streaming on Cloudflare Workers must use native `ReadableStream`; any library relying on the Node.js `stream` module will fail at runtime on the deployed Worker. Verification via `wrangler dev` is the definition of "done" for this foundation — do not mark ready until streaming is confirmed in the Workers runtime.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -189,7 +189,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-02       | entries-schema          | [F-02] Entries data schema — Supabase migration + RLS       | no                    | Depends on F-01; settle entry schema shape before planning     |
 | F-03       | ai-integration-scaffold | [F-03] AI integration scaffold — OpenRouter + SSE streaming | yes                   | Run `/10x-plan ai-integration-scaffold`                        |
 | S-01       | car-management          | [S-01] Car management — add, view, remove, switch           | done                  | Shipped 2026-05-27                                             |
-| S-02       | ai-car-chat             | [S-02] AI car chat (north star) — stream AI response        | no                    | Depends on F-01, F-03, S-01                                    |
+| S-02       | ai-car-chat             | [S-02] AI car chat (north star) — stream AI response        | yes                   | Depends on F-01, F-03, S-01 — all done                        |
 | S-03       | repair-entry-logging    | [S-03] Repair entry — date, description, cause/context      | no                    | Depends on F-02, S-01                                          |
 | S-04       | additional-entry-types  | [S-04] Oil change + inspection + insurance entries          | no                    | Depends on F-02, S-01                                          |
 | S-05       | entry-management        | [S-05] Entry management — view, edit, delete                | no                    | Depends on F-02, S-03, S-04                                    |
@@ -213,6 +213,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 | ID   | Change ID   | Outcome                                        | Shipped     | Commits             |
 | ---- | ----------- | ---------------------------------------------- | ----------- | ------------------- |
-| F-01 | cars-schema    | cars table + RLS + TypeScript types live                                | 2026-05-27 | b7df5ef, 6bca689                    |
-| F-02 | entries-schema | 4 entry tables + RLS + FK to cars + TypeScript types live               | 2026-05-28 | 50d1e4c, e013642, 72c4c1e, 12d349f |
-| S-01 | car-management | add, view, edit, delete, select cars; dashboard shows selected car      | 2026-05-27 | 224789c, b66a9bc, afd2b4f, 14affa2 |
+| F-01 | cars-schema             | cars table + RLS + TypeScript types live                                                   | 2026-05-27 | b7df5ef, 6bca689                              |
+| F-02 | entries-schema          | 4 entry tables + RLS + FK to cars + TypeScript types live                                  | 2026-05-28 | 50d1e4c, e013642, 72c4c1e, 12d349f           |
+| F-03 | ai-integration-scaffold | OpenRouter + SSE streaming verified on Workers; useStreamingText hook + StreamingText ready | 2026-06-01 | 4187e6c, ad1ebb2, e36de8b, 26a944d, 417949b  |
+| S-01 | car-management          | add, view, edit, delete, select cars; dashboard shows selected car                         | 2026-05-27 | 224789c, b66a9bc, afd2b4f, 14affa2            |
