@@ -298,16 +298,16 @@ None — `repair_entries` table and TypeScript types are fully in place from F-0
 
 #### Automated
 
-- [x] 3.1 `npm run build` passes with no type errors
+- [x] 3.1 `npm run build` passes with no type errors — 210f649
 
 #### Manual
 
-- [x] 3.2 Topbar shows "Entries" link for logged-in users
-- [x] 3.3 /entries logged out → redirect to /auth/signin
-- [x] 3.4 /entries logged in, no car selected → redirect to /cars
-- [x] 3.5 /entries with selected car → page loads, form with today's date pre-filled
-- [x] 3.6 Submit description-only → entry at top of list, form clears
-- [x] 3.7 Submit all fields → entry shows cause and mileage
-- [x] 3.8 Empty description → inline validation error
-- [x] 3.9 Reload page → entries persist (server-fetched)
-- [x] 3.10 "Entries" Topbar link navigates to /entries
+- [x] 3.2 Topbar shows "Entries" link for logged-in users — 210f649
+- [x] 3.3 /entries logged out → redirect to /auth/signin — 210f649
+- [x] 3.4 /entries logged in, no car selected → redirect to /cars — 210f649
+- [x] 3.5 /entries with selected car → page loads, form with today's date pre-filled — 210f649
+- [x] 3.6 Submit description-only → entry at top of list, form clears — 210f649
+- [x] 3.7 Submit all fields → entry shows cause and mileage — 210f649
+- [x] 3.8 Empty description → inline validation error — 210f649
+- [x] 3.9 Reload page → entries persist (server-fetched) — 210f649
+- [x] 3.10 "Entries" Topbar link navigates to /entries — 210f649
