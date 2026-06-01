@@ -55,17 +55,19 @@ export interface OilChangeEntry extends BaseEntry {
 
 export interface InspectionEntry extends BaseEntry {
   entry_type: "inspection";
-  result: string | null;
+  result: string;
   next_inspection_date: string | null;
 }
 
 export interface InsuranceEntry extends BaseEntry {
   entry_type: "insurance";
-  insurer: string | null;
+  insurer: string;
   policy_start_date: string | null;
   renewal_date: string;
 }
 
+// Service functions querying separate entry tables must inject entry_type at the return site,
+// e.g. `return { ...res.data, entry_type: 'repair' as const }` — the column does not exist in the DB.
 export type Entry = RepairEntry | OilChangeEntry | InspectionEntry | InsuranceEntry;
 
 export interface RepairEntryFormData {
@@ -84,14 +86,14 @@ export interface OilChangeEntryFormData {
 export interface InspectionEntryFormData {
   conducted_at: string;
   mileage?: number | null;
-  result?: string | null;
+  result: string;
   next_inspection_date?: string | null;
 }
 
 export interface InsuranceEntryFormData {
   conducted_at: string;
   mileage?: number | null;
-  insurer?: string | null;
+  insurer: string;
   policy_start_date?: string | null;
   renewal_date: string;
 }
