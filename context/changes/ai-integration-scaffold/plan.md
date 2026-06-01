@@ -255,21 +255,21 @@ None — this is a pure additive change with no schema migrations or data transf
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` completes — OPENROUTER_API_KEY accepted by env schema
+- [x] 1.1 `npm run lint` passes with no new errors — 4187e6c
+- [x] 1.2 `npm run build` completes — OPENROUTER_API_KEY accepted by env schema — 4187e6c
 
 #### Manual
 
 - [ ] 1.3 `curl -N` with valid session cookie returns `data: {"text":"..."}` SSE lines followed by `data: [DONE]`
-- [x] 1.4 Request without session cookie returns HTTP 401
-- [x] 1.5 Request with empty prompt returns HTTP 400
+- [x] 1.4 Request without session cookie returns HTTP 401 — 4187e6c
+- [x] 1.5 Request with empty prompt returns HTTP 400 — 4187e6c
 
 ### Phase 2: Streaming React Components
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes with no TypeScript errors in new files
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes with no TypeScript errors in new files
 
 ### Phase 3: Demo Page + wrangler dev Verification
 

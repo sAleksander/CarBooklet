@@ -7,7 +7,7 @@ export async function createChatStream(prompt: string) {
   }
 
   const client = new OpenAI({
-    apiKey: String(OPENROUTER_API_KEY),
+    apiKey: OPENROUTER_API_KEY,
     baseURL: "https://openrouter.ai/api/v1",
   });
 
