@@ -27,7 +27,7 @@ export function ChatDemo() {
       });
 
       if (!res.ok) {
-        const data = (await res.json()) as { error?: string };
+        const data = (await res.json().catch(() => ({}))) as { error?: string };
         setFetchError(data.error ?? `Request failed (${res.status})`);
         return;
       }

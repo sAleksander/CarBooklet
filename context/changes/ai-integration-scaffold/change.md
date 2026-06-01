@@ -2,7 +2,7 @@
 change_id: ai-integration-scaffold
 roadmap_id: F-03
 title: "AI integration scaffold — OpenRouter + SSE streaming"
-status: implemented
+status: impl_reviewed
 created: 2026-06-01
 updated: 2026-06-01
 prd_refs:

@@ -1,6 +1,5 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
-import { createClient } from "@/lib/supabase";
 import { createChatStream } from "@/lib/services/ai";
 
 const promptSchema = z.object({
@@ -8,15 +7,7 @@ const promptSchema = z.object({
 });
 
 export const POST: APIRoute = async (context) => {
-  const supabase = createClient(context.request.headers, context.cookies);
-  if (!supabase) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) {
+  if (!context.locals.user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -51,8 +42,11 @@ export const POST: APIRoute = async (context) => {
           }
         }
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-      } catch {
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error("[ai/chat] Stream error:", e);
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "Stream failed" })}\n\n`));
+        controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } finally {
         controller.close();
       }

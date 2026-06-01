@@ -70,7 +70,7 @@ Install the `openai` npm package, register `OPENROUTER_API_KEY` in the env schem
 
 **Intent**: Add the `openai` npm package (v4+) as a production dependency. OpenRouter officially supports the openai SDK as a proxy client; this is its recommended integration path.
 
-**Contract**: Package name `openai`, version `^4.x`. ESM-compatible — no bundler configuration required.
+**Contract**: Package name `openai`, version `^6.x` (v6.39.1 installed). ESM-compatible — no bundler configuration required.
 
 #### 2. Register OPENROUTER_API_KEY in env schema
 
