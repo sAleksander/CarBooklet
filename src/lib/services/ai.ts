@@ -9,10 +9,14 @@ export async function createChatStream(prompt: string) {
   const client = new OpenAI({
     apiKey: OPENROUTER_API_KEY,
     baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+      "HTTP-Referer": "http://localhost:4321",
+      "X-Title": "CarBooklet",
+    },
   });
 
   return client.chat.completions.create({
-    model: "google/gemini-2.0-flash-exp:free",
+    model: "openrouter/free",
     messages: [
       { role: "system", content: "You are a helpful car assistant." },
       { role: "user", content: prompt },

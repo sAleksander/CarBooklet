@@ -260,7 +260,7 @@ None — this is a pure additive change with no schema migrations or data transf
 
 #### Manual
 
-- [ ] 1.3 `curl -N` with valid session cookie returns `data: {"text":"..."}` SSE lines followed by `data: [DONE]`
+- [x] 1.3 `curl -N` with valid session cookie returns `data: {"text":"..."}` SSE lines followed by `data: [DONE]`
 - [x] 1.4 Request without session cookie returns HTTP 401 — 4187e6c
 - [x] 1.5 Request with empty prompt returns HTTP 400 — 4187e6c
 
@@ -268,18 +268,18 @@ None — this is a pure additive change with no schema migrations or data transf
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes with no TypeScript errors in new files
+- [x] 2.1 `npm run lint` passes — ad1ebb2
+- [x] 2.2 `npm run build` passes with no TypeScript errors in new files — ad1ebb2
 
 ### Phase 3: Demo Page + wrangler dev Verification
 
 #### Automated
 
-- [ ] 3.1 `npm run build` passes with no type errors
+- [x] 3.1 `npm run build` passes with no type errors
 
 #### Manual
 
-- [ ] 3.2 Visit `/ai-test` logged out → redirect to `/auth/signin`
-- [ ] 3.3 Visit `/ai-test` logged in → page loads, form visible
-- [ ] 3.4 Submit a prompt → tokens stream in real time, cursor blinks, disappears on completion
-- [ ] 3.5 `wrangler tail` shows no runtime errors during streaming
+- [x] 3.2 Visit `/ai-test` logged out → redirect to `/auth/signin`
+- [x] 3.3 Visit `/ai-test` logged in → page loads, form visible
+- [x] 3.4 Submit a prompt → tokens stream in real time, cursor blinks, disappears on completion
+- [x] 3.5 `wrangler tail` shows no runtime errors during streaming
