@@ -277,22 +277,22 @@ None — `repair_entries` table and TypeScript types are fully in place from F-0
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes
-- [x] 1.2 `npm run build` passes with no TypeScript errors
+- [x] 1.1 `npm run lint` passes — b5686de
+- [x] 1.2 `npm run build` passes with no TypeScript errors — b5686de
 
 #### Manual
 
-- [x] 1.3 GET /api/entries/repair?car_id=<uuid> returns `{ entries: [] }` for a car with no entries
-- [x] 1.4 POST /api/entries/repair returns `{ entry: { ... } }` with status 201
-- [x] 1.5 Request without session returns 401
-- [x] 1.6 POST with empty description returns 400
+- [x] 1.3 GET /api/entries/repair?car_id=<uuid> returns `{ entries: [] }` for a car with no entries — b5686de
+- [x] 1.4 POST /api/entries/repair returns `{ entry: { ... } }` with status 201 — b5686de
+- [x] 1.5 Request without session returns 401 — b5686de
+- [x] 1.6 POST with empty description returns 400 — b5686de
 
 ### Phase 2: React Components
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes with no TypeScript errors
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes with no TypeScript errors
 
 ### Phase 3: Astro Page + Navigation
 
