@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createChatStream } from "@/lib/services/ai";
+import { createClient } from "@/lib/supabase";
+import { getCarById } from "@/lib/services/cars";
 
 const promptSchema = z.object({
   prompt: z.string().min(1, "Prompt is required").max(2000, "Prompt is too long"),
@@ -9,6 +11,21 @@ const promptSchema = z.object({
 export const POST: APIRoute = async (context) => {
   if (!context.locals.user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const selectedCarId = context.locals.selectedCarId;
+  if (!selectedCarId) {
+    return Response.json({ error: "No car selected" }, { status: 400 });
+  }
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) {
+    return Response.json({ error: "Service unavailable" }, { status: 503 });
+  }
+
+  const car = await getCarById(supabase, selectedCarId);
+  if (!car) {
+    return Response.json({ error: "Car not found" }, { status: 400 });
   }
 
   let body: unknown;
@@ -25,7 +42,7 @@ export const POST: APIRoute = async (context) => {
 
   let stream: Awaited<ReturnType<typeof createChatStream>>;
   try {
-    stream = await createChatStream(result.data.prompt);
+    stream = await createChatStream(result.data.prompt, car);
   } catch (err) {
     return Response.json({ error: (err as Error).message }, { status: 500 });
   }

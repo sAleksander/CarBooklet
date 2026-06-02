@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { OPENROUTER_API_KEY } from "astro:env/server";
+import type { Car } from "@/types";
 
 const client = new OpenAI({
   apiKey: OPENROUTER_API_KEY,
@@ -9,17 +10,30 @@ const client = new OpenAI({
   },
 });
 
-export async function createChatStream(prompt: string) {
+function buildSystemPrompt(car: Car): string {
+  const details: string[] = [`fuel type: ${car.engine_type}`];
+  if (car.engine_capacity.trim()) details.push(`engine capacity: ${car.engine_capacity}`);
+  if (car.engine_power.trim()) details.push(`engine power: ${car.engine_power}`);
+  if (car.engine_code?.trim()) details.push(`engine code: ${car.engine_code}`);
+  if (car.vin_number?.trim()) details.push(`VIN: ${car.vin_number}`);
+
+  return (
+    `You are an expert car assistant. The user's car is a ${car.production_year} ${car.brand} ${car.model}. ` +
+    `Known details: ${details.join(", ")}. ` +
+    `Answer questions using your specific knowledge of this car model — common faults, maintenance intervals, ` +
+    `OBD2 codes, and technical specifications. Be precise and reference the specific model where relevant.`
+  );
+}
+
+export async function createChatStream(prompt: string, car: Car) {
   if (!OPENROUTER_API_KEY) {
     throw new Error("OPENROUTER_API_KEY is not configured");
   }
 
   return client.chat.completions.create({
-    // Catch-all alias — OpenRouter routes to the currently available free model. Pin to a specific
-    // model ID (e.g. "google/gemini-2.0-flash-exp:free") before S-02 if determinism matters.
     model: "openrouter/free",
     messages: [
-      { role: "system", content: "You are a helpful car assistant." },
+      { role: "system", content: buildSystemPrompt(car) },
       { role: "user", content: prompt },
     ],
     stream: true,
