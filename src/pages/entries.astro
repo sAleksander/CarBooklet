@@ -3,8 +3,13 @@ import Layout from "@/layouts/Layout.astro";
 import Topbar from "@/components/Topbar.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
-import { getRepairEntries } from "@/lib/services/entries";
-import { RepairEntries } from "@/components/entries/RepairEntries";
+import {
+  getRepairEntries,
+  getOilChangeEntries,
+  getInspectionEntries,
+  getInsuranceEntries,
+} from "@/lib/services/entries";
+import { EntriesTabs } from "@/components/entries/EntriesTabs";
 
 const { selectedCarId, user } = Astro.locals;
 
@@ -18,17 +23,21 @@ if (!supabase || !user) {
   return Astro.redirect("/cars");
 }
 
-const [car, initialEntries] = await Promise.all([
-  getCarById(supabase, selectedCarId),
-  getRepairEntries(supabase, selectedCarId, user.id),
-]);
+const [car, initialRepairEntries, initialOilChangeEntries, initialInspectionEntries, initialInsuranceEntries] =
+  await Promise.all([
+    getCarById(supabase, selectedCarId),
+    getRepairEntries(supabase, selectedCarId, user.id),
+    getOilChangeEntries(supabase, selectedCarId, user.id),
+    getInspectionEntries(supabase, selectedCarId, user.id),
+    getInsuranceEntries(supabase, selectedCarId, user.id),
+  ]);
 
-if (!car) {
+if (car?.user_id !== user.id) {
   return Astro.redirect("/cars");
 }
 ---
 
-<Layout title={`${car.brand} ${car.model} — Repair Entries`}>
+<Layout title={`${car.brand} ${car.model} — Entries`}>
   <div class="bg-cosmic min-h-screen p-4">
     <Topbar />
     <div class="flex justify-center pt-8">
@@ -37,8 +46,15 @@ if (!car) {
           {car.brand}
           {car.model}
         </h1>
-        <p class="mb-8 text-sm text-blue-100/60">Repair entries</p>
-        <RepairEntries initialEntries={initialEntries} carId={selectedCarId} client:load />
+        <p class="mb-8 text-sm text-blue-100/60">Service history</p>
+        <EntriesTabs
+          initialRepairEntries={initialRepairEntries}
+          initialOilChangeEntries={initialOilChangeEntries}
+          initialInspectionEntries={initialInspectionEntries}
+          initialInsuranceEntries={initialInsuranceEntries}
+          carId={selectedCarId}
+          client:load
+        />
       </div>
     </div>
   </div>
