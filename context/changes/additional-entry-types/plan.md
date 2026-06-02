@@ -420,13 +420,13 @@ None — all four tables are already live from F-02. This plan is purely additiv
 
 #### Automated
 
-- [x] 3.1 `npm run build` passes with no type errors
+- [x] 3.1 `npm run build` passes with no type errors — d027739
 
 #### Manual
 
-- [x] 3.2 `/entries` loads with 4 tabs; Repairs tab is active by default
-- [x] 3.3 Heading shows car name with "Service history" subtitle
-- [x] 3.4 Oil Changes: add form works; entry appears with oil_details
-- [x] 3.5 Inspections: Pass/Fail select present; entry appears with result and next due date
-- [x] 3.6 Insurance: validation blocks submit without renewal_date; valid submit works
-- [x] 3.7 All 4 tab histories persist on page reload
+- [x] 3.2 `/entries` loads with 4 tabs; Repairs tab is active by default — d027739
+- [x] 3.3 Heading shows car name with "Service history" subtitle — d027739
+- [x] 3.4 Oil Changes: add form works; entry appears with oil_details — d027739
+- [x] 3.5 Inspections: Pass/Fail select present; entry appears with result and next due date — d027739
+- [x] 3.6 Insurance: validation blocks submit without renewal_date; valid submit works — d027739
+- [x] 3.7 All 4 tab histories persist on page reload — d027739
