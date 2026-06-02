@@ -10,15 +10,22 @@ const client = new OpenAI({
   },
 });
 
+function sanitise(value: string): string {
+  // eslint-disable-next-line no-control-regex
+  return value.replace(/[\r\n\x00-\x1F\x7F]/g, " ").trim();
+}
+
 function buildSystemPrompt(car: Car): string {
-  const details: string[] = [`fuel type: ${car.engine_type}`];
-  if (car.engine_capacity.trim()) details.push(`engine capacity: ${car.engine_capacity}`);
-  if (car.engine_power.trim()) details.push(`engine power: ${car.engine_power}`);
-  if (car.engine_code?.trim()) details.push(`engine code: ${car.engine_code}`);
-  if (car.vin_number?.trim()) details.push(`VIN: ${car.vin_number}`);
+  const details: string[] = [
+    `fuel type: ${sanitise(car.engine_type)}`,
+    `engine capacity: ${sanitise(car.engine_capacity)}`,
+    `engine power: ${sanitise(car.engine_power)}`,
+  ];
+  if (car.engine_code?.trim()) details.push(`engine code: ${sanitise(car.engine_code)}`);
+  if (car.vin_number?.trim()) details.push(`VIN: ${sanitise(car.vin_number)}`);
 
   return (
-    `You are an expert car assistant. The user's car is a ${car.production_year} ${car.brand} ${car.model}. ` +
+    `You are an expert car assistant. The user's car is a ${sanitise(car.production_year)} ${sanitise(car.brand)} ${sanitise(car.model)}. ` +
     `Known details: ${details.join(", ")}. ` +
     `Answer questions using your specific knowledge of this car model — common faults, maintenance intervals, ` +
     `OBD2 codes, and technical specifications. Be precise and reference the specific model where relevant.`

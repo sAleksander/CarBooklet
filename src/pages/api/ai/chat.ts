@@ -13,21 +13,6 @@ export const POST: APIRoute = async (context) => {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const selectedCarId = context.locals.selectedCarId;
-  if (!selectedCarId) {
-    return Response.json({ error: "No car selected" }, { status: 400 });
-  }
-
-  const supabase = createClient(context.request.headers, context.cookies);
-  if (!supabase) {
-    return Response.json({ error: "Service unavailable" }, { status: 503 });
-  }
-
-  const car = await getCarById(supabase, selectedCarId);
-  if (!car) {
-    return Response.json({ error: "Car not found" }, { status: 400 });
-  }
-
   let body: unknown;
   try {
     body = await context.request.json();
@@ -40,11 +25,28 @@ export const POST: APIRoute = async (context) => {
     return Response.json({ error: result.error.issues[0].message }, { status: 400 });
   }
 
+  const selectedCarId = context.locals.selectedCarId;
+  if (!selectedCarId) {
+    return Response.json({ error: "No car selected" }, { status: 400 });
+  }
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) {
+    return Response.json({ error: "Service unavailable" }, { status: 503 });
+  }
+
+  const car = await getCarById(supabase, selectedCarId);
+  if (car?.user_id !== context.locals.user.id) {
+    return Response.json({ error: "Car not found" }, { status: 404 });
+  }
+
   let stream: Awaited<ReturnType<typeof createChatStream>>;
   try {
     stream = await createChatStream(result.data.prompt, car);
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    // eslint-disable-next-line no-console
+    console.error("[ai/chat] Service error:", err);
+    return Response.json({ error: "AI service error" }, { status: 500 });
   }
 
   const encoder = new TextEncoder();

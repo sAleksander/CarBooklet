@@ -19,7 +19,7 @@ if (!supabase || !user) {
 
 const car = await getCarById(supabase, selectedCarId);
 
-if (!car) {
+if (car?.user_id !== user.id) {
   return Astro.redirect("/cars");
 }
 ---
