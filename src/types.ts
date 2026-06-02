@@ -55,13 +55,13 @@ export interface OilChangeEntry extends BaseEntry {
 
 export interface InspectionEntry extends BaseEntry {
   entry_type: "inspection";
-  result: string;
+  result: "Passed" | "Failed" | null;
   next_inspection_date: string | null;
 }
 
 export interface InsuranceEntry extends BaseEntry {
   entry_type: "insurance";
-  insurer: string;
+  insurer: string | null;
   policy_start_date: string | null;
   renewal_date: string;
 }
@@ -86,14 +86,14 @@ export interface OilChangeEntryFormData {
 export interface InspectionEntryFormData {
   conducted_at: string;
   mileage?: number | null;
-  result: string;
+  result?: "Passed" | "Failed" | null;
   next_inspection_date?: string | null;
 }
 
 export interface InsuranceEntryFormData {
   conducted_at: string;
   mileage?: number | null;
-  insurer: string;
+  insurer?: string | null;
   policy_start_date?: string | null;
   renewal_date: string;
 }
