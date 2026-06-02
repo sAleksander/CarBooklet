@@ -2,6 +2,7 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 import { getRepairEntries, createRepairEntry } from "@/lib/services/entries";
+import { getCarById } from "@/lib/services/cars";
 
 const carIdSchema = z.uuid();
 
@@ -37,7 +38,7 @@ export const GET: APIRoute = async (context) => {
   }
 
   try {
-    const entries = await getRepairEntries(supabase, carId);
+    const entries = await getRepairEntries(supabase, carId, context.locals.user.id);
     return Response.json({ entries });
   } catch (err) {
     return Response.json({ error: (err as Error).message }, { status: 500 });
@@ -68,6 +69,10 @@ export const POST: APIRoute = async (context) => {
 
   try {
     const { car_id, conducted_at, mileage, description, cause } = result.data;
+    const car = await getCarById(supabase, car_id);
+    if (car?.user_id !== context.locals.user.id) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
     const entry = await createRepairEntry(supabase, context.locals.user.id, car_id, {
       conducted_at,
       mileage: mileage ?? null,

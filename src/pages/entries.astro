@@ -6,20 +6,26 @@ import { getCarById } from "@/lib/services/cars";
 import { getRepairEntries } from "@/lib/services/entries";
 import { RepairEntries } from "@/components/entries/RepairEntries";
 
-const { selectedCarId } = Astro.locals;
+const { selectedCarId, user } = Astro.locals;
 
 if (!selectedCarId) {
   return Astro.redirect("/cars");
 }
 
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-const car = supabase ? await getCarById(supabase, selectedCarId) : null;
+
+if (!supabase || !user) {
+  return Astro.redirect("/cars");
+}
+
+const [car, initialEntries] = await Promise.all([
+  getCarById(supabase, selectedCarId),
+  getRepairEntries(supabase, selectedCarId, user.id),
+]);
 
 if (!car) {
   return Astro.redirect("/cars");
 }
-
-const initialEntries = supabase ? await getRepairEntries(supabase, selectedCarId) : [];
 ---
 
 <Layout title={`${car.brand} ${car.model} — Repair Entries`}>

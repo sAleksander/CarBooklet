@@ -1,11 +1,16 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { RepairEntry, RepairEntryFormData } from "@/types";
 
-export async function getRepairEntries(supabase: SupabaseClient, carId: string): Promise<RepairEntry[]> {
+export async function getRepairEntries(
+  supabase: SupabaseClient,
+  carId: string,
+  userId: string,
+): Promise<RepairEntry[]> {
   const res = await supabase
     .from("repair_entries")
     .select("*")
     .eq("car_id", carId)
+    .eq("user_id", userId)
     .order("conducted_at", { ascending: false });
   if (res.error) throw new Error(res.error.message);
   return (res.data as Omit<RepairEntry, "entry_type">[]).map((row) => ({ ...row, entry_type: "repair" as const }));
