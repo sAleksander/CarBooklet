@@ -200,27 +200,27 @@ None — this is a pure additive change to the service layer and UI. No schema m
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` passes with no TypeScript errors
+- [x] 1.1 `npm run lint` passes with no new errors — d45454b
+- [x] 1.2 `npm run build` passes with no TypeScript errors — d45454b
 
 #### Manual
 
-- [x] 1.3 curl with valid session + selected car returns SSE events referencing the car model
-- [x] 1.4 curl with no selected car cookie returns HTTP 400 "No car selected"
-- [x] 1.5 curl without session cookie returns HTTP 401
+- [x] 1.3 curl with valid session + selected car returns SSE events referencing the car model — d45454b
+- [x] 1.4 curl with no selected car cookie returns HTTP 400 "No car selected" — d45454b
+- [x] 1.5 curl without session cookie returns HTTP 401 — d45454b
 
 ### Phase 2: /ai-chat Page + Navigation + /ai-test Cleanup
 
 #### Automated
 
-- [ ] 2.1 `npm run build` passes with no type errors
+- [x] 2.1 `npm run build` passes with no type errors
 
 #### Manual
 
-- [ ] 2.2 Topbar shows "AI Chat" link for logged-in users
-- [ ] 2.3 /ai-chat logged out → redirect to /auth/signin
-- [ ] 2.4 /ai-chat logged in, no car selected → redirect to /cars
-- [ ] 2.5 /ai-chat with selected car → page loads, heading shows car name
-- [ ] 2.6 AI response references the specific car model
-- [ ] 2.7 Blinking cursor visible during streaming; disappears on completion
-- [ ] 2.8 /ai-test returns 404 (deleted)
+- [x] 2.2 Topbar shows "AI Chat" link for logged-in users
+- [x] 2.3 /ai-chat logged out → redirect to /auth/signin
+- [x] 2.4 /ai-chat logged in, no car selected → redirect to /cars
+- [x] 2.5 /ai-chat with selected car → page loads, heading shows car name
+- [x] 2.6 AI response references the specific car model
+- [x] 2.7 Blinking cursor visible during streaming; disappears on completion
+- [x] 2.8 /ai-test returns 404 (deleted)
