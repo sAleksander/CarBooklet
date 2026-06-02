@@ -213,14 +213,14 @@ None — this is a pure additive change to the service layer and UI. No schema m
 
 #### Automated
 
-- [x] 2.1 `npm run build` passes with no type errors
+- [x] 2.1 `npm run build` passes with no type errors — 4ade220
 
 #### Manual
 
-- [x] 2.2 Topbar shows "AI Chat" link for logged-in users
-- [x] 2.3 /ai-chat logged out → redirect to /auth/signin
-- [x] 2.4 /ai-chat logged in, no car selected → redirect to /cars
-- [x] 2.5 /ai-chat with selected car → page loads, heading shows car name
-- [x] 2.6 AI response references the specific car model
-- [x] 2.7 Blinking cursor visible during streaming; disappears on completion
-- [x] 2.8 /ai-test returns 404 (deleted)
+- [x] 2.2 Topbar shows "AI Chat" link for logged-in users — 4ade220
+- [x] 2.3 /ai-chat logged out → redirect to /auth/signin — 4ade220
+- [x] 2.4 /ai-chat logged in, no car selected → redirect to /cars — 4ade220
+- [x] 2.5 /ai-chat with selected car → page loads, heading shows car name — 4ade220
+- [x] 2.6 AI response references the specific car model — 4ade220
+- [x] 2.7 Blinking cursor visible during streaming; disappears on completion — 4ade220
+- [x] 2.8 /ai-test returns 404 (deleted) — 4ade220
