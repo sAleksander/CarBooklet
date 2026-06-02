@@ -390,27 +390,27 @@ None — all four tables are already live from F-02. This plan is purely additiv
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` passes with no TypeScript errors
+- [x] 1.1 `npm run lint` passes with no new errors — b2bc6b9
+- [x] 1.2 `npm run build` passes with no TypeScript errors — b2bc6b9
 
 #### Manual
 
-- [x] 1.3 GET /api/entries/oil-change?car_id=<uuid> returns `{ entries: [] }` for a car with no entries
-- [x] 1.4 GET /api/entries/inspection?car_id=<uuid> returns `{ entries: [] }`
-- [x] 1.5 GET /api/entries/insurance?car_id=<uuid> returns `{ entries: [] }`
-- [x] 1.6 POST /api/entries/oil-change returns `{ entry }` 201
-- [x] 1.7 POST /api/entries/inspection returns `{ entry }` 201
-- [x] 1.8 POST /api/entries/insurance returns `{ entry }` 201
-- [x] 1.9 POST /api/entries/insurance without renewal_date returns 400
-- [x] 1.10 POST /api/entries/inspection with result "Unknown" returns 400
-- [x] 1.11 Unauthenticated requests return 401; wrong car_id returns 403
+- [x] 1.3 GET /api/entries/oil-change?car_id=<uuid> returns `{ entries: [] }` for a car with no entries — b2bc6b9
+- [x] 1.4 GET /api/entries/inspection?car_id=<uuid> returns `{ entries: [] }` — b2bc6b9
+- [x] 1.5 GET /api/entries/insurance?car_id=<uuid> returns `{ entries: [] }` — b2bc6b9
+- [x] 1.6 POST /api/entries/oil-change returns `{ entry }` 201 — b2bc6b9
+- [x] 1.7 POST /api/entries/inspection returns `{ entry }` 201 — b2bc6b9
+- [x] 1.8 POST /api/entries/insurance returns `{ entry }` 201 — b2bc6b9
+- [x] 1.9 POST /api/entries/insurance without renewal_date returns 400 — b2bc6b9
+- [x] 1.10 POST /api/entries/inspection with result "Unknown" returns 400 — b2bc6b9
+- [x] 1.11 Unauthenticated requests return 401; wrong car_id returns 403 — b2bc6b9
 
 ### Phase 2: React Components
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes with no TypeScript errors in new files
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes with no TypeScript errors in new files
 
 #### Manual
 
