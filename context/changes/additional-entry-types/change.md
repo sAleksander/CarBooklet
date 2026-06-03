@@ -5,6 +5,7 @@ title: "Additional entry types — oil change, inspection, and insurance entry l
 status: impl_reviewed
 created: 2026-06-02
 updated: 2026-06-02
+archived_at: null
 prd_refs:
   - FR-005
   - FR-006

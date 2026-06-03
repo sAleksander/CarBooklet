@@ -5,6 +5,7 @@ title: "Repair entry logging — view and add repair entries for selected car"
 status: impl_reviewed
 created: 2026-06-01
 updated: 2026-06-01
+archived_at: null
 prd_refs:
   - FR-003
 unlocks:

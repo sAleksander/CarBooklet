@@ -5,6 +5,7 @@ title: "Cars data schema — Supabase migration + RLS"
 status: impl_reviewed
 created: 2026-05-27
 updated: 2026-05-28
+archived_at: null
 implemented: 2026-05-27
 prd_refs:
   - FR-002

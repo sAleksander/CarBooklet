@@ -5,6 +5,7 @@ title: "AI integration scaffold — OpenRouter + SSE streaming"
 status: impl_reviewed
 created: 2026-06-01
 updated: 2026-06-01
+archived_at: null
 prd_refs:
   - FR-010
   - FR-011

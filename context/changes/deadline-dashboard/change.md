@@ -5,6 +5,7 @@ title: "Deadline dashboard — oil change, inspection, and insurance deadline ca
 status: impl_reviewed
 created: 2026-06-03
 updated: 2026-06-03
+archived_at: null
 prd_refs:
   - FR-012
 unlocks: []

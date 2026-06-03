@@ -5,6 +5,7 @@ title: "AI car chat — stream model-aware AI responses for the selected car"
 status: impl_reviewed
 created: 2026-06-02
 updated: 2026-06-02
+archived_at: null
 review: context/changes/ai-car-chat/reviews/impl-review.md
 prd_refs:
   - US-01

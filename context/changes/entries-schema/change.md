@@ -5,6 +5,7 @@ title: "Entries data schema — Supabase migration + RLS"
 status: impl_reviewed
 created: 2026-05-28
 updated: 2026-05-28
+archived_at: null
 prd_refs:
   - FR-003
   - FR-005
