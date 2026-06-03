@@ -322,22 +322,22 @@ None — no schema changes. All four tables already exist from F-02.
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` passes with no TypeScript errors
+- [x] 1.1 `npm run lint` passes with no new errors — 3c17ed7
+- [x] 1.2 `npm run build` passes with no TypeScript errors — 3c17ed7
 
 #### Manual
 
-- [x] 1.3 PATCH /api/entries/repair with valid body returns `{ entry }` 200 with updated fields
-- [x] 1.4 DELETE /api/entries/repair?id=<uuid> returns 204
-- [x] 1.5 PATCH with non-existent entry id returns 404
-- [x] 1.6 DELETE without session returns 401
+- [x] 1.3 PATCH /api/entries/repair with valid body returns `{ entry }` 200 with updated fields — 3c17ed7
+- [x] 1.4 DELETE /api/entries/repair?id=<uuid> returns 204 — 3c17ed7
+- [x] 1.5 PATCH with non-existent entry id returns 404 — 3c17ed7
+- [x] 1.6 DELETE without session returns 401 — 3c17ed7
 
 ### Phase 2: Edit Form Components + Install Dialog
 
 #### Automated
 
-- [ ] 2.1 `npm run lint` passes
-- [ ] 2.2 `npm run build` passes with no TypeScript errors in new files
+- [x] 2.1 `npm run lint` passes
+- [x] 2.2 `npm run build` passes with no TypeScript errors in new files
 
 #### Manual
 
