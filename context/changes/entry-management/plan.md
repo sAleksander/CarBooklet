@@ -336,25 +336,25 @@ None — no schema changes. All four tables already exist from F-02.
 
 #### Automated
 
-- [x] 2.1 `npm run lint` passes
-- [x] 2.2 `npm run build` passes with no TypeScript errors in new files
+- [x] 2.1 `npm run lint` passes — 20c9718
+- [x] 2.2 `npm run build` passes with no TypeScript errors in new files — 20c9718
 
 #### Manual
 
-- [ ] 2.3 Edit forms render without console errors (verified in Phase 3)
+- [x] 2.3 Edit forms render without console errors (verified in Phase 3)
 
 ### Phase 3: List + Orchestrator Updates
 
 #### Automated
 
-- [ ] 3.1 `npm run build` passes with no type errors
+- [x] 3.1 `npm run build` passes with no type errors
 
 #### Manual
 
-- [ ] 3.2 Entry cards show Edit and Delete buttons for all 4 tabs
-- [ ] 3.3 Delete confirmation shows entry type and date; cancel leaves entry in list
-- [ ] 3.4 Confirmed delete removes entry from list for all 4 types
-- [ ] 3.5 Network error on delete shows error in still-open dialog
-- [ ] 3.6 Edit modal opens pre-filled for all 4 entry types
-- [ ] 3.7 Saving edit updates entry in-place in the list
-- [ ] 3.8 Cancel closes edit modal without changes
+- [x] 3.2 Entry cards show Edit and Delete buttons for all 4 tabs
+- [x] 3.3 Delete confirmation shows entry type and date; cancel leaves entry in list
+- [x] 3.4 Confirmed delete removes entry from list for all 4 types
+- [x] 3.5 Network error on delete shows error in still-open dialog
+- [x] 3.6 Edit modal opens pre-filled for all 4 entry types
+- [x] 3.7 Saving edit updates entry in-place in the list
+- [x] 3.8 Cancel closes edit modal without changes
