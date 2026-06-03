@@ -2,7 +2,7 @@
 change_id: deadline-dashboard
 roadmap_id: S-06
 title: "Deadline dashboard — oil change, inspection, and insurance deadline cards"
-status: implementing
+status: implemented
 created: 2026-06-03
 updated: 2026-06-03
 prd_refs:

@@ -272,14 +272,14 @@ None — no schema changes. All three date columns exist from F-02.
 
 #### Automated
 
-- [x] 2.1 `npm run build` passes with no type errors
+- [x] 2.1 `npm run build` passes with no type errors — 0bfd1bf
 
 #### Manual
 
-- [x] 2.2 `/dashboard` loads full-page layout with Topbar
-- [x] 2.3 All three deadline cards render correctly with entry data
-- [x] 2.4 Urgency colors correct: red / yellow / green per threshold
-- [x] 2.5 No-data placeholder renders for cards with no entries
-- [x] 2.6 Inspection "next date not set" state renders correctly
-- [x] 2.7 Oil change km threshold shows only when mileage was logged
-- [x] 2.8 No regressions on `/entries` or `/ai-chat`
+- [x] 2.2 `/dashboard` loads full-page layout with Topbar — 0bfd1bf
+- [x] 2.3 All three deadline cards render correctly with entry data — 0bfd1bf
+- [x] 2.4 Urgency colors correct: red / yellow / green per threshold — 0bfd1bf
+- [x] 2.5 No-data placeholder renders for cards with no entries — 0bfd1bf
+- [x] 2.6 Inspection "next date not set" state renders correctly — 0bfd1bf
+- [x] 2.7 Oil change km threshold shows only when mileage was logged — 0bfd1bf
+- [x] 2.8 No regressions on `/entries` or `/ai-chat` — 0bfd1bf
