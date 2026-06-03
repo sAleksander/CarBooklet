@@ -97,3 +97,33 @@ export interface InsuranceEntryFormData {
   policy_start_date?: string | null;
   renewal_date: string;
 }
+
+// ─── Deadline types ───────────────────────────────────────────────────────────
+
+export type DeadlineStatus = "no_data" | "no_next_date" | "red" | "yellow" | "green";
+
+export interface OilChangeDeadline {
+  status: DeadlineStatus;
+  lastConductedAt: string | null;
+  lastMileage: number | null;
+  nextDueDate: string | null;
+  nextDueMileage: number | null;
+}
+
+export interface InspectionDeadline {
+  status: DeadlineStatus;
+  lastConductedAt: string | null;
+  nextInspectionDate: string | null;
+}
+
+export interface InsuranceDeadline {
+  status: DeadlineStatus;
+  renewalDate: string | null;
+  insurer: string | null;
+}
+
+export interface CarDeadlines {
+  oilChange: OilChangeDeadline;
+  inspection: InspectionDeadline;
+  insurance: InsuranceDeadline;
+}
