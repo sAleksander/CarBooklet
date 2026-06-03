@@ -20,7 +20,7 @@ export const POST: APIRoute = async (context) => {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 
-  const car = await getCarById(supabase, id).catch(() => null);
+  const car = await getCarById(supabase, id, user.id).catch(() => null);
   if (!car) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }

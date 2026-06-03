@@ -272,7 +272,7 @@ function addOneYear(dateStr: string): string {
 function computeDeadlineStatus(dueDateStr: string | null): DeadlineStatus {
   if (!dueDateStr) return "no_data";
   const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  today.setUTCHours(0, 0, 0, 0);
   const dueDate = new Date(dueDateStr);
   const daysUntil = Math.floor((dueDate.getTime() - today.getTime()) / 86_400_000);
   if (daysUntil <= 30) return "red";

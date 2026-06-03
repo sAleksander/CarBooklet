@@ -7,8 +7,8 @@ export async function getCars(supabase: SupabaseClient): Promise<Car[]> {
   return res.data as Car[];
 }
 
-export async function getCarById(supabase: SupabaseClient, id: string): Promise<Car | null> {
-  const res = await supabase.from("cars").select("*").eq("id", id).single();
+export async function getCarById(supabase: SupabaseClient, id: string, userId: string): Promise<Car | null> {
+  const res = await supabase.from("cars").select("*").eq("id", id).eq("user_id", userId).single();
   if (res.error) {
     if (res.error.code === "PGRST116") return null;
     throw new Error(res.error.message);

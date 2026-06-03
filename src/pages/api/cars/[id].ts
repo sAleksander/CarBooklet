@@ -45,7 +45,7 @@ export const PATCH: APIRoute = async (context) => {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 
-  const existing = await getCarById(supabase, id).catch(() => null);
+  const existing = await getCarById(supabase, id, user.id).catch(() => null);
   if (!existing) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
@@ -88,7 +88,7 @@ export const DELETE: APIRoute = async (context) => {
     return Response.json({ error: "Not found" }, { status: 404 });
   }
 
-  const existing = await getCarById(supabase, id).catch(() => null);
+  const existing = await getCarById(supabase, id, user.id).catch(() => null);
   if (!existing) {
     return Response.json({ error: "Not found" }, { status: 404 });
   }

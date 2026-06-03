@@ -18,7 +18,7 @@ if (!supabase || !user) {
   return Astro.redirect("/cars");
 }
 
-const car = await getCarById(supabase, selectedCarId);
+const car = await getCarById(supabase, selectedCarId, user.id);
 
 if (car?.user_id !== user.id) {
   return Astro.redirect("/cars");
@@ -28,7 +28,7 @@ let deadlines;
 try {
   deadlines = await getCarDeadlines(supabase, selectedCarId, user.id);
 } catch {
-  return Astro.redirect("/cars");
+  return Astro.redirect("/cars?error=load_failed");
 }
 ---
 
@@ -87,8 +87,7 @@ try {
                 </div>
               ) : (
                 <p class="text-sm text-blue-100/70">
-                  Next inspection:{" "}
-                  <span class="font-medium text-white">{deadlines.inspection.nextInspectionDate}</span>
+                  Next inspection: <span class="font-medium text-white">{deadlines.inspection.nextInspectionDate}</span>
                 </p>
               )
             }
@@ -103,9 +102,7 @@ try {
                   <p class="text-blue-100/70">
                     Renewal: <span class="font-medium text-white">{deadlines.insurance.renewalDate}</span>
                   </p>
-                  {deadlines.insurance.insurer && (
-                    <p class="text-blue-100/50">{deadlines.insurance.insurer}</p>
-                  )}
+                  {deadlines.insurance.insurer && <p class="text-blue-100/50">{deadlines.insurance.insurer}</p>}
                 </div>
               )
             }

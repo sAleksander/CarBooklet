@@ -17,7 +17,7 @@ if (!supabase || !user) {
   return Astro.redirect("/cars");
 }
 
-const car = await getCarById(supabase, selectedCarId);
+const car = await getCarById(supabase, selectedCarId, user.id);
 
 if (car?.user_id !== user.id) {
   return Astro.redirect("/cars");

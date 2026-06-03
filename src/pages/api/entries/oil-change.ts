@@ -74,8 +74,8 @@ export const POST: APIRoute = async (context) => {
 
   try {
     const { car_id, conducted_at, mileage, oil_details } = result.data;
-    const car = await getCarById(supabase, car_id);
-    if (car?.user_id !== context.locals.user.id) {
+    const car = await getCarById(supabase, car_id, context.locals.user.id);
+    if (!car) {
       return Response.json({ error: "Forbidden" }, { status: 403 });
     }
     const entry = await createOilChangeEntry(supabase, context.locals.user.id, car_id, {
@@ -158,7 +158,8 @@ export const DELETE: APIRoute = async (context) => {
   }
 
   try {
-    await deleteOilChangeEntry(supabase, parsed.data, context.locals.user.id);
+    const deleted = await deleteOilChangeEntry(supabase, parsed.data, context.locals.user.id);
+    if (!deleted) return Response.json({ error: "Entry not found" }, { status: 404 });
     return new Response(null, { status: 204 });
   } catch (err) {
     return Response.json({ error: (err as Error).message }, { status: 500 });

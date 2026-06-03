@@ -35,8 +35,8 @@ export const POST: APIRoute = async (context) => {
     return Response.json({ error: "Service unavailable" }, { status: 503 });
   }
 
-  const car = await getCarById(supabase, selectedCarId);
-  if (car?.user_id !== context.locals.user.id) {
+  const car = await getCarById(supabase, selectedCarId, context.locals.user.id);
+  if (!car) {
     return Response.json({ error: "Car not found" }, { status: 404 });
   }
 

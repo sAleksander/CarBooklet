@@ -25,10 +25,10 @@ const dotColor: Record<DeadlineStatus, string> = {
 };
 ---
 
-<div class={`rounded-xl border p-5 text-white ${borderBg[status]}`}>
+<div class:list={`rounded-xl border p-5 text-white ${borderBg[status]}`}>
   <div class="mb-3 flex items-center gap-2">
-    <span class={`h-2.5 w-2.5 rounded-full ${dotColor[status]}`}></span>
-    <h2 class="text-sm font-semibold uppercase tracking-wide text-blue-100/70">{title}</h2>
+    <span class:list={`h-2.5 w-2.5 rounded-full ${dotColor[status]}`}></span>
+    <h2 class="text-sm font-semibold tracking-wide text-blue-100/70 uppercase">{title}</h2>
   </div>
   <slot />
 </div>
