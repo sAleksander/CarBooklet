@@ -3,7 +3,7 @@ project: CarBooklet
 version: 1
 status: draft
 created: 2026-05-27
-updated: 2026-06-02
+updated: 2026-06-03
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -33,11 +33,11 @@ CarBooklet replaces the physical car service booklet — always missing when nee
 | F-02 | entries-schema          | (foundation) entries table + RLS + FK to cars live                                | F-01             | FR-003, FR-005, FR-006, FR-007, FR-008          | done     |
 | F-03 | ai-integration-scaffold | (foundation) OpenRouter client + SSE streaming verified on Cloudflare Workers      | —                | FR-010, FR-011, NFR: visible AI response feedback | done   |
 | S-01 | car-management          | add, view, and remove their cars; multiple cars supported                          | F-01             | FR-001, FR-002, FR-009                          | done     |
-| S-02 | ai-car-chat             | ask the AI about their car; AI responds with model knowledge and visible streaming | F-01, F-03, S-01 | US-01, FR-010, FR-011                           | proposed |
+| S-02 | ai-car-chat             | ask the AI about their car; AI responds with model knowledge and visible streaming | F-01, F-03, S-01 | US-01, FR-010, FR-011                           | done     |
 | S-03 | repair-entry-logging    | log a repair entry (date, description, cause/context)                              | F-02, S-01       | FR-003                                          | done     |
-| S-04 | additional-entry-types  | log oil change, inspection, and insurance entries                                  | F-02, S-01       | FR-005, FR-006, FR-007                          | proposed |
-| S-05 | entry-management        | view, edit, and delete any entry, with a delete confirmation step                  | F-02, S-03, S-04 | FR-008                                          | proposed |
-| S-06 | deadline-dashboard      | see a dashboard surfacing upcoming oil change, inspection, and insurance deadlines | S-04, S-05       | FR-012                                          | proposed |
+| S-04 | additional-entry-types  | log oil change, inspection, and insurance entries                                  | F-02, S-01       | FR-005, FR-006, FR-007                          | done     |
+| S-05 | entry-management        | view, edit, and delete any entry, with a delete confirmation step                  | F-02, S-03, S-04 | FR-008                                          | done     |
+| S-06 | deadline-dashboard      | see a dashboard surfacing upcoming oil change, inspection, and insurance deadlines | S-04, S-05       | FR-012                                          | done     |
 
 ## Streams
 
@@ -129,7 +129,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - Entry context integration — the AI prompt sends car make/model/year only at this milestone; once S-03/S-04 populate the entries table, the prompt should be updated to include logged entries so FR-011's history path is exercised. Intentionally deferred to keep this slice lean. Owner: user. Block: no.
   - CI pipeline target — `.github/workflows/ci.yml` may deploy to the deprecated Cloudflare Pages target instead of Workers (per `infrastructure.md` risk register, likelihood: high); must be fixed before first production deploy. Owner: user. Block: no (develop and verify locally; fix before shipping S-02 to production).
 - **Risk:** This is the north star — any delay here delays the product proof. SSE correctness must be confirmed in F-03 before this slice begins; do not absorb F-03's runtime risk into S-02 scope.
-- **Status:** proposed
+- **Status:** done
 
 ### S-03: Repair entry logging
 
@@ -155,7 +155,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Date field priority — next due date (inspection) and renewal date (insurance) must be first-class date columns for FR-012 dashboard queries; confirm this is reflected in F-02's schema before starting this slice. Owner: user. Block: no.
 - **Risk:** Three entry types in one slice is the most scope-heavy slice on the roadmap. If timeline pressure mounts, insurance entries (FR-007) are the lowest safety stakes — oil change interval and inspection expiry are the dates with regulatory consequences in the PRD's context (Poland: expired inspection prohibits road use).
-- **Status:** proposed
+- **Status:** done
 
 ### S-05: Entry management
 
@@ -167,7 +167,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Delete confirmation is PRD-mandated (FR-008 Socrates resolution) — hard delete without a confirmation dialog is a regression, not a simplification.
-- **Status:** proposed
+- **Status:** done
 
 ### S-06: Deadline dashboard
 
@@ -180,7 +180,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:**
   - Dashboard scope — FR-012 Socrates round was not run (PRD Open Question 3). Is a deadline-only list sufficient for v1, or is a richer vehicle overview expected? Owner: user. Block: no (a deadline list satisfies FR-012 as written; scope can be expanded without replanning).
 - **Risk:** Sequenced last because all entry types (S-04) must exist before the dashboard has meaningful data to surface. This order is correct despite FR-012 being a must-have.
-- **Status:** proposed
+- **Status:** done
 
 ## Backlog Handoff
 
@@ -193,8 +193,8 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | S-02       | ai-car-chat             | [S-02] AI car chat (north star) — stream AI response        | yes                   | Depends on F-01, F-03, S-01 — all done                        |
 | S-03       | repair-entry-logging    | [S-03] Repair entry — date, description, cause/context      | done                  | Shipped 2026-06-02                                             |
 | S-04       | additional-entry-types  | [S-04] Oil change + inspection + insurance entries          | yes                   | Depends on F-02, S-01 — all done                               |
-| S-05       | entry-management        | [S-05] Entry management — view, edit, delete                | no                    | Depends on F-02, S-03, S-04 — S-04 still pending              |
-| S-06       | deadline-dashboard      | [S-06] Deadline dashboard — oil / inspection / insurance    | no                    | Depends on S-04, S-05                                          |
+| S-05       | entry-management        | [S-05] Entry management — view, edit, delete                | done                  | Shipped 2026-06-03                                             |
+| S-06       | deadline-dashboard      | [S-06] Deadline dashboard — oil / inspection / insurance    | yes                   | Depends on S-04, S-05 — both done                              |
 
 ## Open Roadmap Questions
 
@@ -219,3 +219,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | F-03 | ai-integration-scaffold | OpenRouter + SSE streaming verified on Workers; useStreamingText hook + StreamingText ready | 2026-06-01 | 4187e6c, ad1ebb2, e36de8b, 26a944d, 417949b  |
 | S-01 | car-management          | add, view, edit, delete, select cars; dashboard shows selected car                         | 2026-05-27 | 224789c, b66a9bc, afd2b4f, 14affa2            |
 | S-03 | repair-entry-logging    | /entries page with add form + history list; ownership-guarded API; Topbar link             | 2026-06-02 | b5686de, 1a3b7ee, 210f649, 4e72fa3, 887a2de  |
+| S-02 | ai-car-chat             | /ai-chat page + Topbar link; AI responds with car model knowledge; SSE streaming           | 2026-06-02 | d45454b, 4ade220, b8548fe, 50833b5            |
+| S-04 | additional-entry-types  | /entries tabbed (Repairs \| Oil Changes \| Inspections \| Insurance); Pass/Fail select     | 2026-06-02 | b2bc6b9, 60e7925, d027739, aae3e22, fa75376   |
+| S-05 | entry-management        | Edit + Delete (with confirmation) for all 4 entry types; PATCH + DELETE API routes         | 2026-06-03 | 3c17ed7, 20c9718, ecc9652, 71c3661             |
+| S-06 | deadline-dashboard      | Dashboard with oil change / inspection / insurance deadline cards, color-coded by urgency  | 2026-06-03 | 34974da, 0bfd1bf, c141ac1, 8b58b87             |
