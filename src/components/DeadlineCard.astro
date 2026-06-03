@@ -1,0 +1,34 @@
+---
+import type { DeadlineStatus } from "@/types";
+
+interface Props {
+  title: string;
+  status: DeadlineStatus;
+}
+
+const { title, status } = Astro.props;
+
+const borderBg: Record<DeadlineStatus, string> = {
+  red: "border-red-400/50 bg-red-500/10",
+  yellow: "border-amber-400/50 bg-amber-500/10",
+  green: "border-green-400/50 bg-green-500/10",
+  no_data: "border-white/10 bg-white/5",
+  no_next_date: "border-white/10 bg-white/5",
+};
+
+const dotColor: Record<DeadlineStatus, string> = {
+  red: "bg-red-400",
+  yellow: "bg-amber-400",
+  green: "bg-green-400",
+  no_data: "bg-white/30",
+  no_next_date: "bg-white/30",
+};
+---
+
+<div class={`rounded-xl border p-5 text-white ${borderBg[status]}`}>
+  <div class="mb-3 flex items-center gap-2">
+    <span class={`h-2.5 w-2.5 rounded-full ${dotColor[status]}`}></span>
+    <h2 class="text-sm font-semibold uppercase tracking-wide text-blue-100/70">{title}</h2>
+  </div>
+  <slot />
+</div>

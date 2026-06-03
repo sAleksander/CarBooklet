@@ -261,25 +261,25 @@ None — no schema changes. All three date columns exist from F-02.
 
 #### Automated
 
-- [x] 1.1 `npm run lint` passes with no new errors
-- [x] 1.2 `npm run build` passes with no TypeScript errors
+- [x] 1.1 `npm run lint` passes with no new errors — 34974da
+- [x] 1.2 `npm run build` passes with no TypeScript errors — 34974da
 
 #### Manual
 
-- [x] 1.3 `getCarDeadlines` and `CarDeadlines` import cleanly from `@/lib/services/entries`
+- [x] 1.3 `getCarDeadlines` and `CarDeadlines` import cleanly from `@/lib/services/entries` — 34974da
 
 ### Phase 2: Dashboard Page Redesign
 
 #### Automated
 
-- [ ] 2.1 `npm run build` passes with no type errors
+- [x] 2.1 `npm run build` passes with no type errors
 
 #### Manual
 
-- [ ] 2.2 `/dashboard` loads full-page layout with Topbar
-- [ ] 2.3 All three deadline cards render correctly with entry data
-- [ ] 2.4 Urgency colors correct: red / yellow / green per threshold
-- [ ] 2.5 No-data placeholder renders for cards with no entries
-- [ ] 2.6 Inspection "next date not set" state renders correctly
-- [ ] 2.7 Oil change km threshold shows only when mileage was logged
-- [ ] 2.8 No regressions on `/entries` or `/ai-chat`
+- [x] 2.2 `/dashboard` loads full-page layout with Topbar
+- [x] 2.3 All three deadline cards render correctly with entry data
+- [x] 2.4 Urgency colors correct: red / yellow / green per threshold
+- [x] 2.5 No-data placeholder renders for cards with no entries
+- [x] 2.6 Inspection "next date not set" state renders correctly
+- [x] 2.7 Oil change km threshold shows only when mileage was logged
+- [x] 2.8 No regressions on `/entries` or `/ai-chat`
