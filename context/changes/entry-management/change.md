@@ -2,7 +2,7 @@
 change_id: entry-management
 roadmap_id: S-05
 title: "Entry management — edit and delete all entry types with delete confirmation"
-status: implementing
+status: implemented
 created: 2026-06-03
 updated: 2026-06-03
 prd_refs:
