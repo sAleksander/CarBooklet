@@ -142,3 +142,103 @@ export async function createInsuranceEntry(
   const row = res.data as Omit<InsuranceEntry, "entry_type">;
   return { ...row, entry_type: "insurance" as const };
 }
+
+// ─── Update functions ─────────────────────────────────────────────────────────
+
+export async function updateRepairEntry(
+  supabase: SupabaseClient,
+  entryId: string,
+  userId: string,
+  data: RepairEntryFormData,
+): Promise<RepairEntry | null> {
+  const res = await supabase
+    .from("repair_entries")
+    .update(data)
+    .eq("id", entryId)
+    .eq("user_id", userId)
+    .select()
+    .single();
+  if (res.error?.code === "PGRST116") return null;
+  if (res.error) throw new Error(res.error.message);
+  const row = res.data as Omit<RepairEntry, "entry_type">;
+  return { ...row, entry_type: "repair" as const };
+}
+
+export async function updateOilChangeEntry(
+  supabase: SupabaseClient,
+  entryId: string,
+  userId: string,
+  data: OilChangeEntryFormData,
+): Promise<OilChangeEntry | null> {
+  const res = await supabase
+    .from("oil_change_entries")
+    .update(data)
+    .eq("id", entryId)
+    .eq("user_id", userId)
+    .select()
+    .single();
+  if (res.error?.code === "PGRST116") return null;
+  if (res.error) throw new Error(res.error.message);
+  const row = res.data as Omit<OilChangeEntry, "entry_type">;
+  return { ...row, entry_type: "oil_change" as const };
+}
+
+export async function updateInspectionEntry(
+  supabase: SupabaseClient,
+  entryId: string,
+  userId: string,
+  data: InspectionEntryFormData,
+): Promise<InspectionEntry | null> {
+  const res = await supabase
+    .from("inspection_entries")
+    .update(data)
+    .eq("id", entryId)
+    .eq("user_id", userId)
+    .select()
+    .single();
+  if (res.error?.code === "PGRST116") return null;
+  if (res.error) throw new Error(res.error.message);
+  const row = res.data as Omit<InspectionEntry, "entry_type">;
+  return { ...row, entry_type: "inspection" as const };
+}
+
+export async function updateInsuranceEntry(
+  supabase: SupabaseClient,
+  entryId: string,
+  userId: string,
+  data: InsuranceEntryFormData,
+): Promise<InsuranceEntry | null> {
+  const res = await supabase
+    .from("insurance_entries")
+    .update(data)
+    .eq("id", entryId)
+    .eq("user_id", userId)
+    .select()
+    .single();
+  if (res.error?.code === "PGRST116") return null;
+  if (res.error) throw new Error(res.error.message);
+  const row = res.data as Omit<InsuranceEntry, "entry_type">;
+  return { ...row, entry_type: "insurance" as const };
+}
+
+// ─── Delete functions ─────────────────────────────────────────────────────────
+
+export async function deleteRepairEntry(supabase: SupabaseClient, entryId: string, userId: string): Promise<void> {
+  const res = await supabase.from("repair_entries").delete().eq("id", entryId).eq("user_id", userId);
+  if (res.error) throw new Error(res.error.message);
+}
+
+export async function deleteOilChangeEntry(supabase: SupabaseClient, entryId: string, userId: string): Promise<void> {
+  const res = await supabase.from("oil_change_entries").delete().eq("id", entryId).eq("user_id", userId);
+  if (res.error) throw new Error(res.error.message);
+}
+
+export async function deleteInspectionEntry(supabase: SupabaseClient, entryId: string, userId: string): Promise<void> {
+  const res = await supabase.from("inspection_entries").delete().eq("id", entryId).eq("user_id", userId);
+  if (res.error) throw new Error(res.error.message);
+}
+
+export async function deleteInsuranceEntry(supabase: SupabaseClient, entryId: string, userId: string): Promise<void> {
+  const res = await supabase.from("insurance_entries").delete().eq("id", entryId).eq("user_id", userId);
+  if (res.error) throw new Error(res.error.message);
+}

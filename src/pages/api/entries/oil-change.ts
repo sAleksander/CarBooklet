@@ -1,10 +1,16 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
-import { getOilChangeEntries, createOilChangeEntry } from "@/lib/services/entries";
+import {
+  getOilChangeEntries,
+  createOilChangeEntry,
+  updateOilChangeEntry,
+  deleteOilChangeEntry,
+} from "@/lib/services/entries";
 import { getCarById } from "@/lib/services/cars";
 
 const carIdSchema = z.uuid();
+const entryIdSchema = z.uuid();
 
 const oilChangeEntrySchema = z.object({
   car_id: z.uuid(),
@@ -78,6 +84,82 @@ export const POST: APIRoute = async (context) => {
       oil_details,
     });
     return Response.json({ entry }, { status: 201 });
+  } catch (err) {
+    return Response.json({ error: (err as Error).message }, { status: 500 });
+  }
+};
+
+const oilChangeEntryPatchSchema = z.object({
+  id: z.uuid(),
+  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
+  mileage: z.number().int().min(0).nullable().optional(),
+  oil_details: z
+    .string()
+    .nullish()
+    .transform((v) => v ?? null),
+});
+
+export const PATCH: APIRoute = async (context) => {
+  if (!context.locals.user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let body: unknown;
+  try {
+    body = await context.request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const result = oilChangeEntryPatchSchema.safeParse(body);
+  if (!result.success) {
+    return Response.json({ error: result.error.issues[0].message }, { status: 400 });
+  }
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const { id, conducted_at, mileage, oil_details } = result.data;
+    const entry = await updateOilChangeEntry(supabase, id, context.locals.user.id, {
+      conducted_at,
+      mileage: mileage ?? null,
+      oil_details,
+    });
+    if (!entry) {
+      return Response.json({ error: "Entry not found" }, { status: 404 });
+    }
+    return Response.json({ entry });
+  } catch (err) {
+    return Response.json({ error: (err as Error).message }, { status: 500 });
+  }
+};
+
+export const DELETE: APIRoute = async (context) => {
+  if (!context.locals.user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const id = new URL(context.request.url).searchParams.get("id");
+  if (!id) {
+    return Response.json({ error: "id is required" }, { status: 400 });
+  }
+
+  const parsed = entryIdSchema.safeParse(id);
+  if (!parsed.success) {
+    return Response.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  }
+
+  const supabase = createClient(context.request.headers, context.cookies);
+  if (!supabase) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    await deleteOilChangeEntry(supabase, parsed.data, context.locals.user.id);
+    return new Response(null, { status: 204 });
   } catch (err) {
     return Response.json({ error: (err as Error).message }, { status: 500 });
   }
