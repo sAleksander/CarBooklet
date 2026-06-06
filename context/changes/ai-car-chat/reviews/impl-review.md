@@ -32,7 +32,7 @@
   - Tradeoff: None significant — purely additive defence.
   - Confidence: HIGH — identical fix was applied in S-03 impl-review.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED — 50833b5
 
 ### F2 — Missing ownership check in /ai-chat page
 
@@ -46,7 +46,7 @@
   - Tradeoff: None significant.
   - Confidence: HIGH.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED — 50833b5
 
 ### F3 — Body validation runs after DB fetch (ordering inversion)
 
@@ -56,7 +56,7 @@
 - **Location**: src/pages/api/ai/chat.ts:26–41
 - **Detail**: `getCarById` (DB round-trip) runs at lines 26-28 before `request.json()` and `promptSchema.safeParse` at lines 32-41. The sibling pattern in `src/pages/api/entries/repair.ts` parses and validates the body first (cheap local work), then fetches from the DB.
 - **Fix**: Move the `request.json()` parse and `promptSchema.safeParse` block to run before the `createClient` / `getCarById` calls.
-- **Decision**: PENDING
+- **Decision**: FIXED — 50833b5
 
 ### F4 — DB field values interpolated into system prompt without sanitisation
 
@@ -75,7 +75,7 @@
   - Tradeoff: Risk grows significantly when entry text is added to the prompt.
   - Confidence: MED.
   - Blind spot: Unknown attacker access level to DB.
-- **Decision**: PENDING
+- **Decision**: FIXED — 50833b5
 
 ### F5 — Raw SDK error message forwarded to client
 
@@ -85,7 +85,7 @@
 - **Location**: src/pages/api/ai/chat.ts:47
 - **Detail**: `(err as Error).message` from the caught `createChatStream` throw is forwarded verbatim to the browser. OpenAI/OpenRouter SDK errors can contain upstream error details, rate-limit metadata, or partial request context.
 - **Fix**: Replace with `return Response.json({ error: "AI service error" }, { status: 500 });` and log the original `err` server-side.
-- **Decision**: PENDING
+- **Decision**: FIXED — 50833b5
 
 ### F6 — engine_capacity / engine_power conditionally guarded (plan drift)
 
@@ -95,4 +95,4 @@
 - **Location**: src/lib/services/ai.ts:15–16
 - **Detail**: The plan states `engine_capacity` and `engine_power` should always be included (unconditional). The implementation guards all fields with `.trim()` checks. In practice the Car schema defines both as `string` (not optional), so empty strings are unlikely and behaviour is equivalent for real data.
 - **Fix**: Remove the `.trim()` guards on lines 15–16 to match the plan contract, or update the plan to reflect guarding against empty strings.
-- **Decision**: PENDING
+- **Decision**: FIXED — 50833b5

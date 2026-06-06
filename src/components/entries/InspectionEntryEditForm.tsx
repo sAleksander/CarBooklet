@@ -25,15 +25,25 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
     result: entry.result,
     next_inspection_date: entry.next_inspection_date ?? "",
   });
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof InspectionEditFormState, string>>>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   function setField<K extends keyof InspectionEditFormState>(key: K, value: InspectionEditFormState[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
+  }
+
+  function validate(): boolean {
+    const errors: Partial<Record<keyof InspectionEditFormState, string>> = {};
+    if (!form.conducted_at) errors.conducted_at = "Date is required";
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
+    if (!validate()) return;
     setApiError(null);
     setIsLoading(true);
     try {
@@ -76,6 +86,7 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
             }}
             disabled={isLoading}
           />
+          {fieldErrors.conducted_at && <p className="text-destructive text-sm">{fieldErrors.conducted_at}</p>}
         </div>
         <div className="space-y-1">
           <Label htmlFor="edit_insp_mileage">Mileage (km, optional)</Label>

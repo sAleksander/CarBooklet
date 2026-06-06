@@ -17,15 +17,25 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
     oil_details: entry.oil_details ?? "",
     mileage: entry.mileage,
   });
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof OilChangeEntryFormData, string>>>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   function setField<K extends keyof OilChangeEntryFormData>(key: K, value: OilChangeEntryFormData[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    setFieldErrors((prev) => ({ ...prev, [key]: undefined }));
+  }
+
+  function validate(): boolean {
+    const errors: Partial<Record<keyof OilChangeEntryFormData, string>> = {};
+    if (!form.conducted_at) errors.conducted_at = "Date is required";
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   }
 
   async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
+    if (!validate()) return;
     setApiError(null);
     setIsLoading(true);
     try {
@@ -66,6 +76,7 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
             }}
             disabled={isLoading}
           />
+          {fieldErrors.conducted_at && <p className="text-destructive text-sm">{fieldErrors.conducted_at}</p>}
         </div>
         <div className="space-y-1">
           <Label htmlFor="edit_oc_mileage">Mileage (km, optional)</Label>
