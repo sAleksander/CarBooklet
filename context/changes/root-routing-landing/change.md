@@ -1,7 +1,7 @@
 ---
 id: root-routing-landing
 title: "S-01: Root routing + minimal landing page"
-status: implementing
+status: implemented
 created: "2026-06-08"
 updated: "2026-06-08"
 roadmap_id: S-01

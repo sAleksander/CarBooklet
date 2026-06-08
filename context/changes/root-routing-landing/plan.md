@@ -149,14 +149,14 @@ Replace the 10x Astro Starter boilerplate copy and feature cards in `Welcome.ast
 
 #### Automated
 
-- [x] 2.1 Lint passes: `npm run lint`
-- [x] 2.2 Build passes: `npm run build`
+- [x] 2.1 Lint passes: `npm run lint` — 0f195b3
+- [x] 2.2 Build passes: `npm run build` — 0f195b3
 
 #### Manual
 
-- [x] 2.3 Headline reads "CarBooklet"
-- [x] 2.4 Tagline matches approved copy
-- [x] 2.5 No feature cards visible
-- [x] 2.6 Sign In and Sign Up buttons present and route correctly
-- [x] 2.7 Cosmic background and Topbar render correctly
-- [x] 2.8 No visual regressions on protected pages
+- [x] 2.3 Headline reads "CarBooklet" — 0f195b3
+- [x] 2.4 Tagline matches approved copy — 0f195b3
+- [x] 2.5 No feature cards visible — 0f195b3
+- [x] 2.6 Sign In and Sign Up buttons present and route correctly — 0f195b3
+- [x] 2.7 Cosmic background and Topbar render correctly — 0f195b3
+- [x] 2.8 No visual regressions on protected pages — 0f195b3
