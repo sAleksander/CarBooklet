@@ -1,6 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
-import Topbar from "@/components/Topbar.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { ChatDemo } from "@/components/ai/ChatDemo";
@@ -24,19 +23,16 @@ if (car?.user_id !== user.id) {
 }
 ---
 
-<Layout title="AI Chat">
-  <div class="bg-cosmic min-h-screen p-4">
-    <Topbar />
-    <div class="flex justify-center pt-8">
-      <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
-        <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
-          {car.brand}
-          {car.model}
-          — AI Chat
-        </h1>
-        <p class="mb-8 text-sm text-blue-100/60">{car.production_year}</p>
-        <ChatDemo client:load />
-      </div>
+<AppLayout title="AI Chat" selectedCar={car}>
+  <div class="flex justify-center pt-4">
+    <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+        {car.brand}
+        {car.model}
+        — AI Chat
+      </h1>
+      <p class="mb-8 text-sm text-blue-100/60">{car.production_year}</p>
+      <ChatDemo client:load />
     </div>
   </div>
-</Layout>
+</AppLayout>

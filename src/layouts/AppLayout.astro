@@ -25,7 +25,7 @@ const userEmail = Astro.locals.user?.email ?? "";
     <div class="flex flex-1 flex-col overflow-hidden">
       <!-- Mobile top bar -->
       <header class="flex items-center gap-3 border-b border-white/10 px-4 py-3 md:hidden">
-        <MobileSidebarTrigger client:load pathname={pathname} userEmail={userEmail} selectedCar={selectedCar} />
+        <MobileSidebarTrigger client:only="react" pathname={pathname} userEmail={userEmail} selectedCar={selectedCar} />
         {title && <span class="text-sm font-medium text-white/80">{title}</span>}
       </header>
 

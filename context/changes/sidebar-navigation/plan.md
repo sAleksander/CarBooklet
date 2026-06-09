@@ -359,28 +359,28 @@ Note: `CarList` renders a `<div className="space-y-6 p-4">` as its root element 
 
 #### Automated
 
-- [x] 3.1 `npm run build` succeeds
-- [x] 3.2 `npm run lint` passes
+- [x] 3.1 `npm run build` succeeds — 9d017dc
+- [x] 3.2 `npm run lint` passes — 9d017dc
 
 #### Manual
 
-- [x] 3.3 Desktop: sidebar visible, content scrolls independently, `bg-cosmic` applied full-screen
-- [x] 3.4 Mobile: hamburger in top bar, Sheet opens/closes, nav link navigates correctly
+- [x] 3.3 Desktop: sidebar visible, content scrolls independently, `bg-cosmic` applied full-screen — 9d017dc
+- [x] 3.4 Mobile: hamburger in top bar, Sheet opens/closes, nav link navigates correctly — 9d017dc
 
 ### Phase 4: Migrate protected pages and clean up Topbar
 
 #### Automated
 
-- [ ] 4.1 `grep -r "Topbar" src/` returns no results
-- [ ] 4.2 `npm run build` succeeds with no TypeScript errors
-- [ ] 4.3 `npm run lint` passes
+- [x] 4.1 `grep -r "Topbar" src/` returns no results
+- [x] 4.2 `npm run build` succeeds with no TypeScript errors
+- [x] 4.3 `npm run lint` passes
 
 #### Manual
 
-- [ ] 4.4 All four protected routes render with sidebar and correct active-state
-- [ ] 4.5 Car-switcher shows car name on dashboard/entries/ai-chat; "Select a car" on /cars
-- [ ] 4.6 User email + Sign Out visible in sidebar footer; sign-out works end-to-end
-- [ ] 4.7 Mobile Sheet works on all four routes
-- [ ] 4.8 Landing page (`/`) still shows Sign In/Sign Up CTAs after Topbar removal
-- [ ] 4.9 Car CRUD smoke test: add, edit, delete, select a car on `/cars`
-- [ ] 4.10 AI chat smoke test: message streams correctly on `/ai-chat`
+- [x] 4.4 All four protected routes render with sidebar and correct active-state
+- [x] 4.5 Car-switcher shows car name on dashboard/entries/ai-chat; "Select a car" on /cars
+- [x] 4.6 User email + Sign Out visible in sidebar footer; sign-out works end-to-end
+- [x] 4.7 Mobile Sheet works on all four routes
+- [x] 4.8 Landing page (`/`) still shows Sign In/Sign Up CTAs after Topbar removal
+- [x] 4.9 Car CRUD smoke test: add, edit, delete, select a car on `/cars`
+- [x] 4.10 AI chat smoke test: message streams correctly on `/ai-chat`
