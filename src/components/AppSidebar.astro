@@ -1,0 +1,67 @@
+---
+import { NAV_ITEMS } from "@/lib/nav";
+import type { Car } from "@/types";
+
+interface Props {
+  pathname: string;
+  userEmail: string;
+  selectedCar?: Car;
+}
+
+const { pathname, userEmail, selectedCar } = Astro.props;
+---
+
+<aside class="flex h-full w-60 flex-shrink-0 flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)]">
+  <!-- Car switcher -->
+  <div class="border-b border-[var(--sidebar-border)] p-4">
+    <a
+      href="/cars"
+      class="flex w-full items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm transition-colors hover:bg-white/10"
+    >
+      {
+        selectedCar ? (
+          <span class="truncate text-[var(--sidebar-foreground)]">
+            {selectedCar.brand} {selectedCar.model}
+          </span>
+        ) : (
+          <span class="text-[var(--sidebar-foreground)]/50">Select a car</span>
+        )
+      }
+    </a>
+  </div>
+
+  <!-- Nav list -->
+  <nav class="flex-1 space-y-1 p-3">
+    {
+      NAV_ITEMS.map((item) => {
+        const isActive = pathname.startsWith(item.href);
+        return (
+          <a
+            href={item.href}
+            class:list={[
+              "block rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+              isActive
+                ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
+                : "text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)]",
+            ].join(" ")}
+          >
+            {item.label}
+          </a>
+        );
+      })
+    }
+  </nav>
+
+  <!-- Footer -->
+  <div class="border-t border-[var(--sidebar-border)] p-4">
+    <p class="mb-3 truncate text-xs text-[var(--sidebar-foreground)]/60">{userEmail}</p>
+    <form method="POST" action="/api/auth/signout">
+      <button
+        type="submit"
+        class="text-sm text-[var(--sidebar-foreground)]/70 transition-colors hover:text-[var(--sidebar-foreground)]"
+      >
+        Sign out
+      </button>
+    </form>
+  </div>
+</aside>

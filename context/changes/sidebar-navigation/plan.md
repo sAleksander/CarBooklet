@@ -334,26 +334,26 @@ Note: `CarList` renders a `<div className="space-y-6 p-4">` as its root element 
 
 #### Automated
 
-- [x] 1.1 All four packages install without peer-dependency errors
-- [x] 1.2 `npm run build` succeeds after installation
-- [x] 1.3 `npm run lint` passes
+- [x] 1.1 All four packages install without peer-dependency errors — 4902d37
+- [x] 1.2 `npm run build` succeeds after installation — 4902d37
+- [x] 1.3 `npm run lint` passes — 4902d37
 
 #### Manual
 
-- [x] 1.4 The four new `src/components/ui/*.tsx` files exist
-- [x] 1.5 `--sidebar-*` vars in `global.css` `:root` read as dark OKLCH values
+- [x] 1.4 The four new `src/components/ui/*.tsx` files exist — 4902d37
+- [x] 1.5 `--sidebar-*` vars in `global.css` `:root` read as dark OKLCH values — 4902d37
 
 ### Phase 2: Build AppSidebar and MobileSidebarTrigger
 
 #### Automated
 
-- [ ] 2.1 `npm run build` succeeds
-- [ ] 2.2 `npm run lint` passes (no unused imports, no TypeScript errors)
+- [x] 2.1 `npm run build` succeeds
+- [x] 2.2 `npm run lint` passes (no unused imports, no TypeScript errors)
 
 #### Manual
 
-- [ ] 2.3 `AppSidebar.astro` renders as a dark sidebar column on a test page
-- [ ] 2.4 `MobileSidebarTrigger.tsx` opens a Sheet with nav items when hamburger is clicked
+- [x] 2.3 `AppSidebar.astro` renders as a dark sidebar column on a test page
+- [x] 2.4 `MobileSidebarTrigger.tsx` opens a Sheet with nav items when hamburger is clicked
 
 ### Phase 3: Create AppLayout shell
 
