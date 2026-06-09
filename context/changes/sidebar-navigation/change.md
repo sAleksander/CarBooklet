@@ -1,7 +1,7 @@
 ---
 change_id: sidebar-navigation
 title: Sidebar navigation
-status: implementing
+status: implemented
 created: 2026-06-09
 updated: 2026-06-09
 archived_at: null
