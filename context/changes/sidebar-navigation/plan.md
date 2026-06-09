@@ -347,25 +347,25 @@ Note: `CarList` renders a `<div className="space-y-6 p-4">` as its root element 
 
 #### Automated
 
-- [x] 2.1 `npm run build` succeeds
-- [x] 2.2 `npm run lint` passes (no unused imports, no TypeScript errors)
+- [x] 2.1 `npm run build` succeeds — d2b7104
+- [x] 2.2 `npm run lint` passes (no unused imports, no TypeScript errors) — d2b7104
 
 #### Manual
 
-- [x] 2.3 `AppSidebar.astro` renders as a dark sidebar column on a test page
-- [x] 2.4 `MobileSidebarTrigger.tsx` opens a Sheet with nav items when hamburger is clicked
+- [x] 2.3 `AppSidebar.astro` renders as a dark sidebar column on a test page — d2b7104
+- [x] 2.4 `MobileSidebarTrigger.tsx` opens a Sheet with nav items when hamburger is clicked — d2b7104
 
 ### Phase 3: Create AppLayout shell
 
 #### Automated
 
-- [ ] 3.1 `npm run build` succeeds
-- [ ] 3.2 `npm run lint` passes
+- [x] 3.1 `npm run build` succeeds
+- [x] 3.2 `npm run lint` passes
 
 #### Manual
 
-- [ ] 3.3 Desktop: sidebar visible, content scrolls independently, `bg-cosmic` applied full-screen
-- [ ] 3.4 Mobile: hamburger in top bar, Sheet opens/closes, nav link navigates correctly
+- [x] 3.3 Desktop: sidebar visible, content scrolls independently, `bg-cosmic` applied full-screen
+- [x] 3.4 Mobile: hamburger in top bar, Sheet opens/closes, nav link navigates correctly
 
 ### Phase 4: Migrate protected pages and clean up Topbar
 
