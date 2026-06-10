@@ -1,6 +1,7 @@
 ---
 import AppLayout from "@/layouts/AppLayout.astro";
 import EntryDetail from "@/components/entries/EntryDetail.astro";
+import { EntryDetailEditor } from "@/components/entries/EntryDetailEditor";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { getEntryById } from "@/lib/services/entries";
@@ -84,7 +85,9 @@ const title = entry && car ? `${entryTypeLabel[entryType]} — ${car.brand} ${ca
                 ← Back to entries
               </a>
             </div>
-            <EntryDetail entry={entry} />
+            <EntryDetailEditor entry={entry} client:load>
+              <EntryDetail entry={entry} />
+            </EntryDetailEditor>
           </div>
         )
       }
