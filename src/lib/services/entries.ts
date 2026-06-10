@@ -378,3 +378,69 @@ export async function getCarDeadlines(supabase: SupabaseClient, carId: string, u
     },
   };
 }
+
+export async function getLastEntry(supabase: SupabaseClient, carId: string, userId: string): Promise<Entry | null> {
+  const [repairRes, oilRes, inspRes, insRes] = await Promise.all([
+    supabase
+      .from("repair_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(1),
+    supabase
+      .from("oil_change_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(1),
+    supabase
+      .from("inspection_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(1),
+    supabase
+      .from("insurance_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(1),
+  ]);
+  if (repairRes.error) throw new Error(repairRes.error.message);
+  if (oilRes.error) throw new Error(oilRes.error.message);
+  if (inspRes.error) throw new Error(inspRes.error.message);
+  if (insRes.error) throw new Error(insRes.error.message);
+
+  const candidates: Entry[] = [
+    ...(repairRes.data[0]
+      ? [{ ...(repairRes.data[0] as Omit<RepairEntry, "entry_type">), entry_type: "repair" as const }]
+      : []),
+    ...(oilRes.data[0]
+      ? [{ ...(oilRes.data[0] as Omit<OilChangeEntry, "entry_type">), entry_type: "oil_change" as const }]
+      : []),
+    ...(inspRes.data[0]
+      ? [{ ...(inspRes.data[0] as Omit<InspectionEntry, "entry_type">), entry_type: "inspection" as const }]
+      : []),
+    ...(insRes.data[0]
+      ? [{ ...(insRes.data[0] as Omit<InsuranceEntry, "entry_type">), entry_type: "insurance" as const }]
+      : []),
+  ];
+
+  const priority: Record<Entry["entry_type"], number> = {
+    repair: 0,
+    oil_change: 1,
+    inspection: 2,
+    insurance: 3,
+  };
+  return candidates.reduce<Entry | null>((best, cur) => {
+    if (!best) return cur;
+    const delta = new Date(cur.conducted_at).getTime() - new Date(best.conducted_at).getTime();
+    if (delta > 0) return cur;
+    if (delta === 0 && priority[cur.entry_type] < priority[best.entry_type]) return cur;
+    return best;
+  }, null);
+}
