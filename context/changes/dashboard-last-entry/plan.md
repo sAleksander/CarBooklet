@@ -170,22 +170,22 @@ None — no data or schema changes.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run lint`
-- [x] 1.2 Build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npm run lint` — e69f0de
+- [x] 1.2 Build succeeds: `npm run build` — e69f0de
 
 ### Phase 2: `LastEntryCard` widget + dashboard wiring
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run lint`
-- [ ] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run lint`
+- [x] 2.2 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 Dashboard shows a card for the most-recent entry (correct label, date, type-specific summary)
-- [ ] 2.4 Card links to and opens the correct `/entries/[type]/[id]` detail page
-- [ ] 2.5 Card updates on reload after logging a newer-dated entry
-- [ ] 2.6 Same-`conducted_at` entries resolve by type priority (repair > oil_change > inspection > insurance)
-- [ ] 2.7 Null summary field shows the em-dash placeholder
-- [ ] 2.8 Car with zero entries renders no widget and no error
-- [ ] 2.9 Widget renders inside AppLayout on desktop and mobile
+- [x] 2.3 Dashboard shows a card for the most-recent entry (correct label, date, type-specific summary)
+- [x] 2.4 Card links to and opens the correct `/entries/[type]/[id]` detail page
+- [x] 2.5 Card updates on reload after logging a newer-dated entry
+- [x] 2.6 Same-`conducted_at` entries resolve by type priority (repair > oil_change > inspection > insurance)
+- [x] 2.7 Null summary field shows the em-dash placeholder
+- [x] 2.8 Car with zero entries renders no widget and no error
+- [x] 2.9 Widget renders inside AppLayout on desktop and mobile

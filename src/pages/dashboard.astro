@@ -1,9 +1,10 @@
 ---
 import AppLayout from "@/layouts/AppLayout.astro";
 import DeadlineCard from "@/components/DeadlineCard.astro";
+import LastEntryCard from "@/components/LastEntryCard.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
-import { getCarDeadlines } from "@/lib/services/entries";
+import { getCarDeadlines, getLastEntry } from "@/lib/services/entries";
 
 const { user, selectedCarId } = Astro.locals;
 
@@ -24,8 +25,12 @@ if (car?.user_id !== user.id) {
 }
 
 let deadlines;
+let lastEntry;
 try {
-  deadlines = await getCarDeadlines(supabase, selectedCarId, user.id);
+  [deadlines, lastEntry] = await Promise.all([
+    getCarDeadlines(supabase, selectedCarId, user.id),
+    getLastEntry(supabase, selectedCarId, user.id),
+  ]);
 } catch {
   return Astro.redirect("/cars?error=load_failed");
 }
@@ -103,6 +108,14 @@ try {
           }
         </DeadlineCard>
       </div>
+
+      {
+        lastEntry && (
+          <div class="mt-4">
+            <LastEntryCard entry={lastEntry} />
+          </div>
+        )
+      }
     </div>
   </div>
 </AppLayout>

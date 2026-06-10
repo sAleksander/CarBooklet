@@ -1,0 +1,48 @@
+---
+import type { Entry } from "@/types";
+
+interface Props {
+  entry: Entry;
+}
+
+const { entry } = Astro.props;
+
+const entryTypeLabel: Record<string, string> = {
+  repair: "Repair",
+  oil_change: "Oil Change",
+  inspection: "Inspection",
+  insurance: "Insurance",
+};
+
+const dash = "—";
+
+let summary: string;
+switch (entry.entry_type) {
+  case "repair":
+    summary = entry.description || dash;
+    break;
+  case "oil_change":
+    summary = entry.oil_details ?? dash;
+    break;
+  case "inspection":
+    summary = entry.result ?? dash;
+    break;
+  case "insurance":
+    summary = entry.insurer ?? dash;
+    break;
+}
+---
+
+<a
+  href={`/entries/${entry.entry_type}/${entry.id}`}
+  class="block rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl transition-colors hover:bg-white/15"
+>
+  <p class="mb-3 text-xs font-semibold tracking-wide text-blue-100/60 uppercase">Last entry</p>
+  <div class="flex items-start justify-between gap-4">
+    <div class="min-w-0">
+      <p class="text-sm font-semibold text-white">{entryTypeLabel[entry.entry_type]}</p>
+      <p class="mt-0.5 truncate text-sm text-blue-100/70">{summary}</p>
+    </div>
+    <p class="shrink-0 text-sm text-blue-100/50">{new Date(entry.conducted_at).toLocaleDateString()}</p>
+  </div>
+</a>
