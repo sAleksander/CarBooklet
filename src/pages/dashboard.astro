@@ -18,21 +18,21 @@ if (!supabase || !user) {
   return Astro.redirect("/cars");
 }
 
-const car = await getCarById(supabase, selectedCarId, user.id);
-
-if (car?.user_id !== user.id) {
-  return Astro.redirect("/cars");
-}
-
+let car;
 let deadlines;
 let lastEntry;
 try {
-  [deadlines, lastEntry] = await Promise.all([
+  [car, deadlines, lastEntry] = await Promise.all([
+    getCarById(supabase, selectedCarId, user.id),
     getCarDeadlines(supabase, selectedCarId, user.id),
     getLastEntry(supabase, selectedCarId, user.id),
   ]);
 } catch {
   return Astro.redirect("/cars?error=load_failed");
+}
+
+if (car?.user_id !== user.id) {
+  return Astro.redirect("/cars");
 }
 ---
 

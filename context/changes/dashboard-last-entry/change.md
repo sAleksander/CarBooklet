@@ -1,7 +1,7 @@
 ---
 change_id: dashboard-last-entry
 title: Dashboard last entry widget
-status: implemented
+status: impl_reviewed
 created: 2026-06-10
 updated: 2026-06-10
 archived_at: null
