@@ -178,30 +178,30 @@ None — no data or schema changes.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npm run lint`
-- [x] 1.2 Build succeeds: `npm run build`
+- [x] 1.1 Type checking passes: `npm run lint` — 8523829
+- [x] 1.2 Build succeeds: `npm run build` — 8523829
 
 #### Manual
 
-- [x] 1.3 Footer shows Edit + Delete on all 4 entry types
-- [x] 1.4 Edit replaces read view with the pre-filled type-specific form
-- [x] 1.5 Saving persists and the reloaded page shows the new values (updated_at reflects edit)
-- [x] 1.6 Cancel returns to the read view unchanged
-- [x] 1.7 Delete → confirm → lands on /entries with the entry removed
-- [x] 1.8 Cancelling the delete dialog leaves the entry intact
-- [x] 1.9 Failed delete shows inline error and stays on the page
-- [x] 1.10 Renders in AppLayout desktop + mobile; logged-out redirects to /auth/signin
+- [x] 1.3 Footer shows Edit + Delete on all 4 entry types — 8523829
+- [x] 1.4 Edit replaces read view with the pre-filled type-specific form — 8523829
+- [x] 1.5 Saving persists and the reloaded page shows the new values (updated_at reflects edit) — 8523829
+- [x] 1.6 Cancel returns to the read view unchanged — 8523829
+- [x] 1.7 Delete → confirm → lands on /entries with the entry removed — 8523829
+- [x] 1.8 Cancelling the delete dialog leaves the entry intact — 8523829
+- [x] 1.9 Failed delete shows inline error and stays on the page — 8523829
+- [x] 1.10 Renders in AppLayout desktop + mobile; logged-out redirects to /auth/signin — 8523829
 
 ### Phase 2: Strip edit/delete from the list side
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run lint`
-- [ ] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run lint`
+- [x] 2.2 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 2.3 No Edit/Delete buttons on any list card (all 4 tabs)
-- [ ] 2.4 Clicking a card still opens its detail page
-- [ ] 2.5 Creating an entry from each tab still works and prepends to the list
-- [ ] 2.6 No console errors on the list view
+- [x] 2.3 No Edit/Delete buttons on any list card (all 4 tabs)
+- [x] 2.4 Clicking a card still opens its detail page
+- [x] 2.5 Creating an entry from each tab still works and prepends to the list
+- [x] 2.6 No console errors on the list view

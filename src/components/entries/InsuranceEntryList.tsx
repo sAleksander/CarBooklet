@@ -1,13 +1,10 @@
 import type { InsuranceEntry } from "@/types";
-import { Button } from "@/components/ui/button";
 
 interface InsuranceEntryListProps {
   entries: InsuranceEntry[];
-  onEdit: (entry: InsuranceEntry) => void;
-  onDelete: (entry: InsuranceEntry) => void;
 }
 
-export function InsuranceEntryList({ entries, onEdit, onDelete }: InsuranceEntryListProps) {
+export function InsuranceEntryList({ entries }: InsuranceEntryListProps) {
   if (entries.length === 0) {
     return <p className="text-muted-foreground text-sm">No insurance entries yet. Log your first one above.</p>;
   }
@@ -22,34 +19,9 @@ export function InsuranceEntryList({ entries, onEdit, onDelete }: InsuranceEntry
           >
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
-              <div className="flex items-center gap-2">
-                {entry.mileage !== null && (
-                  <span className="text-muted-foreground text-xs">Mileage: {entry.mileage.toLocaleString()} km</span>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onEdit(entry);
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-destructive hover:text-destructive"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    onDelete(entry);
-                  }}
-                >
-                  Delete
-                </Button>
-              </div>
+              {entry.mileage !== null && (
+                <span className="text-muted-foreground text-xs">Mileage: {entry.mileage.toLocaleString()} km</span>
+              )}
             </div>
             {entry.insurer && (
               <p className="text-sm">
