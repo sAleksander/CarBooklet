@@ -17,7 +17,7 @@ export function OilChangeEntryList({ entries, onEdit, onDelete }: OilChangeEntry
       {entries.map((entry) => (
         <li key={entry.id}>
           <a
-            href={`/entries/${entry.id}`}
+            href={`/entries/${entry.entry_type}/${entry.id}`}
             className="block rounded-lg border border-white/10 bg-white/5 p-4 text-white transition-colors hover:bg-white/10"
           >
             <div className="mb-1 flex items-center justify-between">

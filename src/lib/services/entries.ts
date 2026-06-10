@@ -130,23 +130,36 @@ export async function getInsuranceEntries(
   }));
 }
 
-export async function getEntryById(supabase: SupabaseClient, entryId: string, userId: string): Promise<Entry | null> {
-  const [repairRes, oilRes, inspRes, insRes] = await Promise.all([
-    supabase.from("repair_entries").select("*").eq("id", entryId).eq("user_id", userId).maybeSingle(),
-    supabase.from("oil_change_entries").select("*").eq("id", entryId).eq("user_id", userId).maybeSingle(),
-    supabase.from("inspection_entries").select("*").eq("id", entryId).eq("user_id", userId).maybeSingle(),
-    supabase.from("insurance_entries").select("*").eq("id", entryId).eq("user_id", userId).maybeSingle(),
-  ]);
-  if (repairRes.error) throw new Error(repairRes.error.message);
-  if (oilRes.error) throw new Error(oilRes.error.message);
-  if (inspRes.error) throw new Error(inspRes.error.message);
-  if (insRes.error) throw new Error(insRes.error.message);
-  if (repairRes.data) return { ...(repairRes.data as Omit<RepairEntry, "entry_type">), entry_type: "repair" as const };
-  if (oilRes.data) return { ...(oilRes.data as Omit<OilChangeEntry, "entry_type">), entry_type: "oil_change" as const };
-  if (inspRes.data)
-    return { ...(inspRes.data as Omit<InspectionEntry, "entry_type">), entry_type: "inspection" as const };
-  if (insRes.data) return { ...(insRes.data as Omit<InsuranceEntry, "entry_type">), entry_type: "insurance" as const };
-  return null;
+export async function getEntryById(
+  supabase: SupabaseClient,
+  entryType: Entry["entry_type"],
+  entryId: string,
+  userId: string,
+): Promise<Entry | null> {
+  const tableMap: Record<Entry["entry_type"], string> = {
+    repair: "repair_entries",
+    oil_change: "oil_change_entries",
+    inspection: "inspection_entries",
+    insurance: "insurance_entries",
+  };
+  const res = await supabase
+    .from(tableMap[entryType])
+    .select("*")
+    .eq("id", entryId)
+    .eq("user_id", userId)
+    .maybeSingle();
+  if (res.error) throw new Error(res.error.message);
+  if (!res.data) return null;
+  switch (entryType) {
+    case "repair":
+      return { ...(res.data as Omit<RepairEntry, "entry_type">), entry_type: "repair" as const };
+    case "oil_change":
+      return { ...(res.data as Omit<OilChangeEntry, "entry_type">), entry_type: "oil_change" as const };
+    case "inspection":
+      return { ...(res.data as Omit<InspectionEntry, "entry_type">), entry_type: "inspection" as const };
+    case "insurance":
+      return { ...(res.data as Omit<InsuranceEntry, "entry_type">), entry_type: "insurance" as const };
+  }
 }
 
 export async function createInsuranceEntry(
