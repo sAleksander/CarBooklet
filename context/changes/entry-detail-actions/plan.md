@@ -196,12 +196,12 @@ None — no data or schema changes.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run lint`
-- [x] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run lint` — 3887180
+- [x] 2.2 Build succeeds: `npm run build` — 3887180
 
 #### Manual
 
-- [x] 2.3 No Edit/Delete buttons on any list card (all 4 tabs)
-- [x] 2.4 Clicking a card still opens its detail page
-- [x] 2.5 Creating an entry from each tab still works and prepends to the list
-- [x] 2.6 No console errors on the list view
+- [x] 2.3 No Edit/Delete buttons on any list card (all 4 tabs) — 3887180
+- [x] 2.4 Clicking a card still opens its detail page — 3887180
+- [x] 2.5 Creating an entry from each tab still works and prepends to the list — 3887180
+- [x] 2.6 No console errors on the list view — 3887180
