@@ -66,7 +66,7 @@
 - **Location**: src/components/entries/EntryDetail.astro:23, src/components/entries/InsuranceEntryList.tsx:21
 - **Detail**: "Date" common field shows `conducted_at` for all entry types. For insurance, the meaningful date is `policy_start_date` or `renewal_date`. The type-specific section shows those fields anyway, so the date appears twice for insurance with different semantics.
 - **Fix**: In EntryDetail.astro and InsuranceEntryList, show `policy_start_date ?? renewal_date` with label "Policy start" for insurance entries.
-- **Decision**: PENDING
+- **Decision**: FIXED — EntryDetail.astro now shows "Policy start" with `policy_start_date ?? renewal_date` for insurance entries in the headline date field.
 
 ### F5 — getEntryById breaks the get/create/update/delete grouping
 
@@ -76,4 +76,4 @@
 - **Location**: src/lib/services/entries.ts:133
 - **Detail**: Function was inserted before `createInsuranceEntry`, separating it from its three sibling create-functions. All gets should be grouped together above creates.
 - **Fix**: Move `getEntryById` to immediately after `getInsuranceEntries` (line 131), before `createInsuranceEntry`.
-- **Decision**: PENDING
+- **Decision**: FIXED — F3 refactor rewrote `getEntryById` in-place; it now sits between `getInsuranceEntries` and `createInsuranceEntry`, restoring the get/create/update/delete grouping.
