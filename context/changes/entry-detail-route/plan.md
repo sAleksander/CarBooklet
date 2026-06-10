@@ -199,28 +199,28 @@ None — no data or schema changes.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run lint`
-- [x] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run lint` — 4638283
+- [x] 2.2 Build succeeds: `npm run build` — 4638283
 
 #### Manual
 
-- [x] 2.3 All 4 entry types render every field on `/entries/[id]`
-- [x] 2.4 Multi-line repair description shows line breaks
-- [x] 2.5 Null optional fields show em-dash placeholder
-- [x] 2.6 Unknown id and foreign-car id both show styled 404 panel (HTTP 404) with working back link
-- [x] 2.7 Logged-out visit redirects to `/auth/signin`
-- [x] 2.8 Detail page renders inside AppLayout on desktop and mobile
+- [x] 2.3 All 4 entry types render every field on `/entries/[id]` — 4638283
+- [x] 2.4 Multi-line repair description shows line breaks — 4638283
+- [x] 2.5 Null optional fields show em-dash placeholder — 4638283
+- [x] 2.6 Unknown id and foreign-car id both show styled 404 panel (HTTP 404) with working back link — 4638283
+- [x] 2.7 Logged-out visit redirects to `/auth/signin` — 4638283
+- [x] 2.8 Detail page renders inside AppLayout on desktop and mobile — 4638283
 
 ### Phase 3: Clickable list cards
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npm run lint`
-- [x] 3.2 Build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run lint` — 9dc7c89
+- [x] 3.2 Build succeeds: `npm run build` — 9dc7c89
 
 #### Manual
 
-- [x] 3.3 Clicking card body (all 4 types) navigates to detail page
-- [x] 3.4 Clicking Edit opens edit form without navigating
-- [x] 3.5 Clicking Delete triggers delete flow without navigating
-- [x] 3.6 Hover state signals the card is clickable
+- [x] 3.3 Clicking card body (all 4 types) navigates to detail page — 9dc7c89
+- [x] 3.4 Clicking Edit opens edit form without navigating — 9dc7c89
+- [x] 3.5 Clicking Delete triggers delete flow without navigating — 9dc7c89
+- [x] 3.6 Hover state signals the card is clickable — 9dc7c89
