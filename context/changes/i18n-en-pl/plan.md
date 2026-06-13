@@ -381,14 +381,14 @@ None — no data or schema changes. Existing users without a `lang` cookie defau
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npm run lint`
-- [x] 4.2 Build succeeds: `npm run build`
+- [x] 4.1 Type checking passes: `npm run lint` — cd122a2
+- [x] 4.2 Build succeeds: `npm run build` — cd122a2
 
 #### Manual
 
-- [x] 4.3 Car list cards show translated engine type labels in both locales
-- [x] 4.4 LastEntryCard renders fully in the active locale (label, entry type, result)
-- [x] 4.5 Dashboard DeadlineCard titles and inline strings appear in the active locale
-- [x] 4.6 All page `<title>` meta strings appear in the active locale
-- [x] 4.7 Spot-check every page in Polish — no visible hardcoded English strings remain
-- [x] 4.8 Final grep audit returns no untranslated template strings
+- [x] 4.3 Car list cards show translated engine type labels in both locales — cd122a2
+- [x] 4.4 LastEntryCard renders fully in the active locale (label, entry type, result) — cd122a2
+- [x] 4.5 Dashboard DeadlineCard titles and inline strings appear in the active locale — cd122a2
+- [x] 4.6 All page `<title>` meta strings appear in the active locale — cd122a2
+- [x] 4.7 Spot-check every page in Polish — no visible hardcoded English strings remain — cd122a2
+- [x] 4.8 Final grep audit returns no untranslated template strings — cd122a2

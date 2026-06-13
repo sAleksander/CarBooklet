@@ -1,7 +1,7 @@
 ---
 change_id: i18n-en-pl
 title: Localization — English + Polish with a persistent language toggle
-status: implementing
+status: implemented
 created: 2026-06-10
 updated: 2026-06-13
 archived_at: null
