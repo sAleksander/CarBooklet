@@ -1,225 +1,181 @@
 ---
-project: CarBooklet
+project: "CarBooklet — UI Glowup"
 version: 1
 status: draft
-created: 2026-05-27
-updated: 2026-06-03
-prd_version: 1
-main_goal: speed
-top_blocker: time
+created: "2026-06-08"
+updated: "2026-06-13"
+prd_version_note: "S-05/S-06 added post-PRD-v2 from user direction; not yet reflected in prd-v2.md"
+prd_version: 2
+main_goal: quality
+top_blocker: motivation
 ---
 
-# Roadmap: CarBooklet
+# Roadmap: CarBooklet — UI Glowup
 
-> Derived from `context/foundation/prd.md` (v1) + auto-researched codebase baseline.
+> Derived from `context/foundation/prd-v2.md` (v2) + auto-researched codebase baseline.
 > Edit-in-place; archive when superseded.
 > Slices below are listed in dependency order. The "At a glance" table is the index.
 
 ## Vision recap
 
-CarBooklet replaces the physical car service booklet — always missing when needed — with a mobile-accessible, AI-queryable record of a vehicle's maintenance and repair history. The core product hypothesis — that an LLM can synthesize a user's personal logged history with general knowledge about their specific car model to answer questions no generic car-advice tool can match — is validated the moment a user adds a car and gets an AI response grounded in its make, model, and year. Entry-grounding (AI referencing logged repairs and services) deepens that proof once entries exist.
+CarBooklet has all its features but feels like an unfinished starter template — the root URL shows boilerplate, the navbar has no active state, and users must memorize URLs to get around. This change is a UX/navigation overhaul: introduce a responsive sidebar, a real landing page, a full-screen entry detail view, and a last-entry widget on the dashboard. No new data, no backend changes — the entire delta is in the UI layer.
 
 ## North star
 
-**S-02: user can add a car and ask the AI; AI responds with car-model knowledge** — proves the product's technical core (OpenRouter integration, SSE streaming, visible progress) before entry-grounding complexity is added. With `speed` as the sequencing goal, this is the earliest milestone that confirms the app's differentiating AI layer works on this infrastructure.
+**S-02: user can navigate the app via a sidebar that always shows where they are** — the smallest delivery that proves the primary success criterion ("user can navigate to any feature from any other feature without guessing URLs"). Once the sidebar is live with active-state indicators on every protected page, the core navigation hypothesis is validated; every other slice builds into an already-coherent shell.
 
-> "North star" here means: the smallest end-to-end slice whose successful delivery proves the product's core technical hypothesis — placed as early as its prerequisites allow because everything else only matters if this works.
+> "North star" here means: the smallest end-to-end slice whose successful delivery proves the change's primary hypothesis — placed as early as its prerequisites allow because everything else only matters if this works.
 
 ## At a glance
 
-| ID   | Change ID               | Outcome (user can …)                                                               | Prerequisites    | PRD refs                                        | Status   |
-| ---- | ----------------------- | ---------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------- | -------- |
-| F-01 | cars-schema             | (foundation) cars table + RLS live in Supabase                                    | —                | FR-002, FR-009                                  | done     |
-| F-02 | entries-schema          | (foundation) entries table + RLS + FK to cars live                                | F-01             | FR-003, FR-005, FR-006, FR-007, FR-008          | done     |
-| F-03 | ai-integration-scaffold | (foundation) OpenRouter client + SSE streaming verified on Cloudflare Workers      | —                | FR-010, FR-011, NFR: visible AI response feedback | done   |
-| S-01 | car-management          | add, view, and remove their cars; multiple cars supported                          | F-01             | FR-001, FR-002, FR-009                          | done     |
-| S-02 | ai-car-chat             | ask the AI about their car; AI responds with model knowledge and visible streaming | F-01, F-03, S-01 | US-01, FR-010, FR-011                           | done     |
-| S-03 | repair-entry-logging    | log a repair entry (date, description, cause/context)                              | F-02, S-01       | FR-003                                          | done     |
-| S-04 | additional-entry-types  | log oil change, inspection, and insurance entries                                  | F-02, S-01       | FR-005, FR-006, FR-007                          | done     |
-| S-05 | entry-management        | view, edit, and delete any entry, with a delete confirmation step                  | F-02, S-03, S-04 | FR-008                                          | done     |
-| S-06 | deadline-dashboard      | see a dashboard surfacing upcoming oil change, inspection, and insurance deadlines | S-04, S-05       | FR-012                                          | done     |
+| ID   | Change ID             | Outcome (user can …)                                                                                | Prerequisites | PRD refs                               | Status   |
+| ---- | --------------------- | --------------------------------------------------------------------------------------------------- | ------------- | -------------------------------------- | -------- |
+| S-01 | root-routing-landing  | arrive at `/` and see a real landing page with sign-in/sign-up links; if logged in, auto-redirect  | —             | US-01, FR-001                          | done     |
+| S-02 | sidebar-navigation    | navigate all protected pages via a responsive sidebar with active-state indicator + mobile collapse | —             | FR-002, FR-003, FR-004, FR-007, FR-008 | done     |
+| S-03 | entry-detail-route    | click any entry card to open a full-screen detail page with all fields and rich-text fully rendered | S-02          | US-02, FR-005                          | done     |
+| S-04 | dashboard-last-entry  | see the most recent entry (any type) displayed on `/dashboard` below the deadline tiles             | S-02          | FR-006                                 | done     |
+| S-05 | entry-detail-actions  | edit or delete an entry from its detail page — actions removed from the `/entries` list view        | S-03          | (post-v2)                              | done     |
+| S-06 | i18n-en-pl            | switch the entire app between English and Polish; their choice persists across sessions             | S-02          | (post-v2)                              | done     |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme             | Chain                                       | Note                                                                                          |
-| ------ | ----------------- | ------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| A      | North star path   | `F-01` / `F-03` → `S-01` → `S-02`          | F-01 and F-03 are parallel heads; S-01 needs only F-01; S-02 needs both. Ship this stream first. |
-| B      | Entry + dashboard | `F-02` → `S-03` / `S-04` → `S-05` → `S-06` | Joins Stream A at F-01 (F-02 depends on it) and S-01 (S-03/S-04 depend on it).               |
+| Stream | Theme               | Chain                       | Note                                                                              |
+| ------ | ------------------- | --------------------------- | --------------------------------------------------------------------------------- |
+| A      | Quick win           | `S-01`                      | Standalone; no prerequisites. Ship in parallel with S-02 for an early visible win. |
+| B      | Navigation overhaul | `S-02` → `S-03` / `S-04`   | North star. S-03 and S-04 can run in parallel once S-02 ships.                   |
+| C      | Entry CRUD reshuffle | `S-03` → `S-05`            | S-05 relocates edit/delete onto the detail page S-03 introduced.                  |
+| D      | Localization        | `S-06`                      | Cross-cutting. Soft-depends on S-02 so all nav/shell copy exists before extraction. Best sequenced last so it covers every string once. |
 
 ## Baseline
 
-What's already in place in the codebase as of 2026-05-27 (auto-researched + user-confirmed).
+What's already in place in the codebase as of 2026-06-08 (auto-researched + user-confirmed).
 Foundations below assume these are present and do NOT re-scaffold them.
 
-- **Frontend:** present — Astro v6 + React v19 + Tailwind CSS v4 + shadcn/ui; file-based routing via `src/pages/`
-- **Backend / API:** present — Astro SSR on Cloudflare Workers; auth API routes at `src/pages/api/auth/`; middleware at `src/middleware.ts`
-- **Data:** absent — no application-level schema or migrations; Supabase `auth.users` table only
-- **Auth:** present — Supabase Auth (`@supabase/ssr`), cookie-based sessions, route protection at `src/middleware.ts:18`; FR-001 is satisfied by the existing baseline
-- **Deploy / infra:** present — Cloudflare Workers (`wrangler.jsonc`) + GitHub Actions CI at `.github/workflows/ci.yml`; note: CI pipeline deploy target (Workers vs. deprecated Pages) requires auditing before first production deploy
-- **Observability:** partial — `wrangler.jsonc` has `observability: { enabled: true }`; no application-level logging or error tracking
+- **Frontend:** present — Astro 6.3.1 + React v19 + Tailwind CSS v4 + shadcn/ui; file-based routing `src/pages/`; components in `src/components/ui/`
+- **Backend / API:** present — Astro SSR on Cloudflare Workers; API routes at `src/pages/api/`; middleware at `src/middleware.ts`
+- **Data:** present — Supabase client; 5 migrations covering cars + 4 entry types (repair, oil change, inspection, insurance) with RLS; no seeds
+- **Auth:** present — Supabase Auth via `@supabase/ssr`, cookie-based sessions, route protection in `src/middleware.ts:4,22-26`; current protected routes: `/dashboard`, `/cars`, `/ai-chat`, `/entries`
+- **Deploy / infra:** present — Cloudflare Workers (`wrangler.jsonc`) + GitHub Actions CI with auto-deploy on main push
+- **Observability:** absent — Cloudflare native observability enabled in `wrangler.jsonc`; no app-level logging or error tracking
 
 ## Foundations
 
-### F-01: Cars data schema
-
-- **Outcome:** (foundation) cars table with make, model, year, and user_id FK + RLS policy (each user sees only their own cars) is live in the Supabase database.
-- **Change ID:** cars-schema
-- **PRD refs:** FR-002, FR-009, Access Control section
-- **Unlocks:** S-01 (car management), S-02 (AI chat — north star), F-02 (FK dependency)
-- **Prerequisites:** —
-- **Parallel with:** F-03
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Schema decisions made here — e.g., free-text vs. structured make/model fields — propagate into the AI prompt in S-02. PRD Socrates already resolved: structured fields are required for model-specific AI knowledge. Keep it simple: free-text strings for make, model, and year in v1.
-- **Status:** ready
-
-### F-02: Entries data schema
-
-- **Outcome:** (foundation) entries table with entry_type, date, description, and type-specific fields + FK to cars + RLS policy is live; supports all four PRD entry types (repair, oil change, inspection, insurance).
-- **Change ID:** entries-schema
-- **PRD refs:** FR-003, FR-005, FR-006, FR-007, FR-008
-- **Unlocks:** S-03 (repair entry logging), S-04 (additional entry types), S-05 (entry management)
-- **Prerequisites:** F-01
-- **Parallel with:** F-03 (after F-01 completes, F-02 and any remaining F-03 work can proceed concurrently)
-- **Blockers:** —
-- **Unknowns:**
-  - Entry schema shape — single entries table with entry_type enum + type-specific nullable columns vs. separate tables per entry type. Owner: user. Block: no (decide when planning F-02; a single table with type-specific columns is the simplest v1 default).
-- **Risk:** Inspection and insurance date fields must be first-class date columns, not buried in a JSONB blob, because FR-012 dashboard queries them directly. Avoid a generic blob-first schema design.
-- **Status:** done
-
-### F-03: AI integration scaffold
-
-- **Outcome:** (foundation) OpenRouter API client is wired to an Astro API route, SSE streaming response is verified working on the Cloudflare Workers runtime via `wrangler dev`, and a reusable loading-state component exists.
-- **Change ID:** ai-integration-scaffold
-- **PRD refs:** FR-010, FR-011, NFR: visible AI response feedback
-- **Unlocks:** S-02 (AI chat — north star)
-- **Prerequisites:** —
-- **Parallel with:** F-01
-- **Blockers:** —
-- **Unknowns:**
-  - OpenRouter SDK ESM compatibility — `infrastructure.md` documents a CJS/ESM runtime trap on Cloudflare Workers; verify any OpenRouter or AI SDK dependency is ESM-compatible before wiring. Owner: user. Block: no (verifiable locally before S-02 begins).
-- **Risk:** SSE streaming on Cloudflare Workers must use native `ReadableStream`; any library relying on the Node.js `stream` module will fail at runtime on the deployed Worker. Verification via `wrangler dev` is the definition of "done" for this foundation — do not mark ready until streaming is confirmed in the Workers runtime.
-- **Status:** done
+No foundations required. All prerequisite infrastructure (auth, data, deploy, routing) is confirmed present in the baseline. Every slice in this change is self-contained UI work that builds directly on the existing codebase.
 
 ## Slices
 
-### S-01: Car management
+### S-01: Root routing + minimal landing page
 
-- **Outcome:** user can add, view, and remove their cars (make, model, year); multiple cars are supported with a visible way to switch between them.
-- **Change ID:** car-management
-- **PRD refs:** FR-001, FR-002, FR-009
-- **Prerequisites:** F-01
-- **Parallel with:** F-03 (no mutual dependency; F-03 can complete while S-01 is being built after F-01)
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** "Selected car" session state — which car is active for AI chat and entry logging — must be established in this slice. Every downstream slice (S-02 through S-06) consumes it. Getting this wrong requires retrofitting multiple slices.
-- **Status:** done
-
-### S-02: AI assistant chat
-
-- **Outcome:** user can ask the AI an open-ended question about their selected car; the AI responds using general knowledge about the car's make, model, and year; the response streams with visible progress from submission to completion.
-- **Change ID:** ai-car-chat
-- **PRD refs:** US-01, FR-010, FR-011
-- **Prerequisites:** F-01, F-03, S-01
-- **Parallel with:** F-02 (F-02 depends on F-01 only; can proceed while S-02 is being developed)
+- **Outcome:** user arrives at `/` and sees a minimal branded landing page with sign-in and sign-up calls to action; if already authenticated, they are immediately redirected to `/dashboard` — no boilerplate screen is shown.
+- **Change ID:** root-routing-landing
+- **PRD refs:** US-01, FR-001
+- **Prerequisites:** —
+- **Parallel with:** S-02
 - **Blockers:** —
 - **Unknowns:**
-  - Entry context integration — the AI prompt sends car make/model/year only at this milestone; once S-03/S-04 populate the entries table, the prompt should be updated to include logged entries so FR-011's history path is exercised. Intentionally deferred to keep this slice lean. Owner: user. Block: no.
-  - CI pipeline target — `.github/workflows/ci.yml` may deploy to the deprecated Cloudflare Pages target instead of Workers (per `infrastructure.md` risk register, likelihood: high); must be fixed before first production deploy. Owner: user. Block: no (develop and verify locally; fix before shipping S-02 to production).
-- **Risk:** This is the north star — any delay here delays the product proof. SSE correctness must be confirmed in F-03 before this slice begins; do not absorb F-03's runtime risk into S-02 scope.
+  - Auth-state routing at `/` — `src/middleware.ts` currently protects named routes but `/` is not in `PROTECTED_ROUTES`; the redirect for authenticated users must be handled either in middleware or in the page itself. Resolve when planning. Owner: codebase. Block: no.
+- **Risk:** Minimal scope — the smallest slice in the roadmap. Main risk is touching `src/middleware.ts` in a way that accidentally alters redirect behavior for existing protected routes. Keep the change surgical: scope to `/` only.
 - **Status:** done
 
-### S-03: Repair entry logging
+### S-02: Sidebar navigation shell ⭐ north star
 
-- **Outcome:** user can log a repair entry for their selected car, including the date, a description of the repair, and the cause/context (what led to the repair).
-- **Change ID:** repair-entry-logging
-- **PRD refs:** FR-003
-- **Prerequisites:** F-02, S-01
-- **Parallel with:** S-04 (both depend on F-02 and S-01; neither depends on the other)
+- **Outcome:** user can navigate between all major sections (Dashboard, Entries, AI Chat) on any protected page via a responsive sidebar; the sidebar shows an active-state indicator for the current section at all times; on small screens the sidebar collapses to a mobile-friendly navigation pattern (specific pattern decided during planning).
+- **Change ID:** sidebar-navigation
+- **PRD refs:** FR-002, FR-003, FR-004, FR-007, FR-008
+- **Prerequisites:** —
+- **Parallel with:** S-01
 - **Blockers:** —
-- **Unknowns:** —
-- **Risk:** The cause/context field is PRD-mandated (FR-003 Socrates resolution) — must not be optional in the UI. After this slice ships, update the AI prompt in S-02 to include logged entries (see entry context integration Unknown in S-02).
-- **Note:** cause field was implemented as optional (nullable) in the UI — the roadmap risk note was a planning mistake confirmed during S-03 planning.
+- **Unknowns:**
+  - Existing topbar implementation — how the current navbar is wired (`src/layouts/` vs. inline per page) determines whether S-02 is a layout replacement or a per-page modification. Owner: codebase (resolve when planning). Block: no.
+  - Mobile nav pattern — FR-004 explicitly defers the specific pattern (hamburger vs. bottom nav) to the implementation decision at planning time. Owner: implementation decision. Block: no.
+- **Risk:** This slice touches every protected page (dashboard, entries, cars, AI chat). The regression surface is the entire protected app — FR-007 (car CRUD) and FR-008 (AI chat backend) must be smoke-tested after this slice ships. Sequenced before S-03 and S-04 so both land into an already-working sidebar rather than being retrofitted.
 - **Status:** done
 
-### S-04: Additional entry types
+### S-03: Entry detail route
 
-- **Outcome:** user can log oil change entries (with optional filter/parts details), technical inspection entries (date, result, next due date), and insurance entries (policy period, renewal date) for their selected car.
-- **Change ID:** additional-entry-types
-- **PRD refs:** FR-005, FR-006, FR-007
-- **Prerequisites:** F-02, S-01
+- **Outcome:** user can click any entry card in the `/entries` list to open a full-screen detail page at `/entries/[id]`; the page displays all fields of that entry with rich-text content fully rendered and readable; the route is auth-guarded.
+- **Change ID:** entry-detail-route
+- **PRD refs:** US-02, FR-005
+- **Prerequisites:** S-02
+- **Parallel with:** S-04
+- **Blockers:** —
+- **Unknowns:**
+  - Rich-text storage format — the PRD notes rich text is "squashed to one line" in the list view; the actual format stored in the database (plain text, HTML, Markdown, structured JSON) determines the rendering approach on the detail page. Owner: codebase (check schema + entry creation code when planning). Block: no.
+  - Route guard for `/entries/[id]` — this new route must be added to the protected routes set in `src/middleware.ts`; confirm the mechanism before planning. Owner: codebase. Block: no.
+- **Risk:** First dynamic route (`[id]`) in the app's page structure. The routing plumbing (Astro dynamic segment + auth guard + 404 handling for unknown or unauthorized IDs) is slightly more complex than static pages. Keep the detail page display-only — no edit functionality in this slice.
+- **Status:** done
+
+### S-04: Dashboard last entry widget
+
+- **Outcome:** user sees the most recent entry of any type displayed on `/dashboard` below the existing oil change / inspection / insurance deadline tiles.
+- **Change ID:** dashboard-last-entry
+- **PRD refs:** FR-006
+- **Prerequisites:** S-02
 - **Parallel with:** S-03
 - **Blockers:** —
 - **Unknowns:**
-  - Date field priority — next due date (inspection) and renewal date (insurance) must be first-class date columns for FR-012 dashboard queries; confirm this is reflected in F-02's schema before starting this slice. Owner: user. Block: no.
-- **Risk:** Three entry types in one slice is the most scope-heavy slice on the roadmap. If timeline pressure mounts, insurance entries (FR-007) are the lowest safety stakes — oil change interval and inspection expiry are the dates with regulatory consequences in the PRD's context (Poland: expired inspection prohibits road use).
+  - Entry schema shape — the existing migrations may have created a single `entries` table with an `entry_type` column OR separate tables per entry type; the "most recent entry of any type" query differs significantly between the two. Owner: codebase (check `supabase/migrations/` when planning). Block: no.
+- **Risk:** Sequenced after S-02 because S-02 changes the dashboard page's layout wrapper; working on both concurrently risks file conflicts. The widget itself is read-only — the main risk is the query pattern depending on schema shape (see Unknown above).
 - **Status:** done
 
-### S-05: Entry management
+### S-05: Relocate edit/delete to entry detail page
 
-- **Outcome:** user can view the full list of entries for their selected car, edit any entry, and delete any entry with a delete confirmation step.
-- **Change ID:** entry-management
-- **PRD refs:** FR-008
-- **Prerequisites:** F-02, S-03, S-04
-- **Parallel with:** —
-- **Blockers:** —
-- **Unknowns:** —
-- **Risk:** Delete confirmation is PRD-mandated (FR-008 Socrates resolution) — hard delete without a confirmation dialog is a regression, not a simplification.
-- **Status:** done
-
-### S-06: Deadline dashboard
-
-- **Outcome:** user sees a dashboard that prominently surfaces upcoming oil change, inspection, and insurance deadlines for each of their registered cars.
-- **Change ID:** deadline-dashboard
-- **PRD refs:** FR-012
-- **Prerequisites:** S-04, S-05
-- **Parallel with:** —
+- **Outcome:** user manages an entry's lifecycle from one place — the edit and delete actions live on the `/entries/[id]` detail page (S-03), and are removed from the `/entries` list view; deleting returns the user to the list, editing reuses the existing entry form, and the list view becomes purely navigational (click to open detail).
+- **Change ID:** entry-detail-actions
+- **PRD refs:** (post-v2 — user-directed addition; fold into prd-v2.md on next PRD pass)
+- **Prerequisites:** S-03 (the detail page must exist before edit/delete can move onto it)
+- **Parallel with:** S-06
 - **Blockers:** —
 - **Unknowns:**
-  - Dashboard scope — FR-012 Socrates round was not run (PRD Open Question 3). Is a deadline-only list sufficient for v1, or is a richer vehicle overview expected? Owner: user. Block: no (a deadline list satisfies FR-012 as written; scope can be expanded without replanning).
-- **Risk:** Sequenced last because all entry types (S-04) must exist before the dashboard has meaningful data to surface. This order is correct despite FR-012 being a must-have.
+  - Current edit/delete wiring — whether the list view triggers edit/delete via inline buttons, a row menu, or a modal, and which handlers/API routes they call, determines how much moves vs. is re-pointed. Owner: codebase (inspect `src/pages/entries.astro` + entry components when planning). Block: no.
+  - Post-delete navigation + confirmation — where the user lands after delete and whether a confirm step is required. Owner: implementation decision at planning. Block: no.
+- **Risk:** Touches the live edit/delete mutation path, so the regression surface is real data loss/corruption, not just layout — the destructive action must be re-tested end-to-end after the move. Keep the underlying form and API routes unchanged; this slice only relocates the entry points, per the "no backend changes" guardrail. Note the existing Parked item "Redesigning add/edit entry forms" stays parked — this is relocation, not redesign.
+- **Status:** done
+
+### S-06: Localization — English + Polish
+
+- **Outcome:** user can switch the entire app between English and Polish from a visible control (placement decided at planning); every user-facing string — sidebar, landing, dashboard, entries, detail, forms, auth — renders in the chosen language, and the choice persists across sessions.
+- **Change ID:** i18n-en-pl
+- **PRD refs:** (post-v2 — user-directed addition; fold into prd-v2.md on next PRD pass)
+- **Prerequisites:** S-02 (soft — all shell/nav copy should exist before strings are extracted, so the localization pass covers the final UI once rather than chasing later changes)
+- **Parallel with:** S-05
+- **Blockers:** —
+- **Unknowns:**
+  - i18n approach — no localization library exists today; whether to adopt one (e.g. `astro:i18n` routing, `i18next`, or a lightweight custom dictionary) and whether language is URL-prefixed (`/pl/...`), cookie-based, or both. This is the central architectural decision and likely warrants `/10x-shape` or an infra-research pass before `/10x-plan`. Owner: implementation decision. Block: **yes — resolve before planning.**
+  - Persistence + default — where the choice is stored (cookie vs. user profile) and how the initial language is picked (browser `Accept-Language` vs. fixed default). Owner: implementation decision. Block: no.
+  - Localized dynamic data — whether entry-type labels, dates, and validation/error messages (including server-side zod errors and Supabase auth errors) also need translation, or only static chrome. Owner: codebase + decision. Block: no.
+- **Risk:** First cross-cutting concern in this roadmap — it touches every page and component rather than a single vertical, so it is not a tidy slice. Highest-effort and highest-surface item here; the string-extraction sweep is the bulk of the work and easy to under-scope. Sequenced last so it localizes the finished UI once. This also breaches the original "entire delta is in the UI layer / no backend changes" framing if language ends up persisted server-side or routes become locale-prefixed — flag that to revisit the Vision recap when this slice is planned.
 - **Status:** done
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID               | Suggested issue title                                       | Ready for `/10x-plan` | Notes                                                          |
-| ---------- | ----------------------- | ----------------------------------------------------------- | --------------------- | -------------------------------------------------------------- |
-| F-01       | cars-schema             | [F-01] Cars data schema — Supabase migration + RLS          | yes                   | Run `/10x-plan cars-schema`                                    |
-| F-02       | entries-schema          | [F-02] Entries data schema — Supabase migration + RLS       | no                    | Depends on F-01; settle entry schema shape before planning     |
-| F-03       | ai-integration-scaffold | [F-03] AI integration scaffold — OpenRouter + SSE streaming | yes                   | Run `/10x-plan ai-integration-scaffold`                        |
-| S-01       | car-management          | [S-01] Car management — add, view, remove, switch           | done                  | Shipped 2026-05-27                                             |
-| S-02       | ai-car-chat             | [S-02] AI car chat (north star) — stream AI response        | yes                   | Depends on F-01, F-03, S-01 — all done                        |
-| S-03       | repair-entry-logging    | [S-03] Repair entry — date, description, cause/context      | done                  | Shipped 2026-06-02                                             |
-| S-04       | additional-entry-types  | [S-04] Oil change + inspection + insurance entries          | yes                   | Depends on F-02, S-01 — all done                               |
-| S-05       | entry-management        | [S-05] Entry management — view, edit, delete                | done                  | Shipped 2026-06-03                                             |
-| S-06       | deadline-dashboard      | [S-06] Deadline dashboard — oil / inspection / insurance    | yes                   | Depends on S-04, S-05 — both done                              |
+| Roadmap ID | Change ID            | Suggested issue title                                           | Ready for `/10x-plan` | Notes                                                    |
+| ---------- | -------------------- | --------------------------------------------------------------- | --------------------- | -------------------------------------------------------- |
+| S-01       | root-routing-landing | [S-01] Root routing + landing page — auth-state redirect + page | yes                   | Run `/10x-plan root-routing-landing`                     |
+| S-02       | sidebar-navigation   | [S-02] Sidebar navigation — responsive shell + active state     | yes                   | Run `/10x-plan sidebar-navigation` ⭐ north star          |
+| S-03       | entry-detail-route   | [S-03] Entry detail route — `/entries/[id]` + rich-text render  | yes                   | S-02 shipped; run `/10x-plan entry-detail-route`         |
+| S-04       | dashboard-last-entry | [S-04] Dashboard last entry widget — most recent entry display  | yes                   | S-02 shipped; run `/10x-plan dashboard-last-entry`       |
+| S-05       | entry-detail-actions | [S-05] Move edit/delete from entries list to detail page        | yes                   | S-03 shipped; run `/10x-plan entry-detail-actions`       |
+| S-06       | i18n-en-pl           | [S-06] Localization — English + Polish with persistent toggle   | —                     | Shipped 2026-06-13                                                              |
 
 ## Open Roadmap Questions
 
-1. **target_scale.qps** — Queries-per-second estimate not captured during shaping. At small scale (handful of users) expected to be negligible; confirm before any rate-limit or capacity decision. Owner: user. Block: no slice.
-2. **target_scale.data_volume** — Data volume not captured. At small scale expected to be small; confirm before storage tier decisions. Owner: user. Block: no slice.
-3. **FR-012 dashboard scope** — Socrates round not run on FR-012 (PRD Open Question 3). Is a deadline-only list sufficient for v1, or is a richer vehicle overview expected? Owner: user. Block: S-06 scope (doesn't block building a deadline list, but shapes what's in it).
-4. **Entry schema shape** — Single entries table with entry_type enum vs. separate tables per entry type. Resolve when invoking `/10x-plan entries-schema` — not a roadmap-level blocker, but deciding early avoids mid-build schema rework. Owner: user. Block: F-02 planning.
+_(none — all planned slices are done)_
 
 ## Parked
 
-- **Car sharing between users** — Why parked: PRD §Non-Goals — one car belongs to one user; sharing risks data isolation bugs before multi-user access patterns are understood.
-- **External history integrations (CarVertical, CEPIK)** — Why parked: PRD §Non-Goals — user-curated history only; external API quality and integration costs are out of scope for v1.
-- **Vehicle fleet management** — Why parked: PRD §Non-Goals — persona owns 1–2 personal cars; fleet grouping adds complexity with no v1 payoff.
-- **Native mobile app / app store distribution** — Why parked: PRD §Non-Goals — web-only for v1; PWA-ready architecture is in scope but no app store submission.
+- **No changes to API routes or backend logic** — Why parked: PRD §Non-Goals — all existing API routes are untouched; any backend touch risks regressions in data flows this UI change has no reason to modify.
+- **AI Chat UX improvements** (loading state, conversation history, persistence across reloads) — Why parked: PRD §Non-Goals — AI chat page will be reachable via sidebar but its internal UX is a separate future change.
+- **Inspections/Insurance dedicated tab** — Why parked: PRD §Non-Goals — entry types stay grouped in the current tab structure for now; dedicated section deferred.
+- **Redesigning add/edit entry forms** — Why parked: PRD §Non-Goals — form UX and field structure are unchanged; only the list view and new detail view are in scope.
 
 ## Done
 
-| ID   | Change ID   | Outcome                                        | Shipped     | Commits             |
-| ---- | ----------- | ---------------------------------------------- | ----------- | ------------------- |
-| F-01 | cars-schema             | cars table + RLS + TypeScript types live                                                   | 2026-05-27 | b7df5ef, 6bca689                              |
-| F-02 | entries-schema          | 4 entry tables + RLS + FK to cars + TypeScript types live                                  | 2026-05-28 | 50d1e4c, e013642, 72c4c1e, 12d349f           |
-| F-03 | ai-integration-scaffold | OpenRouter + SSE streaming verified on Workers; useStreamingText hook + StreamingText ready | 2026-06-01 | 4187e6c, ad1ebb2, e36de8b, 26a944d, 417949b  |
-| S-01 | car-management          | add, view, edit, delete, select cars; dashboard shows selected car                         | 2026-05-27 | 224789c, b66a9bc, afd2b4f, 14affa2            |
-| S-03 | repair-entry-logging    | /entries page with add form + history list; ownership-guarded API; Topbar link             | 2026-06-02 | b5686de, 1a3b7ee, 210f649, 4e72fa3, 887a2de  |
-| S-02 | ai-car-chat             | /ai-chat page + Topbar link; AI responds with car model knowledge; SSE streaming           | 2026-06-02 | d45454b, 4ade220, b8548fe, 50833b5            |
-| S-04 | additional-entry-types  | /entries tabbed (Repairs \| Oil Changes \| Inspections \| Insurance); Pass/Fail select     | 2026-06-02 | b2bc6b9, 60e7925, d027739, aae3e22, fa75376   |
-| S-05 | entry-management        | Edit + Delete (with confirmation) for all 4 entry types; PATCH + DELETE API routes         | 2026-06-03 | 3c17ed7, 20c9718, ecc9652, 71c3661             |
-| S-06 | deadline-dashboard      | Dashboard with oil change / inspection / insurance deadline cards, color-coded by urgency  | 2026-06-03 | 34974da, 0bfd1bf, c141ac1, 8b58b87             |
+- **S-01 · root-routing-landing** — Root routing + minimal landing page. Shipped 2026-06-08. Impl reviewed: APPROVED.
+- **S-02 · sidebar-navigation** — Responsive sidebar shell with active-state indicators + mobile collapse. Shipped 2026-06-09. Impl reviewed: APPROVED.
+- **S-03 · entry-detail-route** — Full-screen entry detail page at `/entries/[id]` with rich-text rendering + auth guard. Shipped 2026-06-10. Impl reviewed: APPROVED.
+- **S-04 · dashboard-last-entry** — Last entry widget on `/dashboard` below deadline tiles. Shipped 2026-06-10. Impl reviewed: APPROVED.
+- **S-05 · entry-detail-actions** — Edit/delete relocated from entries list to detail page; list view is now purely navigational. Shipped 2026-06-12. Impl reviewed: APPROVED.
+- **S-06 · i18n-en-pl** — Full English/Polish localization with cookie-based persistence and sidebar language toggle. Covers every surface (sidebar, dashboard, entries, cars, AI chat, landing, auth). Shipped 2026-06-13.

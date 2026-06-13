@@ -161,6 +161,10 @@ Remove the Edit/Delete buttons from the four list components and the now-dead ed
 
 None — no data or schema changes.
 
+## Addenda
+
+- **p2 — `src/components/ui/button.tsx`** (unplanned, surfaced in manual testing): added `text-foreground` to the `outline` Button variant. The edit-form Cancel button was rendering white-on-white inside the detail page's `text-white` glass card. Fix-at-source aligning with canonical shadcn; spot-checked the other 7 `outline` call sites (CarList, dialog Close, edit-form Cancels) — none regress.
+
 ## References
 
 - Roadmap slice: `context/foundation/roadmap.md` (S-05)

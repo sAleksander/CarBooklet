@@ -1,164 +1,161 @@
 ---
-project: "CarBooklet"
-context_type: greenfield
-updated: "2026-05-20"
+project: "CarBooklet — UI Glowup"
+context_type: brownfield
+updated: "2026-06-06"
 product_type: web-app
 target_scale:
   users: small
 timeline_budget:
-  mvp_weeks: 3
-  hard_deadline: "2026-06-30"
+  delivery_weeks: 2
+  hard_deadline: null
   after_hours_only: true
 checkpoint:
   current_phase: 8
   phases_completed: [1, 2, 3, 4, 5, 6, 7]
-  frs_drafted: 11
+  frs_drafted: 8
   quality_check_status: accepted
 ---
 
+## Current System
+
+**What exists**: CarBooklet — a web app for logging car maintenance history (repairs, oil changes, technical inspections, insurance) with an AI chat assistant that reasons over the user's logged repair history and car model knowledge.
+
+**Tech stack**: Astro v6 + React v19, TypeScript, Tailwind CSS v4, Supabase (auth + database), Cloudflare Workers (edge deployment). Full server-side rendering. shadcn/ui component library.
+
+**Users today**: Individual car owners (1–2 cars) who self-diagnose and track maintenance. Single authenticated user role — flat user model, no admin/guest separation.
+
+**Pain / gap**: The app has all its planned features but feels like a hastily assembled starter template where nothing makes sense. Navigation is disjointed — users must guess URLs to reach features, there is no active-state indicator on the navbar, and the app opens to the 10x Astro starter boilerplate instead of the user's dashboard. Specific UX failures observed during manual testing:
+- Root URL (`/`) shows the starter boilerplate regardless of auth state — should redirect to `/dashboard` or `/auth/signin`
+- Navbar links are small and barely visible; no active-state indicator showing where the user currently is
+- Dashboard is visually bare — lots of empty space, last entry not shown under summary tiles
+- Entry list (`/entries`) shows all entries as a flat "History" list; rich-text formatting is squashed to one line; no way to open an entry in full-screen detail view
+- Inspections and Insurance are grouped under the same tab as Repairs/Oil Changes despite being used ~once a year — they deserve a dedicated section
+- AI Chat has no loading feedback (button stays "sending…" as if broken), no conversation history, entries reset on page reload, and doesn't visibly show it's using repair history
+
+**Must preserve**: All existing core data flows — car management (add/edit/delete car), all entry types (repair, oil change, inspection, insurance), AI chat functionality, authentication and route protection, Supabase schema (no DB migrations).
+
 ## Vision & Problem Statement
 
-**Pain**: The physical car booklet is bound to a single location — inaccessible remotely, incapable of proactive reminders, and its repair/breakdown history cannot be searched or reasoned over intelligently.
+**What's changing**: A UX/navigation overhaul that gives the app a coherent information architecture. The change is structural, not functional — no new features, no changes to how data is stored or processed.
 
-**Moment**: When a warning light appears and the owner needs context from past repairs; when an oil change or inspection deadline approaches unnoticed; when diagnosing a recurring issue and needing to ask "has this happened before?"
+**The delta**:
+1. Root URL routes correctly based on auth state (no more boilerplate screen)
+2. Navbar is visible, informative, and shows the user where they are
+3. Dashboard uses its space to surface useful context (last entry, upcoming deadlines)
+4. Entry list supports full-screen drill-down so rich-text entries are readable
+5. Inspections and Insurance get a dedicated section/tab separate from Repairs/Oil Changes
+6. AI Chat has proper loading feedback and the interface communicates that it uses car history
 
-**Cost today**: The owner either carries the booklet everywhere (risk of loss) or leaves it at home (unavailable when needed). Deadlines are missed. Repair patterns go unrecognized. Self-diagnosis is done without structured historical context.
-
-**Insight**: LLMs can now reason over personal, structured history — making a car-history-aware AI assistant feasible for the first time. Existing maintenance trackers do not have this layer.
-
-**Primary domain rule shape**: Decision support — the app reasons over the vehicle's history and surfaces answers, patterns, and guidance the owner couldn't derive quickly on their own.
+**Why now**: The app was built feature-first. The navigation and visual shell were never addressed as a cohesive layer. Without this change, new users cannot orient themselves and existing users must rely on memorized URLs.
 
 ## User & Persona
 
-**Primary persona**: A private individual owning 1–2 cars who conducts at least some repairs and diagnostics themselves. They are not a professional mechanic but are technically capable — they want to understand their car's problems deeply enough to fix or intelligently discuss them.
+**Primary persona**: An individual car owner who already uses CarBooklet to log entries. They know the features exist but find the interface confusing — they want to be able to navigate to any feature without guessing.
 
-**Pain category**: Decision support + self-repair aid. The core need is not just record-keeping but AI-assisted reasoning over personal vehicle history to enable better self-diagnosis and repair decisions.
+**Pain category**: Navigation friction + visual boilerplate. The core need is orientation — the user should be able to arrive at any feature from any other feature without knowing the URL structure.
 
 ## Access Control
 
-**Authentication**: Email + password or OAuth (social login). User data is server-side and accessible from any device.
+No changes planned — current model preserved.
 
-**User model**: Flat — all users are equal. Every authenticated user has full control over their own cars and records; no admin/member/guest role separation.
+**Current model**: Email + password auth (OAuth-leaning per prior shape session). Single flat user role — all authenticated users have full control over their own cars and entries. No admin, guest, or shared-access roles. Route protection handled in `src/middleware.ts`.
 
-**Smallest access model for MVP**: Single authenticated user role. Each user owns their cars and all entries within them; no sharing, delegation, or admin surface needed for v1.
+**This change does not touch auth or route protection.**
 
 ## Success Criteria
 
 ### Primary
-User asks the AI about their car and gets an answer that references their own logged repair/service history AND general knowledge about their specific car model. The AI response is grounded in actual user data — not generic car advice.
+User can navigate to any feature from any other feature without guessing URLs, and can open individual entries to read them in full.
 
 MVP core flow (proof it works):
-1. User signs up / logs in
-2. User adds a car (make, model, year)
-3. User logs a repair entry (description, date)
-4. User opens AI chat and asks about the car / that repair
-5. AI responds with context drawn from the logged entry and car model knowledge
+1. User arrives at `/` → redirected to `/dashboard` (logged in) or `/auth/signin` (not logged in) — no starter boilerplate
+2. User navigates between sections via navbar; active section is visually indicated at all times
+3. User opens `/entries` → clicks any entry → full-screen detail view renders with rich text fully readable
+4. User opens `/dashboard` → sees last entry displayed below the oil change / inspection / insurance summary tiles
 
-### Secondary (nice-to-have for v1)
-All entry types from the idea notes are supported: breakdown, repair, oil change, technical inspection, insurance, and car data/profile.
+### Secondary (nice-to-have, not blocking v1)
+- Inspections and Insurance get a dedicated section/tab separate from Repairs/Oil Changes
+- AI Chat shows a proper loading state (interface blocked, spinner visible) during response generation instead of stuck "sending…" button
 
 ### Guardrails
-- **Data isolation**: A user's cars and entries are never visible to other users. Strict per-user data boundary, no exceptions.
+- No regressions in car management (add/edit/delete car)
+- No regressions in entry management (add/edit/delete for all entry types)
+- AI chat backend functionality preserved (UX wrapper may change in v1.1 but the call must still work)
+- No Supabase schema changes — this is a frontend/UI-only change
 
 ### Timeline
-`mvp_weeks: 3` (2–3 weeks after-hours, within threshold — no acknowledgment block required)
+`delivery_weeks: 2` — 1–2 weeks after-hours, within threshold. No acknowledgment block required.
 
 ## Functional Requirements
 
-### Authentication & Accounts
-- FR-001: User can register and log in to their account. Priority: must-have
-  > Socrates: Counter-argument considered: "OAuth only to reduce security surface for a small app — no email/password maintenance." Resolution: accepted as an implementation constraint; the FR stands but the auth mechanism leans OAuth. Captured in Forward: tech-stack.
+### Routing & Navigation
+- FR-001: User sees a minimal public landing page at `/` with clear sign-in and sign-up calls to action; if already authenticated, they are immediately redirected to `/dashboard`. Priority: must-have. Change: modified (was showing 10x Astro starter boilerplate; now a real landing page with auth-state routing)
+  > Socrates: Counter-argument considered: "Design a real landing page instead of just redirecting." Resolution: accepted as a scope change — a minimal landing page is now in scope as must-have. The redirect-only approach would have erased the possibility of a public landing entirely. Minimal scope: links to sign-in/sign-up + brief value prop sentence.
+- FR-002: User sees a responsive sidebar navigation on all protected pages, with visible links to all major sections (Dashboard, Entries, AI Chat). Priority: must-have. Change: new
+  > Socrates: Counter-argument considered: "Sidebar is overkill for 3–4 sections; an improved top navbar is simpler." Resolution: rejected — sidebar chosen as the target pattern. Counter-argument stands as a valid alternative but user confirmed sidebar. The mobile-collapse requirement (FR-004) must be explicitly delivered alongside this FR.
+- FR-003: Sidebar navigation displays an active-state indicator for the current section so the user always knows where they are. Priority: must-have. Change: new
+  > Socrates: (Batched with FR-002 above.)
+- FR-004: Sidebar navigation collapses to a mobile-friendly pattern on small screens (hamburger or bottom nav — specific pattern is an implementation decision). Priority: must-have. Change: new
+  > Socrates: Counter-argument considered: "Mobile nav pattern should be decided before building, not left open." Resolution: noted — the specific pattern (hamburger vs. bottom nav) is an implementation decision deferred to the plan stage. The requirement is mobile-accessible sidebar; the implementation chooses the pattern.
 
-### Car Management
-- FR-002: User can add a car (make, model, year, and other identifying data). Priority: must-have
-  > Socrates: Counter-argument considered: "Free-text car name is enough for AI context; structured fields add schema complexity." Resolution: rejected — structured make/model/year is load-bearing for model-specific AI knowledge. The AI can't look up OBD2 codes or model-specific known issues without a precise car model identifier.
-- FR-009: User can manage multiple cars (add, switch between, remove). Priority: must-have
-  > Socrates: Counter-argument considered: "Multi-car adds schema and UX complexity before the single-car flow is validated." Resolution: noted but kept as must-have — the stated persona owns 1–2 cars and designing for one car then retrofitting is technically harder. However, if MVP timeline is tight, multi-car can be deferred to a fast-follow v1.1.
-
-### Entry Logging
-- FR-003: User can log a repair entry for a car, including the cause/context (what led to the repair). Priority: must-have
-  > Socrates: Counter-argument considered: "Breakdown and repair are the same event; a standalone breakdown type adds unnecessary separation." Resolution: FR revised — breakdown is captured as a cause/description field within a Repair entry, not a standalone type. Repair entry is the core, most universally useful entry type.
-- FR-004: *(merged into FR-003 — breakdown is a cause field on a Repair entry)*
-- FR-005: User can log an oil change entry for a car (with optional filter/parts details). Priority: must-have
-  > Socrates: Counter-argument considered: "Oil change is just a tagged repair entry — a separate type adds UI surface area." Resolution: oil change must remain identifiable as a category (not buried in generic repairs) because the dashboard must query it specifically to remind the user of the next interval. Implementation may share a schema with other service entries but must be queryable by type.
-- FR-006: User can log a technical inspection entry for a car (date, result, next due date). Priority: must-have
-  > Socrates: Counter-argument considered: "Inspection is just a dated administrative event; a generic entry type covers it." Resolution: accepted as a schema concern (inspection and insurance may share an 'administrative event' schema with a subtype field) but rejected as a user-facing concern — the dashboard MUST prominently surface inspection expiry. In Poland, an expired inspection prohibits road use. This date must be first-class.
-- FR-007: User can log an insurance entry for a car (policy period, renewal date). Priority: must-have
-  > Socrates: Counter-argument considered: "Insurance data is PII — storing it adds privacy obligations; a calendar reminder is simpler." Resolution: kept, with scope reduced — the app stores renewal date and basic policy metadata only (not policy number or coverage details). The privacy concern is mitigated by minimal data capture. Dashboard visibility of renewal date is the core value.
-
-### Entry Management
-- FR-008: User can view, edit, and delete any entry for a car, with a delete confirmation step. Priority: must-have
-  > Socrates: Counter-argument considered: "Hard delete without audit trail lets users erase or falsify history the AI relies on." Resolution: hard delete is kept (user owns their data, app is not a legal record) but guarded by a confirmation dialog. The user is the authority on what their car's history says; the AI trusts user-provided data.
+### Entry Detail
+- FR-005: User can click any entry in the `/entries` list to open a full-screen detail view at `/entries/[id]`, displaying all entry fields with full rich-text rendering. The route is auth-guarded. Priority: must-have. Change: new
+  > Socrates: Counter-argument considered: "A modal is faster to ship." Resolution: user confirmed new page/route. Auth-guarding note added to the FR — `/entries/[id]` must be added to `PROTECTED_ROUTES` in middleware.
 
 ### Dashboard
-- FR-012: User sees a dashboard/landing page that prominently surfaces upcoming oil change, inspection, and insurance deadlines for each car. Priority: must-have
-  > Socrates: (New FR surfaced during Socrates round for FR-005/006/007 — added, no challenge run yet. Oil change, inspection, and insurance expiry are the three "must not miss" dates; the dashboard is the primary UX surface for proactive reminders.)
+- FR-006: User sees the most recent entry displayed on `/dashboard`, below the existing summary tiles for oil change, inspection, and insurance deadlines. Priority: must-have. Change: modified
+  > Socrates: Counter-argument considered: "Should it be the last repair specifically, not the last entry of any type?" Resolution: FR stands as written — last entry of any type. "Last entry" is the user's most recent action regardless of type; filtering by type would require a design decision the user hasn't made.
 
-### AI Assistant
-- FR-010: User can ask the AI assistant an open-ended question about a car via a free-text chat interface. Priority: must-have
-  > Socrates: Counter-argument considered: "Predefined prompts are faster to ship and more predictable than open chat." Resolution: rejected — the core value is answering questions the user can't anticipate (OBD2 codes, model-specific known issues, recurring pattern analysis). A preset prompt list negates the product's differentiator.
-- FR-011: AI assistant answers using the car's logged history (when entries exist) and the LLM's general knowledge about the specific car model and common issues. Priority: must-have
-  > Socrates: Counter-argument considered: "Model-specific knowledge requires a dedicated database — latency and cost may not be worth it." Resolution: resolved — the LLM's pre-training knowledge is sufficient for model-specific context (OBD2 error codes, known model-specific issues like the Renault Clio 2 airbag connector). No dedicated car model database is needed for v1; the LLM's general knowledge covers the use case.
+### Preserved Behavior
+- FR-007: User can add, edit, and delete cars and all entry types (repair, oil change, inspection, insurance) without any change to existing flows. Priority: must-have. Change: preserved
+  > Socrates: Counter-argument considered: "Preserved FRs are redundant — preservation is implied, not worth making explicit." Resolution: kept as guardrail-only entries (not implementation tasks). These FRs exist to make the regression surface explicit, not to drive new work. Implementation should treat them as a test checklist, not a build list.
+- FR-008: AI chat backend continues to function (API call, response display) after navigation structure changes. Priority: must-have. Change: preserved
+  > Socrates: (Batched with FR-007 above.)
 
 ## Business Logic
 
-**One-sentence domain rule**: Given a user's logged vehicle history and car model, the app surfaces relevant context, patterns, and guidance to help the user diagnose and resolve problems or ask questions about their specific car.
+No domain logic change. This is a UI/navigation-only change.
 
-**What this means in practice**:
-- *Inputs*: The user's logged entries (repairs, oil changes, inspections, insurance, breakdown causes) + the car's make/model/year as an identifier.
-- *Output*: AI-generated answers that are grounded in the user's actual history and in the LLM's general knowledge of the specific car model and common issues (OBD2 codes, model-specific known faults, service intervals).
-- *How the user encounters it*: Through a free-text chat interface where they can ask anything — "why does this warning light keep coming back?", "is this repair cost reasonable for my car model?", "what should I check before my next inspection?". The AI answers by reasoning over both personal history and model knowledge.
-
-**Why this is not empty-CRUD**: The app applies a reasoning rule (contextual AI response grounded in personal + model data) that a spreadsheet or notes app cannot replicate. The value is the synthesis, not the storage.
+**What exists**: The existing domain rule (AI-assisted reasoning over logged car history) is unchanged. The app's data model, Supabase schema, API routes, and AI call logic are all out of scope.
 
 ## Non-Functional Requirements
 
-- **Mobile browser accessibility**: The app must be fully usable on a mobile browser without installation (responsive web). A user in a garage with only their phone must be able to log an entry and ask the AI. The app must be architecturally PWA-compatible for future installability.
-- **Visible AI response feedback**: Any AI call must provide continuous visible loading feedback from submission to response arrival. The user must never experience an ambiguous wait where the app appears frozen. Applies to all AI interactions regardless of response latency.
+- **Mobile browser usability**: All new UI surfaces (sidebar, entry detail page, landing page) must be fully usable on a mobile browser without installation. A user on a phone must be able to navigate the app and read entry details with no degraded experience.
+
+## Constraints & Preserved Behavior
+
+- Supabase schema: no migrations — this is a frontend-only change.
+- All existing API routes (`/api/cars/*`, `/api/entries/*`, `/api/chat/*`, `/api/auth/*`) are untouched.
+- Route protection: all currently protected routes remain protected; new routes (`/entries/[id]`, `/`) must be correctly handled in `src/middleware.ts`.
+- No changes to car CRUD, entry CRUD, or AI chat backend logic.
 
 ## User Stories
 
-### US-01: AI answers about my car
-**Given** the user has a car registered in the system,
-**When** the user asks the AI assistant a question about that car,
-**Then** the AI answers using general knowledge about the car model — and additionally references any logged entries if they are present and relevant to the question.
+### US-01: User navigates to the app and lands in the right place
+**Given** a user visits the root URL (`/`),
+**When** the page loads,
+**Then** they are immediately redirected to `/dashboard` (if authenticated) or `/auth/signin` (if not) — no boilerplate screen is shown.
 
-## Product Framing
-
-```
-product_type:         web-app
-target_scale:
-  users:              small  (just me, or a handful)
-timeline_budget:
-  mvp_weeks:          3
-  hard_deadline:      2026-06-30
-  after_hours_only:   true
-```
-
-**Scale note**: At 1,000+ users, LLM API call cost per AI query becomes a significant concern. The domain rule itself doesn't change (per-user, independent history), but prompt length management and API cost-per-query will need attention before scaling. Captured for forward planning.
+### US-02: User finds a specific entry and reads it in full
+**Given** the user is on `/entries`,
+**When** the user clicks an entry card,
+**Then** they are taken to `/entries/[id]` showing all fields of that entry with rich-text content fully rendered and readable.
 
 ## Non-Goals
 
-- **Car sharing between users**: One car belongs to one user. No co-ownership, shared access, or transfer between accounts in v1. Adding sharing before multi-user access patterns are understood risks data isolation bugs and UX complexity.
-- **External history integrations (CarVertical, CEPIK)**: No automated import of vehicle history from third-party services. The app's knowledge base is user-curated; external data quality and API costs are out of scope for v1.
-- **Vehicle fleet management**: No fleet concept — cars belong directly to the user, not to a named fleet. The stated persona owns 1–2 personal cars; fleet grouping adds organizational complexity with no v1 payoff.
-- **Native mobile app / app store distribution**: Web-only for v1. PWA-ready architecture is in scope (NFR), but no native iOS/Android build, no app store submission. The distinction between "installable from browser" and "app store app" is a deliberate v1 boundary.
+- **No changes to API routes or backend logic**: All existing API routes, Supabase queries, and AI call logic are untouched. This is a frontend-only change. Rationale: any backend touch is out of scope and risks introducing regressions in data flows the UI change has no reason to modify.
+- **AI Chat UX improvements** (loading state, conversation history, persistence across reloads): The chat page will be reachable via sidebar navigation but its internal UX is a separate future change.
+- **Inspections/Insurance dedicated tab**: Grouped with Repairs/Oil Changes in the current entry list for now. Dedicated section deferred.
+- **Redesigning add/edit entry forms**: Form UX and field structure are unchanged. Only the entry list view and new detail view are in scope.
 
 ## Quality cross-check
 
-All greenfield quality elements present. No gaps. Status: `accepted`.
+All 6 brownfield quality elements present. Status: `accepted`.
 
-- Access Control: present — OAuth + flat user model
-- Business Logic: present — one-sentence domain rule captured
-- Project artifacts: present
-- Timeline-cost acknowledgment: present — 3 weeks, within threshold
+- Access Control: present — current model preserved, no changes
+- Business Logic: present — infrastructure-only change (valid for brownfield)
+- Project artifacts: present — shape-notes.md with valid checkpoint
+- Timeline-cost acknowledgment: present — 2 weeks delivery, within threshold
 - Non-Goals: present — 4 explicit entries
-
-## Forward: tech-stack
-
-*(Informational — for 10x-tech-stack-selector, not part of the PRD)*
-
-- Auth: OAuth preferred (FR-001 Socrates) to avoid email/password maintenance and reduce security surface for a small app. Specific provider TBD in stack selection.
-- AI layer: LLM API call per chat query. Prompt will include car make/model/year + all relevant logged entries for context. No dedicated car database — LLM pre-training knowledge covers model-specific use cases.
-- PWA-ready architecture required for future installability (NFR). Framework choice should support service workers / PWA manifest.
+- Preserved behavior: present — Constraints & Preserved Behavior block names what must not break
 

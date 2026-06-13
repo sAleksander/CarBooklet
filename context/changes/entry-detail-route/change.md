@@ -1,7 +1,7 @@
 ---
 change_id: entry-detail-route
 title: Entry detail route
-status: implemented
+status: impl_reviewed
 created: 2026-06-10
 updated: 2026-06-10
 archived_at: null
