@@ -1,0 +1,13 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "entries": "Wpisy",
+    "aiChat": "Czat AI"
+  },
+  "sidebar": {
+    "selectACar": "Wybierz samochód",
+    "signOut": "Wyloguj się",
+    "langEn": "EN",
+    "langPl": "PL"
+  }
+}

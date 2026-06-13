@@ -1,0 +1,13 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "entries": "Entries",
+    "aiChat": "AI Chat"
+  },
+  "sidebar": {
+    "selectACar": "Select a car",
+    "signOut": "Sign out",
+    "langEn": "EN",
+    "langPl": "PL"
+  }
+}

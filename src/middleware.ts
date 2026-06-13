@@ -1,5 +1,6 @@
 import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
+import { LOCALES, DEFAULT_LOCALE } from "@/i18n/config";
 
 const PROTECTED_ROUTES = ["/dashboard", "/cars", "/ai-chat", "/entries"];
 
@@ -18,6 +19,11 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Must be outside the if/else — cookie is readable regardless of Supabase config.
   // App.Locals.selectedCarId is non-optional; placing this inside only one branch causes a TS error.
   context.locals.selectedCarId = context.cookies.get("selected_car_id")?.value ?? null;
+
+  const rawLang = context.cookies.get("lang")?.value;
+  context.locals.lang = LOCALES.includes(rawLang as (typeof LOCALES)[number])
+    ? (rawLang as (typeof LOCALES)[number])
+    : DEFAULT_LOCALE;
 
   if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
     if (!context.locals.user) {

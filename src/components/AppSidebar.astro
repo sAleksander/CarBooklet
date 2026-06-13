@@ -1,5 +1,6 @@
 ---
 import { NAV_ITEMS } from "@/lib/nav";
+import { getT } from "@/i18n/server";
 import type { Car } from "@/types";
 
 interface Props {
@@ -9,6 +10,8 @@ interface Props {
 }
 
 const { pathname, userEmail, selectedCar } = Astro.props;
+const t = getT(Astro.locals.lang);
+const lang = Astro.locals.lang;
 ---
 
 <aside class="flex h-full w-60 flex-shrink-0 flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)]">
@@ -24,7 +27,7 @@ const { pathname, userEmail, selectedCar } = Astro.props;
             {selectedCar.brand} {selectedCar.model}
           </span>
         ) : (
-          <span class="text-[var(--sidebar-foreground)]/50">Select a car</span>
+          <span class="text-[var(--sidebar-foreground)]/50">{t("sidebar.selectACar")}</span>
         )
       }
     </a>
@@ -34,7 +37,7 @@ const { pathname, userEmail, selectedCar } = Astro.props;
   <nav class="flex-1 space-y-1 p-3">
     {
       NAV_ITEMS.map((item) => {
-        const isActive = pathname.startsWith(item.href);
+        const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
         return (
           <a
             href={item.href}
@@ -45,7 +48,7 @@ const { pathname, userEmail, selectedCar } = Astro.props;
                 : "text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)]",
             ].join(" ")}
           >
-            {item.label}
+            {t(item.labelKey)}
           </a>
         );
       })
@@ -55,12 +58,43 @@ const { pathname, userEmail, selectedCar } = Astro.props;
   <!-- Footer -->
   <div class="border-t border-[var(--sidebar-border)] p-4">
     <p class="mb-3 truncate text-xs text-[var(--sidebar-foreground)]/60">{userEmail}</p>
+
+    <!-- Language toggle -->
+    <div class="mb-3 flex gap-1">
+      <form method="POST" action="/api/lang/en">
+        <button
+          type="submit"
+          class:list={[
+            "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+            lang === "en"
+              ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
+              : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+          ].join(" ")}
+        >
+          {t("sidebar.langEn")}
+        </button>
+      </form>
+      <form method="POST" action="/api/lang/pl">
+        <button
+          type="submit"
+          class:list={[
+            "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+            lang === "pl"
+              ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
+              : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+          ].join(" ")}
+        >
+          {t("sidebar.langPl")}
+        </button>
+      </form>
+    </div>
+
     <form method="POST" action="/api/auth/signout">
       <button
         type="submit"
         class="text-sm text-[var(--sidebar-foreground)]/70 transition-colors hover:text-[var(--sidebar-foreground)]"
       >
-        Sign out
+        {t("sidebar.signOut")}
       </button>
     </form>
   </div>

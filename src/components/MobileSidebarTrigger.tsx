@@ -1,47 +1,43 @@
-import { useState } from "react";
 import { Menu } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { NAV_ITEMS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
+import { initClientI18n } from "@/i18n/client";
 import type { Car } from "@/types";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   pathname: string;
   userEmail: string;
   selectedCar?: Car;
+  lang: Locale;
 }
 
-export function MobileSidebarTrigger({ pathname, userEmail, selectedCar }: Props) {
-  const [open, setOpen] = useState(false);
+export function MobileSidebarTrigger({ pathname, userEmail, selectedCar, lang }: Props) {
+  initClientI18n(lang);
+  const { t } = useTranslation();
 
   return (
-    <>
-      <Sheet open={open} onOpenChange={setOpen}>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            setOpen(true);
-          }}
-          className="text-white/80 hover:text-white"
-        >
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="ghost" size="icon" className="text-white/80 hover:text-white">
           <Menu className="h-5 w-5" />
           <span className="sr-only">Open navigation</span>
         </Button>
+      </SheetTrigger>
 
-        <SheetContent side="left" className="w-60 border-r border-white/10 bg-[var(--sidebar)] p-0">
-          <SheetHeader className="sr-only">
-            <SheetTitle>Navigation</SheetTitle>
-          </SheetHeader>
+      <SheetContent side="left" className="w-60 border-r border-white/10 bg-[var(--sidebar)] p-0">
+        <SheetHeader className="sr-only">
+          <SheetTitle>Navigation</SheetTitle>
+        </SheetHeader>
 
-          {/* Car switcher */}
-          <div className="border-b border-[var(--sidebar-border)] p-4">
+        {/* Car switcher */}
+        <div className="border-b border-[var(--sidebar-border)] p-4">
+          <SheetClose asChild>
             <a
               href="/cars"
-              onClick={() => {
-                setOpen(false);
-              }}
               className="flex w-full items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm transition-colors hover:bg-white/10"
             >
               {selectedCar ? (
@@ -49,22 +45,20 @@ export function MobileSidebarTrigger({ pathname, userEmail, selectedCar }: Props
                   {selectedCar.brand} {selectedCar.model}
                 </span>
               ) : (
-                <span className="text-[var(--sidebar-foreground)]/50">Select a car</span>
+                <span className="text-[var(--sidebar-foreground)]/50">{t("sidebar.selectACar")}</span>
               )}
             </a>
-          </div>
+          </SheetClose>
+        </div>
 
-          {/* Nav list */}
-          <nav className="flex-1 space-y-1 p-3">
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname.startsWith(item.href);
-              return (
+        {/* Nav list */}
+        <nav className="flex-1 space-y-1 p-3">
+          {NAV_ITEMS.map((item) => {
+            const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+            return (
+              <SheetClose asChild key={item.href}>
                 <a
-                  key={item.href}
                   href={item.href}
-                  onClick={() => {
-                    setOpen(false);
-                  }}
                   className={cn(
                     "block rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     isActive
@@ -72,26 +66,57 @@ export function MobileSidebarTrigger({ pathname, userEmail, selectedCar }: Props
                       : "text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)]",
                   )}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </a>
-              );
-            })}
-          </nav>
+              </SheetClose>
+            );
+          })}
+        </nav>
 
-          {/* Footer */}
-          <div className="border-t border-[var(--sidebar-border)] p-4">
-            <p className="mb-3 truncate text-xs text-[var(--sidebar-foreground)]/60">{userEmail}</p>
-            <form method="POST" action="/api/auth/signout">
+        {/* Footer */}
+        <div className="border-t border-[var(--sidebar-border)] p-4">
+          <p className="mb-3 truncate text-xs text-[var(--sidebar-foreground)]/60">{userEmail}</p>
+
+          {/* Language toggle */}
+          <div className="mb-3 flex gap-1">
+            <form method="POST" action="/api/lang/en">
               <button
                 type="submit"
-                className="text-sm text-[var(--sidebar-foreground)]/70 transition-colors hover:text-[var(--sidebar-foreground)]"
+                className={cn(
+                  "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+                  lang === "en"
+                    ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
+                    : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+                )}
               >
-                Sign out
+                {t("sidebar.langEn")}
+              </button>
+            </form>
+            <form method="POST" action="/api/lang/pl">
+              <button
+                type="submit"
+                className={cn(
+                  "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+                  lang === "pl"
+                    ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
+                    : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+                )}
+              >
+                {t("sidebar.langPl")}
               </button>
             </form>
           </div>
-        </SheetContent>
-      </Sheet>
-    </>
+
+          <form method="POST" action="/api/auth/signout">
+            <button
+              type="submit"
+              className="text-sm text-[var(--sidebar-foreground)]/70 transition-colors hover:text-[var(--sidebar-foreground)]"
+            >
+              {t("sidebar.signOut")}
+            </button>
+          </form>
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
