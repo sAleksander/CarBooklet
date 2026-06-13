@@ -175,22 +175,38 @@
   },
   "landing": {
     "title": "CarBooklet",
-    "subtitle": "Your car's service history, always at hand.",
+    "subtitle": "Track your car's full service history — repairs, oil changes, inspections, and insurance — in one place.",
     "signIn": "Sign in",
     "signUp": "Sign up"
   },
   "auth": {
     "signIn": "Sign in",
     "signUp": "Sign up",
+    "createAccount": "Create account",
     "email": "Email",
     "password": "Password",
     "confirmPassword": "Confirm password",
     "signingIn": "Signing in…",
     "signingUp": "Signing up…",
+    "creatingAccount": "Creating account…",
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "checkEmail": "Check your email",
     "confirmEmailDesc": "We've sent a confirmation link to your email. Please click it to activate your account.",
-    "backToSignIn": "Back to sign in"
+    "backToSignIn": "Back to sign in",
+    "registrationSuccessful": "Registration successful",
+    "registrationSuccessDesc": "Your account has been created. You can now sign in.",
+    "goToSignIn": "Go to sign in",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Enter a valid email address",
+    "passwordRequired": "Password is required",
+    "passwordMinLength": "Password must be at least {{count}} characters",
+    "passwordCharactersNeeded_one": "{{count}} more character needed",
+    "passwordCharactersNeeded_other": "{{count}} more characters needed",
+    "confirmPasswordRequired": "Please confirm your password",
+    "passwordsMismatch": "Passwords do not match",
+    "passwordPlaceholder": "Your password",
+    "passwordMinPlaceholder": "Min. {{count}} characters",
+    "confirmPasswordPlaceholder": "Re-enter your password"
   }
 }

@@ -353,29 +353,29 @@ None — no data or schema changes. Existing users without a `lang` cookie defau
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npm run lint`
-- [x] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run lint` — 11140a7
+- [x] 2.2 Build succeeds: `npm run build` — 11140a7
 
 #### Manual
 
-- [ ] 2.3 Every protected surface renders in the selected language (both directions)
-- [ ] 2.4 Entry-type labels render localized in tabs, cards, and detail header
-- [ ] 2.5 Client-side form validation messages appear in the active language
-- [ ] 2.6 No hydration warnings on any island-bearing page in either locale
-- [ ] 2.7 No remaining hardcoded English in the protected app (spot-check)
+- [x] 2.3 Every protected surface renders in the selected language (both directions) — 11140a7
+- [x] 2.4 Entry-type labels render localized in tabs, cards, and detail header — 11140a7
+- [x] 2.5 Client-side form validation messages appear in the active language — 11140a7
+- [x] 2.6 No hydration warnings on any island-bearing page in either locale — 11140a7
+- [x] 2.7 No remaining hardcoded English in the protected app (spot-check) — 11140a7
 
 ### Phase 3: Public surfaces
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npm run lint`
-- [ ] 3.2 Build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run lint`
+- [x] 3.2 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 3.3 Landing + all 3 auth pages render in Polish with the Polish cookie, English otherwise
-- [ ] 3.4 Auth flows work in both languages (client copy localized)
-- [ ] 3.5 No hydration warnings on auth pages with form islands
+- [x] 3.3 Landing + all 3 auth pages render in Polish with the Polish cookie, English otherwise
+- [x] 3.4 Auth flows work in both languages (client copy localized)
+- [x] 3.5 No hydration warnings on auth pages with form islands
 
 ### Phase 4: Localization completeness sweep
 

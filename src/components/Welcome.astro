@@ -1,5 +1,7 @@
 ---
+import { getT } from "@/i18n/server";
 
+const t = getT(Astro.locals.lang);
 ---
 
 <div class="bg-cosmic relative min-h-screen w-full overflow-hidden">
@@ -30,23 +32,23 @@
       <h1
         class="mb-6 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 bg-clip-text text-5xl leading-tight font-bold text-transparent sm:text-6xl lg:text-7xl"
       >
-        CarBooklet
+        {t("landing.title")}
       </h1>
       <p class="mb-10 max-w-2xl text-lg text-blue-100/70 sm:text-xl">
-        Track your car's full service history — repairs, oil changes, inspections, and insurance — in one place.
+        {t("landing.subtitle")}
       </p>
       <div class="flex flex-col gap-4 sm:flex-row">
         <a
           href="/auth/signin"
           class="inline-flex items-center justify-center rounded-lg bg-purple-600 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-purple-500"
         >
-          Sign In
+          {t("landing.signIn")}
         </a>
         <a
           href="/auth/signup"
           class="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 text-base font-medium text-white transition-colors hover:bg-white/10"
         >
-          Sign Up
+          {t("landing.signUp")}
         </a>
       </div>
     </div>

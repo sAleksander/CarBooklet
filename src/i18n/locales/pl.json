@@ -175,22 +175,40 @@
   },
   "landing": {
     "title": "CarBooklet",
-    "subtitle": "Historia serwisowa Twojego samochodu, zawsze pod ręką.",
+    "subtitle": "Śledź pełną historię serwisową swojego samochodu — naprawy, wymiany oleju, przeglądy i ubezpieczenia — w jednym miejscu.",
     "signIn": "Zaloguj się",
     "signUp": "Zarejestruj się"
   },
   "auth": {
     "signIn": "Zaloguj się",
     "signUp": "Zarejestruj się",
+    "createAccount": "Utwórz konto",
     "email": "Email",
     "password": "Hasło",
     "confirmPassword": "Potwierdź hasło",
     "signingIn": "Logowanie…",
     "signingUp": "Rejestracja…",
+    "creatingAccount": "Tworzę konto…",
     "noAccount": "Nie masz konta?",
     "haveAccount": "Masz już konto?",
     "checkEmail": "Sprawdź email",
     "confirmEmailDesc": "Wysłaliśmy link potwierdzający na Twój adres email. Kliknij go, aby aktywować konto.",
-    "backToSignIn": "Powrót do logowania"
+    "backToSignIn": "Powrót do logowania",
+    "registrationSuccessful": "Rejestracja zakończona",
+    "registrationSuccessDesc": "Twoje konto zostało utworzone. Możesz teraz się zalogować.",
+    "goToSignIn": "Przejdź do logowania",
+    "emailRequired": "Email jest wymagany",
+    "emailInvalid": "Podaj prawidłowy adres email",
+    "passwordRequired": "Hasło jest wymagane",
+    "passwordMinLength": "Hasło musi mieć co najmniej {{count}} znaków",
+    "passwordCharactersNeeded_one": "Brakuje jeszcze {{count}} znaku",
+    "passwordCharactersNeeded_few": "Brakuje jeszcze {{count}} znaków",
+    "passwordCharactersNeeded_many": "Brakuje jeszcze {{count}} znaków",
+    "passwordCharactersNeeded_other": "Brakuje jeszcze {{count}} znaków",
+    "confirmPasswordRequired": "Potwierdź hasło",
+    "passwordsMismatch": "Hasła nie są identyczne",
+    "passwordPlaceholder": "Twoje hasło",
+    "passwordMinPlaceholder": "Min. {{count}} znaków",
+    "confirmPasswordPlaceholder": "Wpisz hasło ponownie"
   }
 }

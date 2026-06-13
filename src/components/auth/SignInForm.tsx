@@ -1,15 +1,30 @@
 import React, { useState } from "react";
 import { Mail, Lock, LogIn } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { I18nextProvider } from "react-i18next";
 import { FormField } from "@/components/auth/FormField";
 import { PasswordToggle } from "@/components/auth/PasswordToggle";
 import { SubmitButton } from "@/components/auth/SubmitButton";
 import { ServerError } from "@/components/auth/ServerError";
+import { createClientI18n } from "@/i18n/client";
+import type { Locale } from "@/i18n/config";
 
 interface Props {
   serverError?: string | null;
+  lang: Locale;
 }
 
-export default function SignInForm({ serverError }: Props) {
+export default function SignInForm({ serverError, lang }: Props) {
+  const [i18n] = useState(() => createClientI18n(lang));
+  return (
+    <I18nextProvider i18n={i18n}>
+      <SignInFormContent serverError={serverError} />
+    </I18nextProvider>
+  );
+}
+
+function SignInFormContent({ serverError }: { serverError?: string | null }) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -18,12 +33,12 @@ export default function SignInForm({ serverError }: Props) {
   function validate() {
     const next: typeof errors = {};
     if (!email.trim()) {
-      next.email = "Email is required";
+      next.email = t("auth.emailRequired");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      next.email = "Enter a valid email address";
+      next.email = t("auth.emailInvalid");
     }
     if (!password) {
-      next.password = "Password is required";
+      next.password = t("auth.passwordRequired");
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -44,7 +59,7 @@ export default function SignInForm({ serverError }: Props) {
       <FormField
         id="email"
         type="email"
-        label="Email"
+        label={t("auth.email")}
         value={email}
         onChange={(v) => {
           setEmail(v);
@@ -57,14 +72,14 @@ export default function SignInForm({ serverError }: Props) {
 
       <FormField
         id="password"
-        label="Password"
+        label={t("auth.password")}
         type={showPassword ? "text" : "password"}
         value={password}
         onChange={(v) => {
           setPassword(v);
           clearError("password");
         }}
-        placeholder="Your password"
+        placeholder={t("auth.passwordPlaceholder")}
         error={errors.password}
         icon={<Lock className="size-4" />}
         endContent={
@@ -79,8 +94,8 @@ export default function SignInForm({ serverError }: Props) {
 
       <ServerError message={serverError} />
 
-      <SubmitButton pendingText="Signing in..." icon={<LogIn className="size-4" />}>
-        Sign in
+      <SubmitButton pendingText={t("auth.signingIn")} icon={<LogIn className="size-4" />}>
+        {t("auth.signIn")}
       </SubmitButton>
     </form>
   );
