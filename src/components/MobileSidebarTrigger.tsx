@@ -32,13 +32,13 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon" className="text-white/80 hover:text-white">
           <Menu className="h-5 w-5" />
-          <span className="sr-only">Open navigation</span>
+          <span className="sr-only">{t("sidebar.openNavigation")}</span>
         </Button>
       </SheetTrigger>
 
       <SheetContent side="left" className="w-60 border-r border-white/10 bg-[var(--sidebar)] p-0">
         <SheetHeader className="sr-only">
-          <SheetTitle>Navigation</SheetTitle>
+          <SheetTitle>{t("sidebar.navigation")}</SheetTitle>
         </SheetHeader>
 
         {/* Car switcher */}

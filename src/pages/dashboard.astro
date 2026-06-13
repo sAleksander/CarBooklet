@@ -5,8 +5,10 @@ import LastEntryCard from "@/components/LastEntryCard.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { getCarDeadlines, getLastEntry } from "@/lib/services/entries";
+import { getT } from "@/i18n/server";
 
-const { user, selectedCarId } = Astro.locals;
+const { user, selectedCarId, lang } = Astro.locals;
+const t = getT(lang);
 
 if (!selectedCarId) {
   return Astro.redirect("/cars");
@@ -36,7 +38,7 @@ if (car?.user_id !== user.id) {
 }
 ---
 
-<AppLayout title={`Dashboard — ${car.brand} ${car.model}`} selectedCar={car}>
+<AppLayout title={`${t("nav.dashboard")} — ${car.brand} ${car.model}`} selectedCar={car}>
   <div class="flex justify-center pt-4">
     <div class="w-full max-w-3xl">
       <div class="mb-8 rounded-2xl border border-white/10 bg-white/10 px-8 py-6 text-white backdrop-blur-xl">
@@ -49,58 +51,63 @@ if (car?.user_id !== user.id) {
           href="/cars"
           class="mt-3 inline-block text-sm text-blue-200/70 underline-offset-2 hover:text-blue-200 hover:underline"
         >
-          Change car
+          {t("dashboard.changeCar")}
         </a>
       </div>
 
       <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-        <DeadlineCard title="Oil Change" status={deadlines.oilChange.status}>
+        <DeadlineCard title={t("dashboard.oilChange")} status={deadlines.oilChange.status}>
           {
             deadlines.oilChange.status === "no_data" ? (
-              <p class="text-sm text-blue-100/50">No oil change entries logged.</p>
+              <p class="text-sm text-blue-100/50">{t("dashboard.noOilChange")}</p>
             ) : (
               <div class="space-y-1 text-sm">
                 <p class="text-blue-100/70">
-                  Last: <span class="font-medium text-white">{deadlines.oilChange.lastConductedAt}</span>
+                  {t("dashboard.last")}{" "}
+                  <span class="font-medium text-white">{deadlines.oilChange.lastConductedAt}</span>
                 </p>
                 <p class="text-blue-100/70">
-                  Next due: <span class="font-medium text-white">{deadlines.oilChange.nextDueDate}</span>
+                  {t("dashboard.nextDue")} <span class="font-medium text-white">{deadlines.oilChange.nextDueDate}</span>
                 </p>
                 {deadlines.oilChange.nextDueMileage !== null && (
-                  <p class="text-blue-100/50">or at ~{deadlines.oilChange.nextDueMileage.toLocaleString()} km</p>
+                  <p class="text-blue-100/50">
+                    {t("dashboard.orAtKm", { value: deadlines.oilChange.nextDueMileage.toLocaleString() })}
+                  </p>
                 )}
               </div>
             )
           }
         </DeadlineCard>
 
-        <DeadlineCard title="Inspection" status={deadlines.inspection.status}>
+        <DeadlineCard title={t("dashboard.inspection")} status={deadlines.inspection.status}>
           {
             deadlines.inspection.status === "no_data" ? (
-              <p class="text-sm text-blue-100/50">No inspection entries logged.</p>
+              <p class="text-sm text-blue-100/50">{t("dashboard.noInspection")}</p>
             ) : deadlines.inspection.status === "no_next_date" ? (
               <div class="space-y-1 text-sm">
                 <p class="text-blue-100/70">
-                  Last: <span class="font-medium text-white">{deadlines.inspection.lastConductedAt}</span>
+                  {t("dashboard.last")}{" "}
+                  <span class="font-medium text-white">{deadlines.inspection.lastConductedAt}</span>
                 </p>
-                <p class="text-blue-100/50">Next date not set.</p>
+                <p class="text-blue-100/50">{t("dashboard.nextDateNotSet")}</p>
               </div>
             ) : (
               <p class="text-sm text-blue-100/70">
-                Next inspection: <span class="font-medium text-white">{deadlines.inspection.nextInspectionDate}</span>
+                {t("dashboard.nextInspection")}{" "}
+                <span class="font-medium text-white">{deadlines.inspection.nextInspectionDate}</span>
               </p>
             )
           }
         </DeadlineCard>
 
-        <DeadlineCard title="Insurance" status={deadlines.insurance.status}>
+        <DeadlineCard title={t("dashboard.insurance")} status={deadlines.insurance.status}>
           {
             deadlines.insurance.status === "no_data" ? (
-              <p class="text-sm text-blue-100/50">No insurance entries logged.</p>
+              <p class="text-sm text-blue-100/50">{t("dashboard.noInsurance")}</p>
             ) : (
               <div class="space-y-1 text-sm">
                 <p class="text-blue-100/70">
-                  Renewal: <span class="font-medium text-white">{deadlines.insurance.renewalDate}</span>
+                  {t("dashboard.renewal")} <span class="font-medium text-white">{deadlines.insurance.renewalDate}</span>
                 </p>
                 {deadlines.insurance.insurer && <p class="text-blue-100/50">{deadlines.insurance.insurer}</p>}
               </div>

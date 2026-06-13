@@ -368,27 +368,27 @@ None — no data or schema changes. Existing users without a `lang` cookie defau
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npm run lint`
-- [x] 3.2 Build succeeds: `npm run build`
+- [x] 3.1 Type checking passes: `npm run lint` — 67fc2f1
+- [x] 3.2 Build succeeds: `npm run build` — 67fc2f1
 
 #### Manual
 
-- [x] 3.3 Landing + all 3 auth pages render in Polish with the Polish cookie, English otherwise
-- [x] 3.4 Auth flows work in both languages (client copy localized)
-- [x] 3.5 No hydration warnings on auth pages with form islands
+- [x] 3.3 Landing + all 3 auth pages render in Polish with the Polish cookie, English otherwise — 67fc2f1
+- [x] 3.4 Auth flows work in both languages (client copy localized) — 67fc2f1
+- [x] 3.5 No hydration warnings on auth pages with form islands — 67fc2f1
 
 ### Phase 4: Localization completeness sweep
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npm run lint`
-- [ ] 4.2 Build succeeds: `npm run build`
+- [x] 4.1 Type checking passes: `npm run lint`
+- [x] 4.2 Build succeeds: `npm run build`
 
 #### Manual
 
-- [ ] 4.3 Car list cards show translated engine type labels in both locales
-- [ ] 4.4 LastEntryCard renders fully in the active locale (label, entry type, result)
-- [ ] 4.5 Dashboard DeadlineCard titles and inline strings appear in the active locale
-- [ ] 4.6 All page `<title>` meta strings appear in the active locale
-- [ ] 4.7 Spot-check every page in Polish — no visible hardcoded English strings remain
-- [ ] 4.8 Final grep audit returns no untranslated template strings
+- [x] 4.3 Car list cards show translated engine type labels in both locales
+- [x] 4.4 LastEntryCard renders fully in the active locale (label, entry type, result)
+- [x] 4.5 Dashboard DeadlineCard titles and inline strings appear in the active locale
+- [x] 4.6 All page `<title>` meta strings appear in the active locale
+- [x] 4.7 Spot-check every page in Polish — no visible hardcoded English strings remain
+- [x] 4.8 Final grep audit returns no untranslated template strings

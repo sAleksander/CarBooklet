@@ -2,7 +2,14 @@ import { useState } from "react";
 import { useTranslation, I18nextProvider } from "react-i18next";
 import { createClientI18n } from "@/i18n/client";
 import type { Locale } from "@/i18n/config";
-import type { Car } from "@/types";
+import type { Car, EngineType } from "@/types";
+
+const ENGINE_TYPE_KEYS: Record<EngineType, string> = {
+  gas: "cars.form.gasoline",
+  diesel: "cars.form.diesel",
+  electric: "cars.form.electric",
+  lpg: "cars.form.lpg",
+};
 import { Button } from "@/components/ui/button";
 import CarForm from "./CarForm";
 import DeleteCarDialog from "./DeleteCarDialog";
@@ -143,7 +150,7 @@ function CarListContent({ initialCars, initialSelectedCarId }: CarListProps) {
                       {car.brand} {car.model}
                     </p>
                     <p className="text-muted-foreground text-sm">
-                      {car.production_year} · {car.engine_type.toUpperCase()} · {car.engine_capacity} ·{" "}
+                      {car.production_year} · {t(ENGINE_TYPE_KEYS[car.engine_type])} · {car.engine_capacity} ·{" "}
                       {car.engine_power}
                     </p>
                     {car.registration_number && (

@@ -1,18 +1,13 @@
 ---
 import type { Entry } from "@/types";
+import { getT } from "@/i18n/server";
 
 interface Props {
   entry: Entry;
 }
 
 const { entry } = Astro.props;
-
-const entryTypeLabel: Record<string, string> = {
-  repair: "Repair",
-  oil_change: "Oil Change",
-  inspection: "Inspection",
-  insurance: "Insurance",
-};
+const t = getT(Astro.locals.lang);
 
 const dash = "—";
 
@@ -25,7 +20,13 @@ switch (entry.entry_type) {
     summary = entry.oil_details ?? dash;
     break;
   case "inspection":
-    summary = entry.result ?? dash;
+    if (entry.result === "Passed") {
+      summary = t("entries.results.passed");
+    } else if (entry.result === "Failed") {
+      summary = t("entries.results.failed");
+    } else {
+      summary = dash;
+    }
     break;
   case "insurance":
     summary = entry.insurer ?? dash;
@@ -37,10 +38,10 @@ switch (entry.entry_type) {
   href={`/entries/${entry.entry_type}/${entry.id}`}
   class="block rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl transition-colors hover:bg-white/15"
 >
-  <p class="mb-3 text-xs font-semibold tracking-wide text-blue-100/60 uppercase">Last entry</p>
+  <p class="mb-3 text-xs font-semibold tracking-wide text-blue-100/60 uppercase">{t("dashboard.lastEntry")}</p>
   <div class="flex items-start justify-between gap-4">
     <div class="min-w-0">
-      <p class="text-sm font-semibold text-white">{entryTypeLabel[entry.entry_type]}</p>
+      <p class="text-sm font-semibold text-white">{t(`entries.types.${entry.entry_type}`)}</p>
       <p class="mt-0.5 truncate text-sm text-blue-100/70" title={summary}>{summary}</p>
     </div>
     <p class="shrink-0 text-sm text-blue-100/50">{new Date(entry.conducted_at).toLocaleDateString()}</p>

@@ -8,7 +8,9 @@
     "selectACar": "Wybierz samochód",
     "signOut": "Wyloguj się",
     "langEn": "EN",
-    "langPl": "PL"
+    "langPl": "PL",
+    "openNavigation": "Otwórz nawigację",
+    "navigation": "Nawigacja"
   },
   "common": {
     "cancel": "Anuluj",

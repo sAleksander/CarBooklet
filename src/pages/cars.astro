@@ -3,8 +3,10 @@ import AppLayout from "@/layouts/AppLayout.astro";
 import CarList from "@/components/cars/CarList";
 import { createClient } from "@/lib/supabase";
 import { getCars } from "@/lib/services/cars";
+import { getT } from "@/i18n/server";
 
 const { user, selectedCarId, lang } = Astro.locals;
+const t = getT(lang);
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 
 if (!supabase || !user) {
@@ -14,6 +16,6 @@ if (!supabase || !user) {
 const cars = await getCars(supabase);
 ---
 
-<AppLayout title="My Cars">
+<AppLayout title={t("cars.myCars")}>
   <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} lang={lang} />
 </AppLayout>

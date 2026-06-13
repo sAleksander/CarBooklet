@@ -8,7 +8,9 @@
     "selectACar": "Select a car",
     "signOut": "Sign out",
     "langEn": "EN",
-    "langPl": "PL"
+    "langPl": "PL",
+    "openNavigation": "Open navigation",
+    "navigation": "Navigation"
   },
   "common": {
     "cancel": "Cancel",
