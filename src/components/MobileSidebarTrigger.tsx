@@ -1,10 +1,12 @@
-import { Menu } from "lucide-react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { I18nextProvider } from "react-i18next";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { NAV_ITEMS } from "@/lib/nav";
 import { cn } from "@/lib/utils";
-import { initClientI18n } from "@/i18n/client";
+import { createClientI18n } from "@/i18n/client";
 import type { Car } from "@/types";
 import type { Locale } from "@/i18n/config";
 
@@ -15,8 +17,14 @@ interface Props {
   lang: Locale;
 }
 
-export function MobileSidebarTrigger({ pathname, userEmail, selectedCar, lang }: Props) {
-  initClientI18n(lang);
+interface InnerProps {
+  pathname: string;
+  userEmail: string;
+  selectedCar?: Car;
+  lang: Locale;
+}
+
+function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerProps) {
   const { t } = useTranslation();
 
   return (
@@ -118,5 +126,14 @@ export function MobileSidebarTrigger({ pathname, userEmail, selectedCar, lang }:
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+export function MobileSidebarTrigger({ pathname, userEmail, selectedCar, lang }: Props) {
+  const [i18n] = useState(() => createClientI18n(lang));
+  return (
+    <I18nextProvider i18n={i18n}>
+      <MobileSidebarContent pathname={pathname} userEmail={userEmail} selectedCar={selectedCar} lang={lang} />
+    </I18nextProvider>
   );
 }

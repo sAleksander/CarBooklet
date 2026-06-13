@@ -5,11 +5,13 @@ import { EntryDetailEditor } from "@/components/entries/EntryDetailEditor";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { getEntryById } from "@/lib/services/entries";
+import { getT } from "@/i18n/server";
 import type { Entry, Car } from "@/types";
 
 const { type, id } = Astro.params;
-const { selectedCarId, user } = Astro.locals;
+const { selectedCarId, user, lang } = Astro.locals;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
+const t = getT(lang);
 
 const validTypes = ["repair", "oil_change", "inspection", "insurance"] as const;
 type ValidType = (typeof validTypes)[number];
@@ -44,13 +46,13 @@ if (rawEntry?.car_id !== selectedCarId) {
 }
 
 const entryTypeLabel: Record<string, string> = {
-  repair: "Repair",
-  oil_change: "Oil Change",
-  inspection: "Inspection",
-  insurance: "Insurance",
+  repair: t("entries.types.repair"),
+  oil_change: t("entries.types.oil_change"),
+  inspection: t("entries.types.inspection"),
+  insurance: t("entries.types.insurance"),
 };
 
-const title = entry && car ? `${entryTypeLabel[entryType]} — ${car.brand} ${car.model}` : "Entry not found";
+const title = entry && car ? `${entryTypeLabel[entryType]} — ${car.brand} ${car.model}` : t("entries.detail.notFound");
 ---
 
 <AppLayout title={title} selectedCar={car}>
@@ -59,13 +61,13 @@ const title = entry && car ? `${entryTypeLabel[entryType]} — ${car.brand} ${ca
       {
         !entry ? (
           <div class="rounded-2xl border border-white/10 bg-white/10 p-8 text-center text-white backdrop-blur-xl">
-            <h1 class="mb-2 text-xl font-bold text-white/80">Entry not found</h1>
-            <p class="mb-6 text-sm text-blue-100/60">This entry doesn't exist or belongs to a different car.</p>
+            <h1 class="mb-2 text-xl font-bold text-white/80">{t("entries.detail.notFound")}</h1>
+            <p class="mb-6 text-sm text-blue-100/60">{t("entries.detail.notFoundDesc")}</p>
             <a
               href="/entries"
               class="inline-flex items-center gap-1 text-sm text-blue-300 transition-colors hover:text-blue-200"
             >
-              ← Back to entries
+              {t("entries.detail.backToEntries")}
             </a>
           </div>
         ) : (
@@ -82,10 +84,10 @@ const title = entry && car ? `${entryTypeLabel[entryType]} — ${car.brand} ${ca
                 )}
               </div>
               <a href="/entries" class="text-sm text-blue-300 transition-colors hover:text-blue-200">
-                ← Back to entries
+                {t("entries.detail.backToEntries")}
               </a>
             </div>
-            <EntryDetailEditor entry={entry} client:load>
+            <EntryDetailEditor entry={entry} lang={lang} client:load>
               <EntryDetail entry={entry} />
             </EntryDetailEditor>
           </div>

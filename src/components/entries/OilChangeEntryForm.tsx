@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { OilChangeEntry, OilChangeEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ function emptyForm(): OilChangeEntryFormData {
 }
 
 export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<OilChangeEntryFormData>(emptyForm);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,12 +46,12 @@ export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps
       });
       const json = (await res.json().catch(() => ({}))) as { entry?: OilChangeEntry; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.entry) onSuccess(json.entry);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +61,7 @@ export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="oc_conducted_at">Date</Label>
+          <Label htmlFor="oc_conducted_at">{t("entries.fields.date")}</Label>
           <Input
             id="oc_conducted_at"
             type="date"
@@ -71,7 +73,7 @@ export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="oc_mileage">Mileage (km, optional)</Label>
+          <Label htmlFor="oc_mileage">{t("entries.fields.mileage")}</Label>
           <Input
             id="oc_mileage"
             type="number"
@@ -80,27 +82,27 @@ export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps
             onChange={(e) => {
               setField("mileage", e.target.value ? parseInt(e.target.value, 10) : null);
             }}
-            placeholder="e.g. 85000"
+            placeholder={t("entries.placeholders.mileage")}
             disabled={isLoading}
           />
         </div>
       </div>
       <div className="space-y-1">
-        <Label htmlFor="oc_oil_details">Oil / filter details (optional)</Label>
+        <Label htmlFor="oc_oil_details">{t("entries.fields.oilDetails")}</Label>
         <Textarea
           id="oc_oil_details"
           value={form.oil_details ?? ""}
           onChange={(e) => {
             setField("oil_details", e.target.value);
           }}
-          placeholder="e.g. 5W-30 full synthetic, Mann filter"
+          placeholder={t("entries.placeholders.oilDetails")}
           rows={2}
           disabled={isLoading}
         />
       </div>
       {apiError && <p className="text-destructive text-sm">{apiError}</p>}
       <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Saving…" : "Log oil change"}
+        {isLoading ? t("common.saving") : t("entries.actions.logOilChange")}
       </Button>
     </form>
   );

@@ -1,18 +1,14 @@
 import { useState } from "react";
+import { useTranslation, I18nextProvider } from "react-i18next";
 import type { RepairEntry, OilChangeEntry, InspectionEntry, InsuranceEntry } from "@/types";
 import { RepairEntries } from "./RepairEntries";
 import { OilChangeEntries } from "./OilChangeEntries";
 import { InspectionEntries } from "./InspectionEntries";
 import { InsuranceEntries } from "./InsuranceEntries";
+import { createClientI18n } from "@/i18n/client";
+import type { Locale } from "@/i18n/config";
 
 type Tab = "repairs" | "oil_change" | "inspection" | "insurance";
-
-const TABS: { id: Tab; label: string }[] = [
-  { id: "repairs", label: "Repairs" },
-  { id: "oil_change", label: "Oil Changes" },
-  { id: "inspection", label: "Inspections" },
-  { id: "insurance", label: "Insurance" },
-];
 
 interface EntriesTabsProps {
   initialRepairEntries: RepairEntry[];
@@ -20,16 +16,33 @@ interface EntriesTabsProps {
   initialInspectionEntries: InspectionEntry[];
   initialInsuranceEntries: InsuranceEntry[];
   carId: string;
+  lang: Locale;
 }
 
-export function EntriesTabs({
+interface ContentProps {
+  initialRepairEntries: RepairEntry[];
+  initialOilChangeEntries: OilChangeEntry[];
+  initialInspectionEntries: InspectionEntry[];
+  initialInsuranceEntries: InsuranceEntry[];
+  carId: string;
+}
+
+function EntriesTabsContent({
   initialRepairEntries,
   initialOilChangeEntries,
   initialInspectionEntries,
   initialInsuranceEntries,
   carId,
-}: EntriesTabsProps) {
+}: ContentProps) {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState<Tab>("repairs");
+
+  const TABS: { id: Tab; label: string }[] = [
+    { id: "repairs", label: t("entries.tabs.repairs") },
+    { id: "oil_change", label: t("entries.tabs.oilChanges") },
+    { id: "inspection", label: t("entries.tabs.inspections") },
+    { id: "insurance", label: t("entries.tabs.insurance") },
+  ];
 
   return (
     <div>
@@ -54,5 +67,27 @@ export function EntriesTabs({
       {activeTab === "inspection" && <InspectionEntries initialEntries={initialInspectionEntries} carId={carId} />}
       {activeTab === "insurance" && <InsuranceEntries initialEntries={initialInsuranceEntries} carId={carId} />}
     </div>
+  );
+}
+
+export function EntriesTabs({
+  initialRepairEntries,
+  initialOilChangeEntries,
+  initialInspectionEntries,
+  initialInsuranceEntries,
+  carId,
+  lang,
+}: EntriesTabsProps) {
+  const [i18n] = useState(() => createClientI18n(lang));
+  return (
+    <I18nextProvider i18n={i18n}>
+      <EntriesTabsContent
+        initialRepairEntries={initialRepairEntries}
+        initialOilChangeEntries={initialOilChangeEntries}
+        initialInspectionEntries={initialInspectionEntries}
+        initialInsuranceEntries={initialInsuranceEntries}
+        carId={carId}
+      />
+    </I18nextProvider>
   );
 }

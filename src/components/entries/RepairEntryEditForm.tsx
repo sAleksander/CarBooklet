@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { RepairEntry, RepairEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ interface RepairEntryEditFormProps {
 }
 
 export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryEditFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<RepairEntryFormData>({
     conducted_at: entry.conducted_at,
     description: entry.description,
@@ -29,7 +31,7 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
 
   function validate(): boolean {
     const errors: Partial<Record<keyof RepairEntryFormData, string>> = {};
-    if (!form.description.trim()) errors.description = "Description is required";
+    if (!form.description.trim()) errors.description = t("entries.validation.descriptionRequired");
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -53,12 +55,12 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
       });
       const json = (await res.json().catch(() => ({}))) as { entry?: RepairEntry; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.entry) onSuccess(json.entry);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +70,7 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="edit_conducted_at">Date</Label>
+          <Label htmlFor="edit_conducted_at">{t("entries.fields.date")}</Label>
           <Input
             id="edit_conducted_at"
             type="date"
@@ -80,7 +82,7 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="edit_mileage">Mileage (km, optional)</Label>
+          <Label htmlFor="edit_mileage">{t("entries.fields.mileage")}</Label>
           <Input
             id="edit_mileage"
             type="number"
@@ -89,34 +91,34 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
             onChange={(e) => {
               setField("mileage", e.target.value ? parseInt(e.target.value, 10) : null);
             }}
-            placeholder="e.g. 85000"
+            placeholder={t("entries.placeholders.mileage")}
             disabled={isLoading}
           />
         </div>
       </div>
       <div className="space-y-1">
-        <Label htmlFor="edit_description">Description</Label>
+        <Label htmlFor="edit_description">{t("entries.fields.description")}</Label>
         <Textarea
           id="edit_description"
           value={form.description}
           onChange={(e) => {
             setField("description", e.target.value);
           }}
-          placeholder="What was repaired or replaced?"
+          placeholder={t("entries.placeholders.description")}
           rows={3}
           disabled={isLoading}
         />
         {fieldErrors.description && <p className="text-destructive text-sm">{fieldErrors.description}</p>}
       </div>
       <div className="space-y-1">
-        <Label htmlFor="edit_cause">Cause (optional)</Label>
+        <Label htmlFor="edit_cause">{t("entries.fields.cause")}</Label>
         <Textarea
           id="edit_cause"
           value={form.cause ?? ""}
           onChange={(e) => {
             setField("cause", e.target.value);
           }}
-          placeholder="What led to this repair?"
+          placeholder={t("entries.placeholders.cause")}
           rows={2}
           disabled={isLoading}
         />
@@ -124,10 +126,10 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
       {apiError && <p className="text-destructive text-sm">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving…" : "Save changes"}
+          {isLoading ? t("common.saving") : t("common.save")}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       </div>
     </form>

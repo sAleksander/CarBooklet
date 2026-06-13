@@ -1,4 +1,5 @@
 ---
+import { getT } from "@/i18n/server";
 import type { Entry } from "@/types";
 
 interface Props {
@@ -6,6 +7,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
+const t = getT(Astro.locals.lang);
 
 const dash = "—";
 
@@ -20,7 +22,7 @@ function formatDate(dateStr: string | null | undefined): string {
   <div class="grid grid-cols-2 gap-4">
     <div>
       <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">
-        {entry.entry_type === "insurance" ? "Policy start" : "Date"}
+        {entry.entry_type === "insurance" ? t("entries.detail.policyStartLabel") : t("entries.detail.date")}
       </p>
       <p class="mt-1 text-sm text-white">
         {
@@ -31,7 +33,7 @@ function formatDate(dateStr: string | null | undefined): string {
       </p>
     </div>
     <div>
-      <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Mileage</p>
+      <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.mileage")}</p>
       <p class="mt-1 text-sm text-white">
         {entry.mileage !== null ? `${entry.mileage.toLocaleString()} km` : dash}
       </p>
@@ -45,11 +47,11 @@ function formatDate(dateStr: string | null | undefined): string {
     entry.entry_type === "repair" && (
       <div class="space-y-4">
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Description</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.description")}</p>
           <p class="mt-1 text-sm whitespace-pre-wrap text-white">{entry.description || dash}</p>
         </div>
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Cause</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.cause")}</p>
           <p class="mt-1 text-sm whitespace-pre-wrap text-white">{entry.cause ?? dash}</p>
         </div>
       </div>
@@ -59,7 +61,7 @@ function formatDate(dateStr: string | null | undefined): string {
   {
     entry.entry_type === "oil_change" && (
       <div>
-        <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Oil Details</p>
+        <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.oilDetails")}</p>
         <p class="mt-1 text-sm whitespace-pre-wrap text-white">{entry.oil_details ?? dash}</p>
       </div>
     )
@@ -69,11 +71,19 @@ function formatDate(dateStr: string | null | undefined): string {
     entry.entry_type === "inspection" && (
       <div class="space-y-4">
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Result</p>
-          <p class="mt-1 text-sm text-white">{entry.result ?? dash}</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.result")}</p>
+          <p class="mt-1 text-sm text-white">
+            {entry.result === "Passed"
+              ? t("entries.results.passed")
+              : entry.result === "Failed"
+                ? t("entries.results.failed")
+                : dash}
+          </p>
         </div>
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Next Inspection Date</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">
+            {t("entries.detail.nextInspectionDate")}
+          </p>
           <p class="mt-1 text-sm text-white">{formatDate(entry.next_inspection_date)}</p>
         </div>
       </div>
@@ -84,15 +94,17 @@ function formatDate(dateStr: string | null | undefined): string {
     entry.entry_type === "insurance" && (
       <div class="space-y-4">
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Insurer</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.insurer")}</p>
           <p class="mt-1 text-sm text-white">{entry.insurer ?? dash}</p>
         </div>
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Policy Start Date</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">
+            {t("entries.detail.policyStartDate")}
+          </p>
           <p class="mt-1 text-sm text-white">{formatDate(entry.policy_start_date)}</p>
         </div>
         <div>
-          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">Renewal Date</p>
+          <p class="text-xs font-medium tracking-wide text-blue-100/60 uppercase">{t("entries.detail.renewalDate")}</p>
           <p class="mt-1 text-sm text-white">{formatDate(entry.renewal_date)}</p>
         </div>
       </div>
@@ -102,7 +114,15 @@ function formatDate(dateStr: string | null | undefined): string {
   <!-- Metadata footer -->
   <hr class="border-white/10" />
   <p class="text-xs text-blue-100/40">
-    Logged on {formatDate(entry.created_at)}
-    {entry.updated_at !== entry.created_at && <span> · Updated {formatDate(entry.updated_at)}</span>}
+    {t("entries.detail.loggedOn")}
+    {formatDate(entry.created_at)}
+    {
+      entry.updated_at !== entry.created_at && (
+        <span>
+          {" "}
+          · {t("entries.detail.updated")} {formatDate(entry.updated_at)}
+        </span>
+      )
+    }
   </p>
 </div>

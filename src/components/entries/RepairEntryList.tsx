@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { RepairEntry } from "@/types";
 
 interface RepairEntryListProps {
@@ -5,8 +6,10 @@ interface RepairEntryListProps {
 }
 
 export function RepairEntryList({ entries }: RepairEntryListProps) {
+  const { t } = useTranslation();
+
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">No repair entries yet. Log your first one above.</p>;
+    return <p className="text-muted-foreground text-sm">{t("entries.empty.repair")}</p>;
   }
 
   return (
@@ -20,13 +23,15 @@ export function RepairEntryList({ entries }: RepairEntryListProps) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
-                <span className="text-muted-foreground text-xs">Mileage: {entry.mileage.toLocaleString()} km</span>
+                <span className="text-muted-foreground text-xs">
+                  {t("common.mileageKm", { value: entry.mileage.toLocaleString() })}
+                </span>
               )}
             </div>
             <p className="text-sm">{entry.description}</p>
             {entry.cause && (
               <p className="text-muted-foreground mt-1 text-xs">
-                <span className="font-medium">Cause:</span> {entry.cause}
+                <span className="font-medium">{t("entries.detail.cause")}:</span> {entry.cause}
               </p>
             )}
           </a>

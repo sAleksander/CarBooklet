@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { InspectionEntry, InspectionEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,7 @@ function emptyForm(): InspectionFormState {
 }
 
 export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<InspectionFormState>(emptyForm);
   const [apiError, setApiError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,12 +55,12 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
       });
       const json = (await res.json().catch(() => ({}))) as { entry?: InspectionEntry; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.entry) onSuccess(json.entry);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +70,7 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="insp_conducted_at">Date</Label>
+          <Label htmlFor="insp_conducted_at">{t("entries.fields.date")}</Label>
           <Input
             id="insp_conducted_at"
             type="date"
@@ -80,7 +82,7 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="insp_mileage">Mileage (km, optional)</Label>
+          <Label htmlFor="insp_mileage">{t("entries.fields.mileage")}</Label>
           <Input
             id="insp_mileage"
             type="number"
@@ -89,14 +91,14 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
             onChange={(e) => {
               setField("mileage", e.target.value ? parseInt(e.target.value, 10) : null);
             }}
-            placeholder="e.g. 85000"
+            placeholder={t("entries.placeholders.mileage")}
             disabled={isLoading}
           />
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="insp_result">Result (optional)</Label>
+          <Label htmlFor="insp_result">{t("entries.fields.result")}</Label>
           <Select
             value={form.result ?? "none"}
             onValueChange={(v) => {
@@ -105,17 +107,17 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
             disabled={isLoading}
           >
             <SelectTrigger id="insp_result">
-              <SelectValue placeholder="Select result" />
+              <SelectValue placeholder={t("entries.placeholders.selectResult")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">Not recorded</SelectItem>
-              <SelectItem value="Passed">Passed</SelectItem>
-              <SelectItem value="Failed">Failed</SelectItem>
+              <SelectItem value="none">{t("entries.results.notRecorded")}</SelectItem>
+              <SelectItem value="Passed">{t("entries.results.passed")}</SelectItem>
+              <SelectItem value="Failed">{t("entries.results.failed")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1">
-          <Label htmlFor="insp_next_date">Next inspection date (optional)</Label>
+          <Label htmlFor="insp_next_date">{t("entries.fields.nextInspectionDate")}</Label>
           <Input
             id="insp_next_date"
             type="date"
@@ -129,7 +131,7 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
       </div>
       {apiError && <p className="text-destructive text-sm">{apiError}</p>}
       <Button type="submit" disabled={isLoading}>
-        {isLoading ? "Saving…" : "Log inspection"}
+        {isLoading ? t("common.saving") : t("entries.actions.logInspection")}
       </Button>
     </form>
   );

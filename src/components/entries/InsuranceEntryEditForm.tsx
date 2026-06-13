@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { InsuranceEntry, InsuranceEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface InsuranceEditFormState {
 }
 
 export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: InsuranceEntryEditFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<InsuranceEditFormState>({
     conducted_at: entry.conducted_at,
     mileage: entry.mileage,
@@ -37,7 +39,7 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
 
   function validate(): boolean {
     const errors: Partial<Record<keyof InsuranceEditFormState, string>> = {};
-    if (!form.renewal_date) errors.renewal_date = "Renewal date is required";
+    if (!form.renewal_date) errors.renewal_date = t("entries.validation.renewalDateRequired");
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -63,12 +65,12 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
       });
       const json = (await res.json().catch(() => ({}))) as { entry?: InsuranceEntry; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.entry) onSuccess(json.entry);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +80,7 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="edit_ins_conducted_at">Date logged</Label>
+          <Label htmlFor="edit_ins_conducted_at">{t("entries.fields.dateLogged")}</Label>
           <Input
             id="edit_ins_conducted_at"
             type="date"
@@ -90,7 +92,7 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="edit_ins_mileage">Mileage (km, optional)</Label>
+          <Label htmlFor="edit_ins_mileage">{t("entries.fields.mileage")}</Label>
           <Input
             id="edit_ins_mileage"
             type="number"
@@ -99,13 +101,13 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
             onChange={(e) => {
               setField("mileage", e.target.value ? parseInt(e.target.value, 10) : null);
             }}
-            placeholder="e.g. 85000"
+            placeholder={t("entries.placeholders.mileage")}
             disabled={isLoading}
           />
         </div>
       </div>
       <div className="space-y-1">
-        <Label htmlFor="edit_ins_insurer">Insurer (optional)</Label>
+        <Label htmlFor="edit_ins_insurer">{t("entries.fields.insurer")}</Label>
         <Input
           id="edit_ins_insurer"
           type="text"
@@ -113,13 +115,13 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
           onChange={(e) => {
             setField("insurer", e.target.value);
           }}
-          placeholder="e.g. PZU, Warta"
+          placeholder={t("entries.placeholders.insurer")}
           disabled={isLoading}
         />
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="edit_ins_policy_start">Policy start date (optional)</Label>
+          <Label htmlFor="edit_ins_policy_start">{t("entries.fields.policyStart")}</Label>
           <Input
             id="edit_ins_policy_start"
             type="date"
@@ -131,7 +133,7 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
           />
         </div>
         <div className="space-y-1">
-          <Label htmlFor="edit_ins_renewal">Renewal date</Label>
+          <Label htmlFor="edit_ins_renewal">{t("entries.fields.renewalDate")}</Label>
           <Input
             id="edit_ins_renewal"
             type="date"
@@ -147,10 +149,10 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
       {apiError && <p className="text-destructive text-sm">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving…" : "Save changes"}
+          {isLoading ? t("common.saving") : t("common.save")}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       </div>
     </form>

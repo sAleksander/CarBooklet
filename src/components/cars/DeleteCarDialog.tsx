@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { Car } from "@/types";
 import {
   AlertDialog,
@@ -19,23 +20,22 @@ interface DeleteCarDialogProps {
 }
 
 export default function DeleteCarDialog({ car, open, onConfirm, onCancel, isDeleting = false }: DeleteCarDialogProps) {
+  const { t } = useTranslation();
   return (
     <AlertDialog open={open}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Delete {car.brand} {car.model}?
+            {t("common.delete")} {car.brand} {car.model}?
           </AlertDialogTitle>
-          <AlertDialogDescription>
-            This will permanently delete the car and all linked maintenance entries. This action cannot be undone.
-          </AlertDialogDescription>
+          <AlertDialogDescription>{t("cars.delete.description")}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel} disabled={isDeleting}>
-            Cancel
+            {t("common.cancel")}
           </AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} disabled={isDeleting}>
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? t("cars.delete.deleting") : t("common.delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

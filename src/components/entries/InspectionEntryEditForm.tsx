@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { InspectionEntry, InspectionEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface InspectionEditFormState {
 }
 
 export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: InspectionEntryEditFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<InspectionEditFormState>({
     conducted_at: entry.conducted_at,
     mileage: entry.mileage,
@@ -36,7 +38,7 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
 
   function validate(): boolean {
     const errors: Partial<Record<keyof InspectionEditFormState, string>> = {};
-    if (!form.conducted_at) errors.conducted_at = "Date is required";
+    if (!form.conducted_at) errors.conducted_at = t("entries.validation.dateRequired");
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -61,12 +63,12 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
       });
       const json = (await res.json().catch(() => ({}))) as { entry?: InspectionEntry; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.entry) onSuccess(json.entry);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -76,7 +78,7 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="edit_insp_conducted_at">Date</Label>
+          <Label htmlFor="edit_insp_conducted_at">{t("entries.fields.date")}</Label>
           <Input
             id="edit_insp_conducted_at"
             type="date"
@@ -89,7 +91,7 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
           {fieldErrors.conducted_at && <p className="text-destructive text-sm">{fieldErrors.conducted_at}</p>}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="edit_insp_mileage">Mileage (km, optional)</Label>
+          <Label htmlFor="edit_insp_mileage">{t("entries.fields.mileage")}</Label>
           <Input
             id="edit_insp_mileage"
             type="number"
@@ -98,14 +100,14 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
             onChange={(e) => {
               setField("mileage", e.target.value ? parseInt(e.target.value, 10) : null);
             }}
-            placeholder="e.g. 85000"
+            placeholder={t("entries.placeholders.mileage")}
             disabled={isLoading}
           />
         </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="edit_insp_result">Result (optional)</Label>
+          <Label htmlFor="edit_insp_result">{t("entries.fields.result")}</Label>
           <Select
             value={form.result ?? "none"}
             onValueChange={(v) => {
@@ -114,17 +116,17 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
             disabled={isLoading}
           >
             <SelectTrigger id="edit_insp_result">
-              <SelectValue placeholder="Select result" />
+              <SelectValue placeholder={t("entries.placeholders.selectResult")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">Not recorded</SelectItem>
-              <SelectItem value="Passed">Passed</SelectItem>
-              <SelectItem value="Failed">Failed</SelectItem>
+              <SelectItem value="none">{t("entries.results.notRecorded")}</SelectItem>
+              <SelectItem value="Passed">{t("entries.results.passed")}</SelectItem>
+              <SelectItem value="Failed">{t("entries.results.failed")}</SelectItem>
             </SelectContent>
           </Select>
         </div>
         <div className="space-y-1">
-          <Label htmlFor="edit_insp_next_date">Next inspection date (optional)</Label>
+          <Label htmlFor="edit_insp_next_date">{t("entries.fields.nextInspectionDate")}</Label>
           <Input
             id="edit_insp_next_date"
             type="date"
@@ -139,10 +141,10 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
       {apiError && <p className="text-destructive text-sm">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving…" : "Save changes"}
+          {isLoading ? t("common.saving") : t("common.save")}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       </div>
     </form>

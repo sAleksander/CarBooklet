@@ -1,9 +1,26 @@
 import { useState } from "react";
+import { useTranslation, I18nextProvider } from "react-i18next";
+import { createClientI18n } from "@/i18n/client";
+import type { Locale } from "@/i18n/config";
 import { Button } from "@/components/ui/button";
 import { useStreamingText } from "@/components/hooks/useStreamingText";
 import { StreamingText } from "./StreamingText";
 
-export function ChatDemo() {
+interface ChatDemoProps {
+  lang: Locale;
+}
+
+export function ChatDemo({ lang }: ChatDemoProps) {
+  const [i18n] = useState(() => createClientI18n(lang));
+  return (
+    <I18nextProvider i18n={i18n}>
+      <ChatDemoContent />
+    </I18nextProvider>
+  );
+}
+
+function ChatDemoContent() {
+  const { t } = useTranslation();
   const [prompt, setPrompt] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [stream, setStream] = useState<ReadableStream<Uint8Array> | null>(null);
@@ -36,7 +53,7 @@ export function ChatDemo() {
         setStream(res.body);
       }
     } catch (err) {
-      setFetchError(err instanceof Error ? err.message : "Request failed");
+      setFetchError(err instanceof Error ? err.message : t("common.networkError"));
     } finally {
       setIsSubmitting(false);
     }
@@ -52,13 +69,13 @@ export function ChatDemo() {
           onChange={(e) => {
             setPrompt(e.target.value);
           }}
-          placeholder="Ask anything about your car…"
+          placeholder={t("aiChat.placeholder")}
           className="w-full resize-none rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
           rows={3}
           disabled={isSubmitting}
         />
         <Button type="submit" disabled={isSubmitting || !prompt.trim()}>
-          {isSubmitting ? "Sending…" : "Ask"}
+          {isSubmitting ? t("aiChat.sending") : t("aiChat.ask")}
         </Button>
       </form>
 
@@ -66,7 +83,7 @@ export function ChatDemo() {
 
       {hasResponse && (
         <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-          <p className="mb-2 text-xs tracking-wide text-white/40 uppercase">Assistant</p>
+          <p className="mb-2 text-xs tracking-wide text-white/40 uppercase">{t("aiChat.assistant")}</p>
           <StreamingText text={text} isDone={isDone} error={error} />
         </div>
       )}

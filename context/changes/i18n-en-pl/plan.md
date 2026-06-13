@@ -233,6 +233,72 @@ Translate the public landing and auth pages so a user whose cookie/default local
 
 ---
 
+## Phase 4: Localization completeness sweep
+
+### Overview
+
+After the breadth sweeps of Phases 2–3, a targeted pass for strings that routinely escape surface-level translation: engine-type display values in car cards, page `<title>` meta strings, `LastEntryCard.astro` widget copy, `dashboard.astro` inline strings, and a systematic grep audit to find and fix any remaining hardcoded English across all `.astro` and `.tsx` files.
+
+### Changes Required:
+
+#### 1. Engine-type display labels
+
+**File**: `src/components/cars/CarList.tsx`
+
+**Intent**: Car cards currently show `car.engine_type.toUpperCase()` (renders "GAS", "DIESEL", "ELECTRIC", "LPG"). These should be translated.
+
+**Contract**: Inside `CarListContent` (which already has `useTranslation`), map `engine_type` values to existing `cars.form.*` keys (`cars.form.gasoline`, `cars.form.diesel`, `cars.form.electric`, `cars.form.lpg`) using a lookup object. No new translation keys needed.
+
+#### 2. `LastEntryCard.astro` widget strings
+
+**File**: `src/components/LastEntryCard.astro`
+
+**Intent**: "Last entry" label, the hardcoded `entryTypeLabel` map, and the raw "Passed"/"Failed" inspection result value are all untranslated.
+
+**Contract**: Import `getT` from `@/i18n/server`; derive `t = getT(Astro.locals.lang)`. Replace "Last entry" with `t("dashboard.lastEntry")`; replace the `entryTypeLabel` map with `t("entries.types.*")` lookups; map "Passed"/"Failed" to `t("entries.results.passed")` / `t("entries.results.failed")`.
+
+#### 3. `dashboard.astro` inline strings
+
+**File**: `src/pages/dashboard.astro`
+
+**Intent**: The dashboard page contains multiple hardcoded English inline strings passed to child slots and DeadlineCard title props: "Oil Change", "Inspection", "Insurance" (DeadlineCard titles); "Change car", "Last:", "Next due:", "or at ~X km", "No oil change entries logged.", "No inspection entries logged.", "Next date not set.", "Next inspection:", "No insurance entries logged.", "Renewal:".
+
+**Contract**: Use `getT(lang)` (imported for Phase 2); translate DeadlineCard title props using `t("dashboard.oilChange")`, `t("dashboard.inspection")`, `t("dashboard.insurance")`; translate all inline strings using existing `dashboard.*` keys. Add any missing keys to both locale files.
+
+#### 4. Page `<title>` meta strings
+
+**Files**: `src/pages/dashboard.astro`, `src/pages/entries.astro`, `src/pages/cars.astro`, `src/pages/ai-chat.astro`
+
+**Intent**: The `title` prop passed to `<AppLayout>` is constructed with hardcoded English fragments (e.g. `"My Cars"`, `"AI Chat"`, `"Service history"`).
+
+**Contract**: Use `getT` (already imported for Phase 2 in these files) to build the title string. Reuse existing nav/page-level keys (`t("cars.myCars")`, `t("nav.aiChat")`, `t("entries.serviceHistory")`, `t("nav.dashboard")`) wherever they exist; add new `meta.*` keys only if no existing key fits.
+
+#### 5. Systematic audit: remaining hardcoded English
+
+**Files**: All `.astro` and `.tsx` files under `src/`
+
+**Intent**: After Phases 2–4, grep for string literals in template/JSX positions that should have been translated but weren't, then fix any found.
+
+**Contract**: Run `grep` for quoted English string patterns in JSX text and Astro template expressions (e.g., `>"[A-Z]`, `="[A-Z]` in template positions). Review output; patch stragglers; update locale files if new keys are needed.
+
+### Success Criteria:
+
+#### Automated Verification:
+
+- Type checking passes: `npm run lint`
+- Build succeeds: `npm run build`
+
+#### Manual Verification:
+
+- Car list cards show translated engine type labels (e.g. "Benzyna" / "Diesel" in Polish).
+- `LastEntryCard` shows Polish copy in all fields when locale is Polish.
+- Dashboard DeadlineCard titles and all inline strings are Polish when locale is Polish.
+- All page `<title>` meta strings appear in the active locale.
+- Spot-check every page in Polish — no visible hardcoded English strings remain anywhere.
+- Final grep audit returns no untranslated template strings.
+
+---
+
 ## Testing Strategy
 
 ### Manual Testing Steps:
@@ -270,25 +336,25 @@ None — no data or schema changes. Existing users without a `lang` cookie defau
 
 #### Automated
 
-- [x] 1.1 Dependencies install and lockfile consistent: `npm install`
-- [x] 1.2 Type checking passes: `npm run lint`
-- [x] 1.3 Build succeeds: `npm run build`
+- [x] 1.1 Dependencies install and lockfile consistent: `npm install` — ab403bd
+- [x] 1.2 Type checking passes: `npm run lint` — ab403bd
+- [x] 1.3 Build succeeds: `npm run build` — ab403bd
 
 #### Manual
 
-- [ ] 1.4 Sidebar shows a language toggle highlighting the current locale
-- [ ] 1.5 Switching locale sets cookie, reloads, renders sidebar (desktop + mobile) in chosen language
-- [ ] 1.6 `<html lang>` reflects the active locale
-- [ ] 1.7 Choice persists across a full browser restart
-- [ ] 1.8 No hydration warnings in either locale (desktop + mobile)
-- [ ] 1.9 First visit with no cookie renders English
+- [x] 1.4 Sidebar shows a language toggle highlighting the current locale
+- [x] 1.5 Switching locale sets cookie, reloads, renders sidebar (desktop + mobile) in chosen language
+- [x] 1.6 `<html lang>` reflects the active locale
+- [x] 1.7 Choice persists across a full browser restart
+- [x] 1.8 No hydration warnings in either locale (desktop + mobile)
+- [x] 1.9 First visit with no cookie renders English
 
 ### Phase 2: Protected app surfaces
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npm run lint`
-- [ ] 2.2 Build succeeds: `npm run build`
+- [x] 2.1 Type checking passes: `npm run lint`
+- [x] 2.2 Build succeeds: `npm run build`
 
 #### Manual
 
@@ -310,3 +376,19 @@ None — no data or schema changes. Existing users without a `lang` cookie defau
 - [ ] 3.3 Landing + all 3 auth pages render in Polish with the Polish cookie, English otherwise
 - [ ] 3.4 Auth flows work in both languages (client copy localized)
 - [ ] 3.5 No hydration warnings on auth pages with form islands
+
+### Phase 4: Localization completeness sweep
+
+#### Automated
+
+- [ ] 4.1 Type checking passes: `npm run lint`
+- [ ] 4.2 Build succeeds: `npm run build`
+
+#### Manual
+
+- [ ] 4.3 Car list cards show translated engine type labels in both locales
+- [ ] 4.4 LastEntryCard renders fully in the active locale (label, entry type, result)
+- [ ] 4.5 Dashboard DeadlineCard titles and inline strings appear in the active locale
+- [ ] 4.6 All page `<title>` meta strings appear in the active locale
+- [ ] 4.7 Spot-check every page in Polish — no visible hardcoded English strings remain
+- [ ] 4.8 Final grep audit returns no untranslated template strings

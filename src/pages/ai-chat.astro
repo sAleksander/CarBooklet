@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { ChatDemo } from "@/components/ai/ChatDemo";
 
-const { selectedCarId, user } = Astro.locals;
+const { selectedCarId, user, lang } = Astro.locals;
 
 if (!selectedCarId) {
   return Astro.redirect("/cars");
@@ -32,7 +32,7 @@ if (car?.user_id !== user.id) {
         — AI Chat
       </h1>
       <p class="mb-8 text-sm text-blue-100/60">{car.production_year}</p>
-      <ChatDemo client:load />
+      <ChatDemo lang={lang} client:load />
     </div>
   </div>
 </AppLayout>

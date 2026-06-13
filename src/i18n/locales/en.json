@@ -9,5 +9,188 @@
     "signOut": "Sign out",
     "langEn": "EN",
     "langPl": "PL"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "deleting": "Deleting…",
+    "mileageKm": "Mileage: {{value}} km",
+    "networkError": "Network error. Please try again.",
+    "anErrorOccurred": "An error occurred"
+  },
+  "dashboard": {
+    "changeCar": "Change car",
+    "oilChange": "Oil Change",
+    "inspection": "Inspection",
+    "insurance": "Insurance",
+    "noOilChange": "No oil change entries logged.",
+    "last": "Last:",
+    "nextDue": "Next due:",
+    "orAtKm": "or at ~{{value}} km",
+    "noInspection": "No inspection entries logged.",
+    "nextDateNotSet": "Next date not set.",
+    "nextInspection": "Next inspection:",
+    "noInsurance": "No insurance entries logged.",
+    "renewal": "Renewal:",
+    "lastEntry": "Last entry"
+  },
+  "entries": {
+    "serviceHistory": "Service history",
+    "history": "History",
+    "types": {
+      "repair": "Repair",
+      "oil_change": "Oil Change",
+      "inspection": "Inspection",
+      "insurance": "Insurance"
+    },
+    "tabs": {
+      "repairs": "Repairs",
+      "oilChanges": "Oil Changes",
+      "inspections": "Inspections",
+      "insurance": "Insurance"
+    },
+    "log": {
+      "repair": "Log a repair",
+      "oilChange": "Log an oil change",
+      "inspection": "Log an inspection",
+      "insurance": "Log insurance"
+    },
+    "empty": {
+      "repair": "No repair entries yet. Log your first one above.",
+      "oilChange": "No oil change entries yet. Log your first one above.",
+      "inspection": "No inspection entries yet. Log your first one above.",
+      "insurance": "No insurance entries yet. Log your first one above."
+    },
+    "fields": {
+      "date": "Date",
+      "mileage": "Mileage (km, optional)",
+      "description": "Description",
+      "cause": "Cause (optional)",
+      "oilDetails": "Oil / filter details (optional)",
+      "result": "Result (optional)",
+      "nextInspectionDate": "Next inspection date (optional)",
+      "dateLogged": "Date logged",
+      "insurer": "Insurer (optional)",
+      "policyStart": "Policy start date (optional)",
+      "renewalDate": "Renewal date"
+    },
+    "placeholders": {
+      "description": "What was repaired or replaced?",
+      "cause": "What led to this repair?",
+      "oilDetails": "e.g. 5W-30, Castrol Edge",
+      "mileage": "e.g. 85000",
+      "nextInspectionDate": "",
+      "insurer": "e.g. PZU",
+      "policyStart": "",
+      "selectResult": "Select result",
+      "chatPrompt": "Ask anything about your car…"
+    },
+    "results": {
+      "passed": "Passed",
+      "failed": "Failed",
+      "notRecorded": "Not recorded"
+    },
+    "validation": {
+      "descriptionRequired": "Description is required",
+      "dateRequired": "Date is required",
+      "renewalDateRequired": "Renewal date is required"
+    },
+    "actions": {
+      "logRepair": "Log entry",
+      "logOilChange": "Log oil change",
+      "logInspection": "Log inspection",
+      "logInsurance": "Log insurance"
+    },
+    "detail": {
+      "date": "Date",
+      "policyStartLabel": "Policy start",
+      "mileage": "Mileage",
+      "description": "Description",
+      "cause": "Cause",
+      "oilDetails": "Oil Details",
+      "result": "Result",
+      "nextInspectionDate": "Next Inspection Date",
+      "insurer": "Insurer",
+      "policyStartDate": "Policy Start Date",
+      "renewalDate": "Renewal Date",
+      "detailsLabel": "Details",
+      "nextDueLabel": "Next due",
+      "renewalLabel": "Renewal",
+      "policyFrom": "Policy from",
+      "loggedOn": "Logged on",
+      "updated": "Updated",
+      "notFound": "Entry not found",
+      "notFoundDesc": "This entry doesn't exist or belongs to a different car.",
+      "backToEntries": "← Back to entries",
+      "deleteTitle": "Delete entry",
+      "deleteDesc": "This cannot be undone."
+    }
+  },
+  "cars": {
+    "myCars": "My Cars",
+    "addCar": "Add car",
+    "addNewCar": "Add a new car",
+    "noCars": "No cars yet. Add your first car.",
+    "selected": "Selected",
+    "active": "Active",
+    "select": "Select",
+    "addedRefreshFailed": "Car added but failed to refresh list.",
+    "updatedRefreshFailed": "Car updated but failed to refresh list.",
+    "form": {
+      "brand": "Brand *",
+      "model": "Model *",
+      "productionYear": "Production year *",
+      "registrationNumber": "Registration number",
+      "engineType": "Engine type *",
+      "engineCapacity": "Engine capacity *",
+      "enginePower": "Engine power *",
+      "engineCode": "Engine code",
+      "vinNumber": "VIN number",
+      "selectEngineType": "Select engine type",
+      "gasoline": "Gasoline",
+      "diesel": "Diesel",
+      "electric": "Electric",
+      "lpg": "LPG",
+      "brandRequired": "Brand is required",
+      "modelRequired": "Model is required",
+      "yearRequired": "Production year is required",
+      "capacityRequired": "Engine capacity is required",
+      "powerRequired": "Engine power is required",
+      "addCar": "Add car",
+      "saving": "Saving..."
+    },
+    "delete": {
+      "description": "This will permanently delete the car and all linked maintenance entries. This action cannot be undone.",
+      "deleting": "Deleting..."
+    }
+  },
+  "aiChat": {
+    "placeholder": "Ask anything about your car…",
+    "ask": "Ask",
+    "sending": "Sending…",
+    "assistant": "Assistant"
+  },
+  "landing": {
+    "title": "CarBooklet",
+    "subtitle": "Your car's service history, always at hand.",
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "auth": {
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "signingIn": "Signing in…",
+    "signingUp": "Signing up…",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "checkEmail": "Check your email",
+    "confirmEmailDesc": "We've sent a confirmation link to your email. Please click it to activate your account.",
+    "backToSignIn": "Back to sign in"
   }
 }

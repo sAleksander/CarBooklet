@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { RepairEntry } from "@/types";
 import { RepairEntryForm } from "./RepairEntryForm";
 import { RepairEntryList } from "./RepairEntryList";
@@ -9,6 +10,7 @@ interface RepairEntriesProps {
 }
 
 export function RepairEntries({ initialEntries, carId }: RepairEntriesProps) {
+  const { t } = useTranslation();
   const [entries, setEntries] = useState<RepairEntry[]>(initialEntries);
   const [formKey, setFormKey] = useState(0);
 
@@ -20,11 +22,11 @@ export function RepairEntries({ initialEntries, carId }: RepairEntriesProps) {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-white">Log a repair</h2>
+        <h2 className="mb-4 text-lg font-semibold text-white">{t("entries.log.repair")}</h2>
         <RepairEntryForm key={formKey} carId={carId} onSuccess={handleSuccess} />
       </div>
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-white">History</h2>
+        <h2 className="mb-4 text-lg font-semibold text-white">{t("entries.history")}</h2>
         <RepairEntryList entries={entries} />
       </div>
     </div>

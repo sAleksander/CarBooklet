@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { OilChangeEntry } from "@/types";
 
 interface OilChangeEntryListProps {
@@ -5,8 +6,10 @@ interface OilChangeEntryListProps {
 }
 
 export function OilChangeEntryList({ entries }: OilChangeEntryListProps) {
+  const { t } = useTranslation();
+
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">No oil change entries yet. Log your first one above.</p>;
+    return <p className="text-muted-foreground text-sm">{t("entries.empty.oilChange")}</p>;
   }
 
   return (
@@ -20,12 +23,14 @@ export function OilChangeEntryList({ entries }: OilChangeEntryListProps) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
-                <span className="text-muted-foreground text-xs">Mileage: {entry.mileage.toLocaleString()} km</span>
+                <span className="text-muted-foreground text-xs">
+                  {t("common.mileageKm", { value: entry.mileage.toLocaleString() })}
+                </span>
               )}
             </div>
             {entry.oil_details && (
               <p className="text-muted-foreground text-xs">
-                <span className="font-medium">Details:</span> {entry.oil_details}
+                <span className="font-medium">{t("entries.detail.detailsLabel")}:</span> {entry.oil_details}
               </p>
             )}
           </a>

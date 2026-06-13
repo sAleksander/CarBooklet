@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useTranslation, I18nextProvider } from "react-i18next";
+import { createClientI18n } from "@/i18n/client";
+import type { Locale } from "@/i18n/config";
 import type { Entry } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,10 +28,23 @@ const API_SLUG: Record<Entry["entry_type"], string> = {
 
 interface EntryDetailEditorProps {
   entry: Entry;
+  lang: Locale;
   children: React.ReactNode;
 }
 
-export function EntryDetailEditor({ entry, children }: EntryDetailEditorProps) {
+export function EntryDetailEditor({ entry, lang, children }: EntryDetailEditorProps) {
+  const [i18n] = useState(() => createClientI18n(lang));
+  return (
+    <I18nextProvider i18n={i18n}>
+      <EntryDetailEditorContent entry={entry} lang={lang}>
+        {children}
+      </EntryDetailEditorContent>
+    </I18nextProvider>
+  );
+}
+
+function EntryDetailEditorContent({ entry, children }: EntryDetailEditorProps) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -45,10 +61,10 @@ export function EntryDetailEditor({ entry, children }: EntryDetailEditorProps) {
         window.location.href = "/entries";
       } else {
         const json = (await res.json().catch(() => ({}))) as { error?: string };
-        setDeleteError(json.error ?? "An error occurred");
+        setDeleteError(json.error ?? t("common.anErrorOccurred"));
       }
     } catch {
-      setDeleteError("Network error. Please try again.");
+      setDeleteError(t("common.networkError"));
     } finally {
       setIsDeleting(false);
     }
@@ -119,15 +135,16 @@ export function EntryDetailEditor({ entry, children }: EntryDetailEditorProps) {
                 setEditing(true);
               }}
             >
-              Edit
+              {t("common.edit")}
             </Button>
             <Button
               variant="destructive"
               onClick={() => {
+                setDeleteError(null);
                 setConfirmOpen(true);
               }}
             >
-              Delete
+              {t("common.delete")}
             </Button>
           </div>
         </>
@@ -143,8 +160,8 @@ export function EntryDetailEditor({ entry, children }: EntryDetailEditorProps) {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete entry</AlertDialogTitle>
-            <AlertDialogDescription>This cannot be undone.</AlertDialogDescription>
+            <AlertDialogTitle>{t("entries.detail.deleteTitle")}</AlertDialogTitle>
+            <AlertDialogDescription>{t("entries.detail.deleteDesc")}</AlertDialogDescription>
           </AlertDialogHeader>
           {deleteError && <p className="text-destructive text-sm">{deleteError}</p>}
           <AlertDialogFooter>
@@ -154,14 +171,14 @@ export function EntryDetailEditor({ entry, children }: EntryDetailEditorProps) {
                 setConfirmOpen(false);
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </AlertDialogCancel>
             <AlertDialogAction
               disabled={isDeleting}
               onClick={handleDelete}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {isDeleting ? "Deleting…" : "Delete"}
+              {isDeleting ? t("common.deleting") : t("common.delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

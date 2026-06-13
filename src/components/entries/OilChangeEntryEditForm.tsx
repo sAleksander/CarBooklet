@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { OilChangeEntry, OilChangeEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ interface OilChangeEntryEditFormProps {
 }
 
 export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChangeEntryEditFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<OilChangeEntryFormData>({
     conducted_at: entry.conducted_at,
     oil_details: entry.oil_details ?? "",
@@ -28,7 +30,7 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
 
   function validate(): boolean {
     const errors: Partial<Record<keyof OilChangeEntryFormData, string>> = {};
-    if (!form.conducted_at) errors.conducted_at = "Date is required";
+    if (!form.conducted_at) errors.conducted_at = t("entries.validation.dateRequired");
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -51,12 +53,12 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
       });
       const json = (await res.json().catch(() => ({}))) as { entry?: OilChangeEntry; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.entry) onSuccess(json.entry);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -66,7 +68,7 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="edit_oc_conducted_at">Date</Label>
+          <Label htmlFor="edit_oc_conducted_at">{t("entries.fields.date")}</Label>
           <Input
             id="edit_oc_conducted_at"
             type="date"
@@ -79,7 +81,7 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
           {fieldErrors.conducted_at && <p className="text-destructive text-sm">{fieldErrors.conducted_at}</p>}
         </div>
         <div className="space-y-1">
-          <Label htmlFor="edit_oc_mileage">Mileage (km, optional)</Label>
+          <Label htmlFor="edit_oc_mileage">{t("entries.fields.mileage")}</Label>
           <Input
             id="edit_oc_mileage"
             type="number"
@@ -88,20 +90,20 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
             onChange={(e) => {
               setField("mileage", e.target.value ? parseInt(e.target.value, 10) : null);
             }}
-            placeholder="e.g. 85000"
+            placeholder={t("entries.placeholders.mileage")}
             disabled={isLoading}
           />
         </div>
       </div>
       <div className="space-y-1">
-        <Label htmlFor="edit_oc_oil_details">Oil / filter details (optional)</Label>
+        <Label htmlFor="edit_oc_oil_details">{t("entries.fields.oilDetails")}</Label>
         <Textarea
           id="edit_oc_oil_details"
           value={form.oil_details ?? ""}
           onChange={(e) => {
             setField("oil_details", e.target.value);
           }}
-          placeholder="e.g. 5W-30 full synthetic, Mann filter"
+          placeholder={t("entries.placeholders.oilDetails")}
           rows={2}
           disabled={isLoading}
         />
@@ -109,10 +111,10 @@ export function OilChangeEntryEditForm({ entry, onSuccess, onCancel }: OilChange
       {apiError && <p className="text-destructive text-sm">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving…" : "Save changes"}
+          {isLoading ? t("common.saving") : t("common.save")}
         </Button>
         <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-          Cancel
+          {t("common.cancel")}
         </Button>
       </div>
     </form>

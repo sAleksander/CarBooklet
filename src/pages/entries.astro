@@ -9,8 +9,10 @@ import {
   getInsuranceEntries,
 } from "@/lib/services/entries";
 import { EntriesTabs } from "@/components/entries/EntriesTabs";
+import { getT } from "@/i18n/server";
 
-const { selectedCarId, user } = Astro.locals;
+const { selectedCarId, user, lang } = Astro.locals;
+const t = getT(lang);
 
 if (!selectedCarId) {
   return Astro.redirect("/cars");
@@ -22,34 +24,46 @@ if (!supabase || !user) {
   return Astro.redirect("/cars");
 }
 
-const [car, initialRepairEntries, initialOilChangeEntries, initialInspectionEntries, initialInsuranceEntries] =
-  await Promise.all([
-    getCarById(supabase, selectedCarId, user.id),
-    getRepairEntries(supabase, selectedCarId, user.id),
-    getOilChangeEntries(supabase, selectedCarId, user.id),
-    getInspectionEntries(supabase, selectedCarId, user.id),
-    getInsuranceEntries(supabase, selectedCarId, user.id),
-  ]);
+let car;
+try {
+  car = await getCarById(supabase, selectedCarId, user.id);
+} catch {
+  return Astro.redirect("/cars?error=load_failed");
+}
 
 if (car?.user_id !== user.id) {
   return Astro.redirect("/cars");
 }
+
+let initialRepairEntries, initialOilChangeEntries, initialInspectionEntries, initialInsuranceEntries;
+try {
+  [initialRepairEntries, initialOilChangeEntries, initialInspectionEntries, initialInsuranceEntries] =
+    await Promise.all([
+      getRepairEntries(supabase, selectedCarId, user.id),
+      getOilChangeEntries(supabase, selectedCarId, user.id),
+      getInspectionEntries(supabase, selectedCarId, user.id),
+      getInsuranceEntries(supabase, selectedCarId, user.id),
+    ]);
+} catch {
+  return Astro.redirect("/cars?error=load_failed");
+}
 ---
 
-<AppLayout title={`${car.brand} ${car.model} — Entries`} selectedCar={car}>
+<AppLayout title={`${car.brand} ${car.model} — ${t("entries.serviceHistory")}`} selectedCar={car}>
   <div class="flex justify-center pt-4">
     <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
       <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
         {car.brand}
         {car.model}
       </h1>
-      <p class="mb-8 text-sm text-blue-100/60">Service history</p>
+      <p class="mb-8 text-sm text-blue-100/60">{t("entries.serviceHistory")}</p>
       <EntriesTabs
         initialRepairEntries={initialRepairEntries}
         initialOilChangeEntries={initialOilChangeEntries}
         initialInspectionEntries={initialInspectionEntries}
         initialInsuranceEntries={initialInsuranceEntries}
         carId={selectedCarId}
+        lang={lang}
         client:load
       />
     </div>

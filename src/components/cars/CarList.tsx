@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { useTranslation, I18nextProvider } from "react-i18next";
+import { createClientI18n } from "@/i18n/client";
+import type { Locale } from "@/i18n/config";
 import type { Car } from "@/types";
 import { Button } from "@/components/ui/button";
 import CarForm from "./CarForm";
@@ -7,9 +10,20 @@ import DeleteCarDialog from "./DeleteCarDialog";
 interface CarListProps {
   initialCars: Car[];
   initialSelectedCarId: string | null;
+  lang: Locale;
 }
 
-export default function CarList({ initialCars, initialSelectedCarId }: CarListProps) {
+export default function CarList({ initialCars, initialSelectedCarId, lang }: CarListProps) {
+  const [i18n] = useState(() => createClientI18n(lang));
+  return (
+    <I18nextProvider i18n={i18n}>
+      <CarListContent initialCars={initialCars} initialSelectedCarId={initialSelectedCarId} lang={lang} />
+    </I18nextProvider>
+  );
+}
+
+function CarListContent({ initialCars, initialSelectedCarId }: CarListProps) {
+  const { t } = useTranslation();
   const [cars, setCars] = useState<Car[]>(initialCars);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(initialSelectedCarId);
   const [editingCarId, setEditingCarId] = useState<string | null>(null);
@@ -21,7 +35,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
   async function fetchCars(): Promise<Car[]> {
     const res = await fetch("/api/cars");
     const json = (await res.json()) as { cars?: Car[]; error?: string };
-    if (!res.ok) throw new Error(json.error ?? "Failed to fetch cars");
+    if (!res.ok) throw new Error(json.error ?? t("common.anErrorOccurred"));
     return json.cars ?? [];
   }
 
@@ -31,12 +45,12 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
       const res = await fetch(`/api/cars/${id}/select`, { method: "POST" });
       if (!res.ok) {
         const json = (await res.json()) as { error?: string };
-        setError(json.error ?? "Failed to select car");
+        setError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       setSelectedCarId(id);
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("common.networkError"));
     }
   }
 
@@ -47,7 +61,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
       setShowAddForm(false);
       await selectCar(car.id);
     } catch {
-      setError("Car added but failed to refresh list.");
+      setError(t("cars.addedRefreshFailed"));
     }
   }
 
@@ -57,7 +71,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
       setCars(updated);
       setEditingCarId(null);
     } catch {
-      setError("Car updated but failed to refresh list.");
+      setError(t("cars.updatedRefreshFailed"));
     }
   }
 
@@ -69,7 +83,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
       const res = await fetch(`/api/cars/${deletingCar.id}`, { method: "DELETE" });
       if (!res.ok) {
         const json = (await res.json()) as { error?: string };
-        setError(json.error ?? "Failed to delete car");
+        setError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (selectedCarId === deletingCar.id) {
@@ -79,7 +93,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
       setCars(updated);
       setDeletingCar(null);
     } catch {
-      setError("Network error. Please try again.");
+      setError(t("common.networkError"));
     } finally {
       setIsDeleting(false);
     }
@@ -88,14 +102,14 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
   return (
     <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Cars</h1>
+        <h1 className="text-2xl font-bold">{t("cars.myCars")}</h1>
         {!showAddForm && (
           <Button
             onClick={() => {
               setShowAddForm(true);
             }}
           >
-            Add car
+            {t("cars.addCar")}
           </Button>
         )}
       </div>
@@ -104,7 +118,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
 
       {showAddForm && (
         <div className="rounded-lg border p-4">
-          <h2 className="mb-4 text-lg font-semibold">Add a new car</h2>
+          <h2 className="mb-4 text-lg font-semibold">{t("cars.addNewCar")}</h2>
           <CarForm
             onSuccess={handleAddSuccess}
             onCancel={() => {
@@ -115,7 +129,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
       )}
 
       {cars.length === 0 && !showAddForm ? (
-        <p className="text-muted-foreground">No cars yet. Add your first car.</p>
+        <p className="text-muted-foreground">{t("cars.noCars")}</p>
       ) : (
         <ul className="space-y-4">
           {cars.map((car) => {
@@ -135,7 +149,9 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
                     {car.registration_number && (
                       <p className="text-muted-foreground text-sm">{car.registration_number}</p>
                     )}
-                    {isSelected && <span className="text-primary mt-1 inline-block text-xs font-medium">Selected</span>}
+                    {isSelected && (
+                      <span className="text-primary mt-1 inline-block text-xs font-medium">{t("cars.selected")}</span>
+                    )}
                   </div>
                   <div className="flex shrink-0 gap-2">
                     <Button
@@ -144,7 +160,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
                       disabled={isSelected}
                       onClick={() => selectCar(car.id)}
                     >
-                      {isSelected ? "Active" : "Select"}
+                      {isSelected ? t("cars.active") : t("cars.select")}
                     </Button>
                     <Button
                       size="sm"
@@ -153,7 +169,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
                         setEditingCarId(isEditing ? null : car.id);
                       }}
                     >
-                      {isEditing ? "Cancel" : "Edit"}
+                      {isEditing ? t("common.cancel") : t("common.edit")}
                     </Button>
                     <Button
                       size="sm"
@@ -162,7 +178,7 @@ export default function CarList({ initialCars, initialSelectedCarId }: CarListPr
                         setDeletingCar(car);
                       }}
                     >
-                      Delete
+                      {t("common.delete")}
                     </Button>
                   </div>
                 </div>

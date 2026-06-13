@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { Car, CarFormData, EngineType } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,12 +12,13 @@ interface CarFormProps {
   onCancel?: () => void;
 }
 
-const ENGINE_TYPES: { value: EngineType; label: string }[] = [
-  { value: "gas", label: "Gasoline" },
-  { value: "diesel", label: "Diesel" },
-  { value: "electric", label: "Electric" },
-  { value: "lpg", label: "LPG" },
-];
+const ENGINE_TYPE_VALUES: EngineType[] = ["gas", "diesel", "electric", "lpg"];
+const ENGINE_TYPE_KEYS: Record<EngineType, string> = {
+  gas: "cars.form.gasoline",
+  diesel: "cars.form.diesel",
+  electric: "cars.form.electric",
+  lpg: "cars.form.lpg",
+};
 
 const emptyForm = (): CarFormData => ({
   brand: "",
@@ -31,6 +33,7 @@ const emptyForm = (): CarFormData => ({
 });
 
 export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
+  const { t } = useTranslation();
   const [form, setForm] = useState<CarFormData>(() =>
     car
       ? {
@@ -59,11 +62,11 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
 
   function validate(): boolean {
     const errors: Partial<Record<keyof CarFormData, string>> = {};
-    if (!form.brand.trim()) errors.brand = "Brand is required";
-    if (!form.model.trim()) errors.model = "Model is required";
-    if (!form.production_year.trim()) errors.production_year = "Production year is required";
-    if (!form.engine_capacity.trim()) errors.engine_capacity = "Engine capacity is required";
-    if (!form.engine_power.trim()) errors.engine_power = "Engine power is required";
+    if (!form.brand.trim()) errors.brand = t("cars.form.brandRequired");
+    if (!form.model.trim()) errors.model = t("cars.form.modelRequired");
+    if (!form.production_year.trim()) errors.production_year = t("cars.form.yearRequired");
+    if (!form.engine_capacity.trim()) errors.engine_capacity = t("cars.form.capacityRequired");
+    if (!form.engine_power.trim()) errors.engine_power = t("cars.form.powerRequired");
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   }
@@ -83,12 +86,12 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
       });
       const json = (await res.json()) as { car?: Car; error?: string };
       if (!res.ok) {
-        setApiError(json.error ?? "An error occurred");
+        setApiError(json.error ?? t("common.anErrorOccurred"));
         return;
       }
       if (json.car) onSuccess(json.car);
     } catch {
-      setApiError("Network error. Please try again.");
+      setApiError(t("common.networkError"));
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +101,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1">
-          <Label htmlFor="brand">Brand *</Label>
+          <Label htmlFor="brand">{t("cars.form.brand")}</Label>
           <Input
             id="brand"
             value={form.brand}
@@ -111,7 +114,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="model">Model *</Label>
+          <Label htmlFor="model">{t("cars.form.model")}</Label>
           <Input
             id="model"
             value={form.model}
@@ -124,7 +127,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="production_year">Production year *</Label>
+          <Label htmlFor="production_year">{t("cars.form.productionYear")}</Label>
           <Input
             id="production_year"
             value={form.production_year}
@@ -137,7 +140,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="registration_number">Registration number</Label>
+          <Label htmlFor="registration_number">{t("cars.form.registrationNumber")}</Label>
           <Input
             id="registration_number"
             value={form.registration_number ?? ""}
@@ -149,7 +152,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="engine_type">Engine type *</Label>
+          <Label htmlFor="engine_type">{t("cars.form.engineType")}</Label>
           <Select
             value={form.engine_type}
             onValueChange={(v) => {
@@ -157,12 +160,12 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             }}
           >
             <SelectTrigger id="engine_type">
-              <SelectValue placeholder="Select engine type" />
+              <SelectValue placeholder={t("cars.form.selectEngineType")} />
             </SelectTrigger>
             <SelectContent>
-              {ENGINE_TYPES.map((t) => (
-                <SelectItem key={t.value} value={t.value}>
-                  {t.label}
+              {ENGINE_TYPE_VALUES.map((engineType) => (
+                <SelectItem key={engineType} value={engineType}>
+                  {t(ENGINE_TYPE_KEYS[engineType])}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -170,7 +173,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="engine_capacity">Engine capacity *</Label>
+          <Label htmlFor="engine_capacity">{t("cars.form.engineCapacity")}</Label>
           <Input
             id="engine_capacity"
             value={form.engine_capacity}
@@ -183,7 +186,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="engine_power">Engine power *</Label>
+          <Label htmlFor="engine_power">{t("cars.form.enginePower")}</Label>
           <Input
             id="engine_power"
             value={form.engine_power}
@@ -196,7 +199,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1">
-          <Label htmlFor="engine_code">Engine code</Label>
+          <Label htmlFor="engine_code">{t("cars.form.engineCode")}</Label>
           <Input
             id="engine_code"
             value={form.engine_code ?? ""}
@@ -208,7 +211,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
 
         <div className="space-y-1 sm:col-span-2">
-          <Label htmlFor="vin_number">VIN number</Label>
+          <Label htmlFor="vin_number">{t("cars.form.vinNumber")}</Label>
           <Input
             id="vin_number"
             value={form.vin_number ?? ""}
@@ -224,11 +227,11 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
-          {isLoading ? "Saving..." : isEditMode ? "Save changes" : "Add car"}
+          {isLoading ? t("cars.form.saving") : isEditMode ? t("common.save") : t("cars.form.addCar")}
         </Button>
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel} disabled={isLoading}>
-            Cancel
+            {t("common.cancel")}
           </Button>
         )}
       </div>

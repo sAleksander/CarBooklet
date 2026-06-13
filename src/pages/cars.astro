@@ -4,11 +4,16 @@ import CarList from "@/components/cars/CarList";
 import { createClient } from "@/lib/supabase";
 import { getCars } from "@/lib/services/cars";
 
+const { user, selectedCarId, lang } = Astro.locals;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
-const cars = supabase ? await getCars(supabase) : [];
-const { selectedCarId } = Astro.locals;
+
+if (!supabase || !user) {
+  return Astro.redirect("/auth/signin");
+}
+
+const cars = await getCars(supabase);
 ---
 
 <AppLayout title="My Cars">
-  <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} />
+  <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} lang={lang} />
 </AppLayout>

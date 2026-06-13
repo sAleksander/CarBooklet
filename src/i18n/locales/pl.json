@@ -9,5 +9,188 @@
     "signOut": "Wyloguj się",
     "langEn": "EN",
     "langPl": "PL"
+  },
+  "common": {
+    "cancel": "Anuluj",
+    "edit": "Edytuj",
+    "delete": "Usuń",
+    "save": "Zapisz zmiany",
+    "saving": "Zapisuję…",
+    "deleting": "Usuwanie…",
+    "mileageKm": "Przebieg: {{value}} km",
+    "networkError": "Błąd sieci. Spróbuj ponownie.",
+    "anErrorOccurred": "Wystąpił błąd"
+  },
+  "dashboard": {
+    "changeCar": "Zmień samochód",
+    "oilChange": "Wymiana oleju",
+    "inspection": "Przegląd",
+    "insurance": "Ubezpieczenie",
+    "noOilChange": "Brak wpisów wymiany oleju.",
+    "last": "Ostatnia:",
+    "nextDue": "Następna:",
+    "orAtKm": "lub przy ~{{value}} km",
+    "noInspection": "Brak wpisów przeglądu.",
+    "nextDateNotSet": "Brak daty następnego przeglądu.",
+    "nextInspection": "Następny przegląd:",
+    "noInsurance": "Brak wpisów ubezpieczenia.",
+    "renewal": "Odnowienie:",
+    "lastEntry": "Ostatni wpis"
+  },
+  "entries": {
+    "serviceHistory": "Historia serwisu",
+    "history": "Historia",
+    "types": {
+      "repair": "Naprawa",
+      "oil_change": "Wymiana oleju",
+      "inspection": "Przegląd",
+      "insurance": "Ubezpieczenie"
+    },
+    "tabs": {
+      "repairs": "Naprawy",
+      "oilChanges": "Wymiany oleju",
+      "inspections": "Przeglądy",
+      "insurance": "Ubezpieczenia"
+    },
+    "log": {
+      "repair": "Dodaj naprawę",
+      "oilChange": "Dodaj wymianę oleju",
+      "inspection": "Dodaj przegląd",
+      "insurance": "Dodaj ubezpieczenie"
+    },
+    "empty": {
+      "repair": "Brak wpisów napraw. Dodaj pierwszy wpis powyżej.",
+      "oilChange": "Brak wpisów wymiany oleju. Dodaj pierwszy wpis powyżej.",
+      "inspection": "Brak wpisów przeglądów. Dodaj pierwszy wpis powyżej.",
+      "insurance": "Brak wpisów ubezpieczeń. Dodaj pierwszy wpis powyżej."
+    },
+    "fields": {
+      "date": "Data",
+      "mileage": "Przebieg (km, opcjonalnie)",
+      "description": "Opis",
+      "cause": "Przyczyna (opcjonalnie)",
+      "oilDetails": "Dane oleju / filtra (opcjonalnie)",
+      "result": "Wynik (opcjonalnie)",
+      "nextInspectionDate": "Data następnego przeglądu (opcjonalnie)",
+      "dateLogged": "Data wpisu",
+      "insurer": "Ubezpieczyciel (opcjonalnie)",
+      "policyStart": "Data początku polisy (opcjonalnie)",
+      "renewalDate": "Data odnowienia"
+    },
+    "placeholders": {
+      "description": "Co zostało naprawione lub wymienione?",
+      "cause": "Co doprowadziło do tej naprawy?",
+      "oilDetails": "np. 5W-30, Castrol Edge",
+      "mileage": "np. 85000",
+      "nextInspectionDate": "",
+      "insurer": "np. PZU",
+      "policyStart": "",
+      "selectResult": "Wybierz wynik",
+      "chatPrompt": "Zapytaj cokolwiek o swoim samochodzie…"
+    },
+    "results": {
+      "passed": "Zaliczony",
+      "failed": "Niezaliczony",
+      "notRecorded": "Nie zarejestrowano"
+    },
+    "validation": {
+      "descriptionRequired": "Opis jest wymagany",
+      "dateRequired": "Data jest wymagana",
+      "renewalDateRequired": "Data odnowienia jest wymagana"
+    },
+    "actions": {
+      "logRepair": "Dodaj wpis",
+      "logOilChange": "Dodaj wymianę",
+      "logInspection": "Dodaj przegląd",
+      "logInsurance": "Dodaj ubezpieczenie"
+    },
+    "detail": {
+      "date": "Data",
+      "policyStartLabel": "Początek polisy",
+      "mileage": "Przebieg",
+      "description": "Opis",
+      "cause": "Przyczyna",
+      "oilDetails": "Dane oleju",
+      "result": "Wynik",
+      "nextInspectionDate": "Data następnego przeglądu",
+      "insurer": "Ubezpieczyciel",
+      "policyStartDate": "Data początku polisy",
+      "renewalDate": "Data odnowienia",
+      "detailsLabel": "Szczegóły",
+      "nextDueLabel": "Następna",
+      "renewalLabel": "Odnowienie",
+      "policyFrom": "Polisa od",
+      "loggedOn": "Dodano",
+      "updated": "Zaktualizowano",
+      "notFound": "Wpis nie znaleziony",
+      "notFoundDesc": "Ten wpis nie istnieje lub należy do innego samochodu.",
+      "backToEntries": "← Powrót do wpisów",
+      "deleteTitle": "Usuń wpis",
+      "deleteDesc": "Tej operacji nie można cofnąć."
+    }
+  },
+  "cars": {
+    "myCars": "Moje samochody",
+    "addCar": "Dodaj samochód",
+    "addNewCar": "Dodaj nowy samochód",
+    "noCars": "Brak samochodów. Dodaj swój pierwszy samochód.",
+    "selected": "Wybrany",
+    "active": "Aktywny",
+    "select": "Wybierz",
+    "addedRefreshFailed": "Samochód dodany, ale nie udało się odświeżyć listy.",
+    "updatedRefreshFailed": "Samochód zaktualizowany, ale nie udało się odświeżyć listy.",
+    "form": {
+      "brand": "Marka *",
+      "model": "Model *",
+      "productionYear": "Rok produkcji *",
+      "registrationNumber": "Numer rejestracyjny",
+      "engineType": "Typ silnika *",
+      "engineCapacity": "Pojemność silnika *",
+      "enginePower": "Moc silnika *",
+      "engineCode": "Kod silnika",
+      "vinNumber": "Numer VIN",
+      "selectEngineType": "Wybierz typ silnika",
+      "gasoline": "Benzyna",
+      "diesel": "Diesel",
+      "electric": "Elektryczny",
+      "lpg": "LPG",
+      "brandRequired": "Marka jest wymagana",
+      "modelRequired": "Model jest wymagany",
+      "yearRequired": "Rok produkcji jest wymagany",
+      "capacityRequired": "Pojemność silnika jest wymagana",
+      "powerRequired": "Moc silnika jest wymagana",
+      "addCar": "Dodaj samochód",
+      "saving": "Zapisuję..."
+    },
+    "delete": {
+      "description": "To trwale usunie samochód i wszystkie powiązane wpisy serwisowe. Tej operacji nie można cofnąć.",
+      "deleting": "Usuwanie..."
+    }
+  },
+  "aiChat": {
+    "placeholder": "Zapytaj cokolwiek o swoim samochodzie…",
+    "ask": "Zapytaj",
+    "sending": "Wysyłam…",
+    "assistant": "Asystent"
+  },
+  "landing": {
+    "title": "CarBooklet",
+    "subtitle": "Historia serwisowa Twojego samochodu, zawsze pod ręką.",
+    "signIn": "Zaloguj się",
+    "signUp": "Zarejestruj się"
+  },
+  "auth": {
+    "signIn": "Zaloguj się",
+    "signUp": "Zarejestruj się",
+    "email": "Email",
+    "password": "Hasło",
+    "confirmPassword": "Potwierdź hasło",
+    "signingIn": "Logowanie…",
+    "signingUp": "Rejestracja…",
+    "noAccount": "Nie masz konta?",
+    "haveAccount": "Masz już konto?",
+    "checkEmail": "Sprawdź email",
+    "confirmEmailDesc": "Wysłaliśmy link potwierdzający na Twój adres email. Kliknij go, aby aktywować konto.",
+    "backToSignIn": "Powrót do logowania"
   }
 }
