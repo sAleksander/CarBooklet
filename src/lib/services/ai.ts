@@ -10,12 +10,12 @@ const client = new OpenAI({
   },
 });
 
-function sanitise(value: string): string {
+export function sanitise(value: string): string {
   // eslint-disable-next-line no-control-regex
   return value.replace(/[\r\n\x00-\x1F\x7F]/g, " ").trim();
 }
 
-function buildSystemPrompt(car: Car): string {
+export function buildSystemPrompt(car: Car): string {
   const details: string[] = [
     `fuel type: ${sanitise(car.engine_type)}`,
     `engine capacity: ${sanitise(car.engine_capacity)}`,
