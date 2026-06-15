@@ -383,22 +383,22 @@ keywords in `ai.ts` (no behavior change).
 
 #### Automated
 
-- [x] 2.1 Unit spec passes: `npm test`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Unit spec passes: `npm test` — 2885c8d
+- [x] 2.2 Linting passes: `npm run lint` — 2885c8d
 
 #### Manual
 
-- [x] 2.3 Break-`sanitise` check fails the sanitisation case, then revert
+- [x] 2.3 Break-`sanitise` check fails the sanitisation case, then revert — 2885c8d
 
 ### Phase 3: Integration tests — chat envelope (R1 + R2)
 
 #### Automated
 
-- [ ] 3.1 Full suite passes: `npm test`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 Full suite passes: `npm test`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 Guard-reorder check fails a case, then revert
-- [ ] 3.5 `test-plan.md` §6.1/§6.2 read as usable recipes and §3 Phase 1 is `complete`
+- [x] 3.4 Guard-reorder check fails a case, then revert
+- [x] 3.5 `test-plan.md` §6.1/§6.2 read as usable recipes and §3 Phase 1 is `complete`
