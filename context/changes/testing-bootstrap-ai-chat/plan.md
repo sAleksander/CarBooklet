@@ -369,26 +369,26 @@ keywords in `ai.ts` (no behavior change).
 
 #### Automated
 
-- [x] 1.1 Dependency installs: `npm install` completes
-- [x] 1.2 Runner starts green with no specs: `npm test` exits 0
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Build still passes: `npm run build`
+- [x] 1.1 Dependency installs: `npm install` completes — 789611c
+- [x] 1.2 Runner starts green with no specs: `npm test` exits 0 — 789611c
+- [x] 1.3 Linting passes: `npm run lint` — 789611c
+- [x] 1.4 Build still passes: `npm run build` — 789611c
 
 #### Manual
 
-- [x] 1.5 `npm run test:watch` starts and watches without error
-- [x] 1.6 `git grep` confirms `buildSystemPrompt` export landed
+- [x] 1.5 `npm run test:watch` starts and watches without error — 789611c
+- [x] 1.6 `git grep` confirms `buildSystemPrompt` export landed — 789611c
 
 ### Phase 2: Unit tests — AI chat grounding (R1)
 
 #### Automated
 
-- [ ] 2.1 Unit spec passes: `npm test`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Unit spec passes: `npm test`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 Break-`sanitise` check fails the sanitisation case, then revert
+- [x] 2.3 Break-`sanitise` check fails the sanitisation case, then revert
 
 ### Phase 3: Integration tests — chat envelope (R1 + R2)
 
