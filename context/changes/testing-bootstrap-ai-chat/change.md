@@ -1,7 +1,7 @@
 ---
 change_id: testing-bootstrap-ai-chat
 title: Bootstrap test runner and prove the AI chat envelope (grounding + key non-leak)
-status: implementing
+status: implemented
 created: 2026-06-15
 updated: 2026-06-15
 archived_at: null

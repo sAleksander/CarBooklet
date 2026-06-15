@@ -394,11 +394,11 @@ keywords in `ai.ts` (no behavior change).
 
 #### Automated
 
-- [x] 3.1 Full suite passes: `npm test`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 Build passes: `npm run build`
+- [x] 3.1 Full suite passes: `npm test` — 677fd27
+- [x] 3.2 Linting passes: `npm run lint` — 677fd27
+- [x] 3.3 Build passes: `npm run build` — 677fd27
 
 #### Manual
 
-- [x] 3.4 Guard-reorder check fails a case, then revert
-- [x] 3.5 `test-plan.md` §6.1/§6.2 read as usable recipes and §3 Phase 1 is `complete`
+- [x] 3.4 Guard-reorder check fails a case, then revert — 677fd27
+- [x] 3.5 `test-plan.md` §6.1/§6.2 read as usable recipes and §3 Phase 1 is `complete` — 677fd27
