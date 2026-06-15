@@ -59,13 +59,22 @@ function readJson(res: Response): Promise<unknown> {
   return res.json() as Promise<unknown>;
 }
 
-function streamOf(...chunks: { choices: { delta: { content?: string } }[] }[]): ChatStream {
-  // A sync generator is enough: the route consumes the stream with `for await`,
-  // which accepts sync iterables too.
-  function* gen() {
-    for (const chunk of chunks) yield chunk;
-  }
+// The stub chunk shape the route reads: `chunk.choices[0]?.delta?.content`.
+interface ChatChunk {
+  choices: { delta: { content?: string } }[];
+}
+
+// Single boundary that bridges a sync generator stub to the OpenAI stream
+// type. A sync generator is enough: the route consumes the stream with
+// `for await`, which accepts sync iterables too.
+function makeStream(gen: () => Generator<ChatChunk>): ChatStream {
   return gen() as unknown as ChatStream;
+}
+
+function streamOf(...chunks: ChatChunk[]): ChatStream {
+  return makeStream(function* () {
+    for (const chunk of chunks) yield chunk;
+  });
 }
 
 describe("POST /api/ai/chat", () => {
@@ -157,11 +166,12 @@ describe("POST /api/ai/chat", () => {
   });
 
   it("emits a generic stream error without leaking detail when the stream fails mid-flight", async () => {
-    function* failMidStream() {
-      yield { choices: [{ delta: { content: "partial" } }] };
-      throw new Error("upstream exploded: sk-or-test-LEAK");
-    }
-    vi.mocked(createChatStream).mockResolvedValue(failMidStream() as unknown as ChatStream);
+    vi.mocked(createChatStream).mockResolvedValue(
+      makeStream(function* () {
+        yield { choices: [{ delta: { content: "partial" } }] };
+        throw new Error("upstream exploded: sk-or-test-LEAK");
+      }),
+    );
 
     const res = await POST(makeContext());
 
