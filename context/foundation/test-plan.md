@@ -16,7 +16,7 @@ Tests follow three non-negotiable principles for this project:
    risk wins. Do not promote to e2e because e2e "feels safer." Do not put a
    vision model on top of a deterministic visual diff that already catches
    the regression. For CarBooklet this has a concrete edge: the AI chat is
-   the headline-fear surface, but its *answer quality* is the model's job —
+   the headline-fear surface, but its _answer quality_ is the model's job —
    test the deterministic envelope (right car grounded, ownership enforced,
    no key leak, input validated, visible progress), never the LLM's prose.
 2. **User concerns are first-class evidence.** Risks anchored in "the team
@@ -24,9 +24,9 @@ Tests follow three non-negotiable principles for this project:
    carry the same weight as PRD lines or hot-spot data. Here the interview
    put the top fear (AI leaks/misgrounds) and the lowest-confidence area
    (the AI chat path) on the same surface — that is why it is Phase 1.
-3. **Risks are scenarios, not code locations.** This plan documents *what
-   could fail* and *why we believe it's likely* — drawn from documents,
-   interview, and codebase *signal* (churn, structure, test base). It does
+3. **Risks are scenarios, not code locations.** This plan documents _what
+   could fail_ and _why we believe it's likely_ — drawn from documents,
+   interview, and codebase _signal_ (churn, structure, test base). It does
    NOT claim to know which line owns the failure. That knowledge is
    produced by `/10x-research` during each rollout phase. If the plan and
    research disagree about where the failure lives, research is the
@@ -40,28 +40,28 @@ Hot-spot scope used for likelihood weighting: `src/components/entries/`,
 
 The top failure scenarios this project must protect against, ordered by
 risk = impact × likelihood. Risks are failure scenarios in user / business
-terms, not test names. The Source column cites the *evidence that surfaced
-this risk* — never a specific file as "where the failure lives" (that is
+terms, not test names. The Source column cites the _evidence that surfaced
+this risk_ — never a specific file as "where the failure lives" (that is
 research's job, see §1 principle #3).
 
-| # | Risk (failure scenario) | Impact | Likelihood | Source (evidence — not anchor) |
-|---|-------------------------|--------|------------|--------------------------------|
-| 1 | AI chat answers grounded in the **wrong car**, or a user steers the assistant to a car they do not own | High | High | interview Q1 + Q3; PRD Success Criteria (grounded answer must be the user's car); hot-spot dir `src/lib/services/` (17 commits/30d) |
-| 2 | **OpenRouter API key / secrets leak** into logs, error response bodies, or the client bundle | High | Medium | interview Q1; PRD Guardrails (data isolation, minimal data); hot-spot dir `src/pages/api/` (27 commits/30d) |
-| 3 | **Cross-user data access (IDOR)** — a user reads, edits, or deletes another user's car or entry by id | High | High | PRD Access Control "data isolation is unconditional"; abuse lens (authorization); hot-spot dir `src/pages/api/` (27 commits/30d) |
-| 4 | **Auth bypass** — an unauthenticated request reaches a protected page or API route, including the new `/entries/[id]` | High | Medium | PRD Access Control + prd-v2 Constraints; roadmap S-03 guard note; `src/middleware.ts` churn (6 commits/30d) |
-| 5 | **Entry/car CRUD regression** — edit/delete corrupts or wipes data, or server-side validation (mileage, not-null) is not enforced independent of the client | Medium | High | prd-v2 Guardrails FR-007/FR-008; abuse lens (untrusted input); hot-spot dir `src/components/entries/` (65 commits/30d) + migrations |
-| 6 | **AI progress-feedback regression** — no continuous visible feedback during streaming response (PRD names its absence a regression) | Medium | Medium | PRD NFR "AI query feedback"; prd-v2 Secondary success criterion (loading state) |
+| #   | Risk (failure scenario)                                                                                                                                     | Impact | Likelihood | Source (evidence — not anchor)                                                                                                      |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ---------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | AI chat answers grounded in the **wrong car**, or a user steers the assistant to a car they do not own                                                      | High   | High       | interview Q1 + Q3; PRD Success Criteria (grounded answer must be the user's car); hot-spot dir `src/lib/services/` (17 commits/30d) |
+| 2   | **OpenRouter API key / secrets leak** into logs, error response bodies, or the client bundle                                                                | High   | Medium     | interview Q1; PRD Guardrails (data isolation, minimal data); hot-spot dir `src/pages/api/` (27 commits/30d)                         |
+| 3   | **Cross-user data access (IDOR)** — a user reads, edits, or deletes another user's car or entry by id                                                       | High   | High       | PRD Access Control "data isolation is unconditional"; abuse lens (authorization); hot-spot dir `src/pages/api/` (27 commits/30d)    |
+| 4   | **Auth bypass** — an unauthenticated request reaches a protected page or API route, including the new `/entries/[id]`                                       | High   | Medium     | PRD Access Control + prd-v2 Constraints; roadmap S-03 guard note; `src/middleware.ts` churn (6 commits/30d)                         |
+| 5   | **Entry/car CRUD regression** — edit/delete corrupts or wipes data, or server-side validation (mileage, not-null) is not enforced independent of the client | Medium | High       | prd-v2 Guardrails FR-007/FR-008; abuse lens (untrusted input); hot-spot dir `src/components/entries/` (65 commits/30d) + migrations |
+| 6   | **AI progress-feedback regression** — no continuous visible feedback during streaming response (PRD names its absence a regression)                         | Medium | Medium     | PRD NFR "AI query feedback"; prd-v2 Secondary success criterion (loading state)                                                     |
 
 **Impact × Likelihood rubric.** Score both axes on a coarse High / Medium /
 Low scale so two readers agree on the same row. Do not invent finer
 gradations — the goal is ordering, not false precision.
 
-| Rating | Impact | Likelihood |
-|--------|--------|------------|
-| High   | user loses access, data, or money; failure is publicly visible | area changes weekly, or we have already been burned here |
-| Medium | feature degrades, a workaround exists, only some users affected | touched occasionally, has been a source of bugs |
-| Low    | cosmetic, easily reverted, no data effect | stable code, rarely touched |
+| Rating | Impact                                                          | Likelihood                                               |
+| ------ | --------------------------------------------------------------- | -------------------------------------------------------- |
+| High   | user loses access, data, or money; failure is publicly visible  | area changes weekly, or we have already been burned here |
+| Medium | feature degrades, a workaround exists, only some users affected | touched occasionally, has been a source of bugs          |
+| Low    | cosmetic, easily reverted, no data effect                       | stable code, rarely touched                              |
 
 Order is by impact × likelihood; protect High × High first (R1, R3).
 Resource abuse — mass calls against the `openrouter/free` model — is a real
@@ -77,14 +77,14 @@ surface is left unrepresented.
 
 ### Risk Response Guidance
 
-| Risk | What would prove protection | Must challenge | Context `/10x-research` must ground | Likely cheapest layer | Anti-pattern to avoid |
-|------|-----------------------------|----------------|--------------------------------------|-----------------------|-----------------------|
-| #1 | Chat endpoint loads only the *owned* selected car; a foreign/selected car id the user does not own resolves to nothing (e.g. 404), never to another user's car; the system prompt is built from that owned car's fields | "the `user.id` filter on the car lookup is enough, and the selected-car id is trustworthy" | Where the selected-car id originates (cookie / `locals`), how ownership is enforced on lookup, how the prompt is assembled | integration (API route) + unit (prompt builder) | asserting the LLM's answer text; mirroring the prompt string instead of asserting which car's data it draws from |
-| #2 | No error path, log line, or response body emits the OpenRouter key; the secret stays server-only | "`astro:env/server` import means it can never leak" | Error-handling and logging paths in the chat route + AI service; what reaches the client on failure | integration | over-mocking the AI client so the real error/response body is never asserted |
-| #3 | Every car/entry route rejects reads, updates, and deletes of ids the caller does not own | "authenticated == authorized" | RLS policies + the per-query user filter on each car/entry operation | integration (vs Supabase local / RLS) | testing only the owner's happy path; trusting RLS without exercising a second user |
-| #4 | Protected routes redirect (or 401) without a valid session, including `/entries/[id]`; API routes reject unauthenticated calls | "`startsWith` matching in middleware covers every protected path and the new dynamic route" | `PROTECTED_ROUTES` matching logic + whether the detail route is actually guarded | middleware unit / integration | brittle full-page snapshot; testing redirect for one route and assuming the rest |
-| #5 | Create/edit/delete enforce ownership and server-side validation (mileage check, not-null constraints) regardless of client input | "client-side zod equals server-side enforcement" | zod schemas at the API edge + DB constraints as the independent oracle | integration | oracle copied from the handler under test (tautology); over-mocking the DB so constraints never fire |
-| #6 | The user sees continuous progress from submit through to streamed response | "HTTP 200 means the user saw feedback" | The streaming response wiring and the UI's loading-state transitions | one Playwright e2e | `waitForTimeout`; asserting answer content instead of the presence of progress |
+| Risk | What would prove protection                                                                                                                                                                                             | Must challenge                                                                              | Context `/10x-research` must ground                                                                                        | Likely cheapest layer                           | Anti-pattern to avoid                                                                                            |
+| ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| #1   | Chat endpoint loads only the _owned_ selected car; a foreign/selected car id the user does not own resolves to nothing (e.g. 404), never to another user's car; the system prompt is built from that owned car's fields | "the `user.id` filter on the car lookup is enough, and the selected-car id is trustworthy"  | Where the selected-car id originates (cookie / `locals`), how ownership is enforced on lookup, how the prompt is assembled | integration (API route) + unit (prompt builder) | asserting the LLM's answer text; mirroring the prompt string instead of asserting which car's data it draws from |
+| #2   | No error path, log line, or response body emits the OpenRouter key; the secret stays server-only                                                                                                                        | "`astro:env/server` import means it can never leak"                                         | Error-handling and logging paths in the chat route + AI service; what reaches the client on failure                        | integration                                     | over-mocking the AI client so the real error/response body is never asserted                                     |
+| #3   | Every car/entry route rejects reads, updates, and deletes of ids the caller does not own                                                                                                                                | "authenticated == authorized"                                                               | RLS policies + the per-query user filter on each car/entry operation                                                       | integration (vs Supabase local / RLS)           | testing only the owner's happy path; trusting RLS without exercising a second user                               |
+| #4   | Protected routes redirect (or 401) without a valid session, including `/entries/[id]`; API routes reject unauthenticated calls                                                                                          | "`startsWith` matching in middleware covers every protected path and the new dynamic route" | `PROTECTED_ROUTES` matching logic + whether the detail route is actually guarded                                           | middleware unit / integration                   | brittle full-page snapshot; testing redirect for one route and assuming the rest                                 |
+| #5   | Create/edit/delete enforce ownership and server-side validation (mileage check, not-null constraints) regardless of client input                                                                                        | "client-side zod equals server-side enforcement"                                            | zod schemas at the API edge + DB constraints as the independent oracle                                                     | integration                                     | oracle copied from the handler under test (tautology); over-mocking the DB so constraints never fire             |
+| #6   | The user sees continuous progress from submit through to streamed response                                                                                                                                              | "HTTP 200 means the user saw feedback"                                                      | The streaming response wiring and the UI's loading-state transitions                                                       | one Playwright e2e                              | `waitForTimeout`; asserting answer content instead of the presence of progress                                   |
 
 ## 3. Phased Rollout
 
@@ -92,23 +92,23 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| # | Phase name | Goal (one line) | Risks covered | Test types | Status | Change folder |
-|---|------------|-----------------|---------------|------------|--------|---------------|
-| 1 | Bootstrap + AI chat envelope | Stand up the test runner and prove the chat endpoint grounds only on the owned car, guards auth / no-car / invalid input, and never leaks the key | #1, #2 | unit + integration | complete | context/changes/testing-bootstrap-ai-chat/ |
-| 2 | Data isolation + CRUD integrity | Every car/entry route rejects non-owned ids; create/edit/delete enforce ownership + server-side validation | #3, #5 | integration | not started | — |
-| 3 | Auth & route protection | Protected routes redirect/401 without a session, including `/entries/[id]` | #4 | unit + integration | not started | — |
-| 4 | E2E critical path + CI gate | One browser flow (sign-in → navigate → ask AI → see visible progress → grounded answer) and wire the suite into CI | #6 | e2e + gates | not started | — |
+| #   | Phase name                      | Goal (one line)                                                                                                                                   | Risks covered | Test types         | Status      | Change folder                                  |
+| --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------ | ----------- | ---------------------------------------------- |
+| 1   | Bootstrap + AI chat envelope    | Stand up the test runner and prove the chat endpoint grounds only on the owned car, guards auth / no-car / invalid input, and never leaks the key | #1, #2        | unit + integration | complete    | context/changes/testing-bootstrap-ai-chat/     |
+| 2   | Data isolation + CRUD integrity | Every car/entry route rejects non-owned ids; create/edit/delete enforce ownership + server-side validation                                        | #3, #5        | integration        | researched  | context/changes/data-isolation-crud-integrity/ |
+| 3   | Auth & route protection         | Protected routes redirect/401 without a session, including `/entries/[id]`                                                                        | #4            | unit + integration | not started | —                                              |
+| 4   | E2E critical path + CI gate     | One browser flow (sign-in → navigate → ask AI → see visible progress → grounded answer) and wire the suite into CI                                | #6            | e2e + gates        | not started | —                                              |
 
 **Status vocabulary** (fixed — parser literals):
 
-| Value | Meaning |
-|-------|---------|
-| `not started` | No change folder for this rollout phase yet. |
+| Value           | Meaning                                                             |
+| --------------- | ------------------------------------------------------------------- |
+| `not started`   | No change folder for this rollout phase yet.                        |
 | `change opened` | `context/changes/<id>/` exists with `change.md`; research not done. |
-| `researched` | `research.md` exists in the change folder. |
-| `planned` | `plan.md` exists with a `## Progress` section. |
-| `implementing` | Progress section has at least one `[x]` and at least one `[ ]`. |
-| `complete` | Progress section is fully `[x]`. |
+| `researched`    | `research.md` exists in the change folder.                          |
+| `planned`       | `plan.md` exists with a `## Progress` section.                      |
+| `implementing`  | Progress section has at least one `[x]` and at least one `[ ]`.     |
+| `complete`      | Progress section is fully `[x]`.                                    |
 
 ## 4. Stack
 
@@ -117,18 +117,19 @@ The classic test base for this project. AI-native tools (if any) carry a
 
 **Current test base: `none`** — no test-runner config, no test dependencies
 in `package.json`, and zero `*.test.*` / `*.spec.*` files. The project has a
-test *culture* of none; Phase 1 bootstraps the runner before any assertion
+test _culture_ of none; Phase 1 bootstraps the runner before any assertion
 is written.
 
-| Layer | Tool | Version | Notes |
-|-------|------|---------|-------|
-| unit + integration | Vitest | none yet — see Phase 1 | Vite-native; aligns with the Astro + `@tailwindcss/vite` build already in the repo |
-| API / network mocking | MSW (or OpenAI client stub at the network edge) | none yet — see Phase 1 | Mock the OpenRouter HTTP edge only; never mock internal services |
-| Supabase integration | local Supabase stack (`npx supabase start`) | n/a | Real Postgres + RLS for Phase 2 isolation tests; do not mock the DB for IDOR coverage |
-| e2e | Playwright | none yet — see Phase 4 | Project's stated E2E path (CLAUDE.md `/10x-e2e`); DOM-snapshot default, vision only for visual-only risks |
-| (optional) AI-native | not adopted | n/a | LLM answer quality is out of scope (§7); no vision/AI-judge layer planned |
+| Layer                 | Tool                                            | Version                | Notes                                                                                                     |
+| --------------------- | ----------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
+| unit + integration    | Vitest                                          | none yet — see Phase 1 | Vite-native; aligns with the Astro + `@tailwindcss/vite` build already in the repo                        |
+| API / network mocking | MSW (or OpenAI client stub at the network edge) | none yet — see Phase 1 | Mock the OpenRouter HTTP edge only; never mock internal services                                          |
+| Supabase integration  | local Supabase stack (`npx supabase start`)     | n/a                    | Real Postgres + RLS for Phase 2 isolation tests; do not mock the DB for IDOR coverage                     |
+| e2e                   | Playwright                                      | none yet — see Phase 4 | Project's stated E2E path (CLAUDE.md `/10x-e2e`); DOM-snapshot default, vision only for visual-only risks |
+| (optional) AI-native  | not adopted                                     | n/a                    | LLM answer quality is out of scope (§7); no vision/AI-judge layer planned                                 |
 
 **Stack grounding tools (current session):**
+
 - Docs: no Context7 / framework-docs MCP exposed — not available in current session; relied on local manifests + repo config; checked: 2026-06-14
 - Search: WebSearch / WebFetch available — not used for this initial write; reserve for verifying Vitest/Playwright setup against current Astro v6 + Cloudflare adapter docs at Phase 1; checked: 2026-06-14
 - Runtime/browser: no Playwright MCP exposed; Playwright itself is the planned Phase 4 e2e tool via `/10x-e2e`; checked: 2026-06-14
@@ -145,14 +146,14 @@ The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase N" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate | Where | Required? | Catches |
-|------|-------|-----------|---------|
-| lint + typecheck | local + CI | required (already wired — husky/lint-staged + CI) | syntactic / type drift |
-| unit + integration | local + CI | required after §3 Phase 1 | logic regressions, AI grounding, ownership, validation |
-| e2e on critical flow | CI on PR | required after §3 Phase 4 | broken sign-in → navigate → AI progress path |
-| post-edit hook | local (agent loop) | optional | regressions at edit time |
-| visual diff (deterministic) | CI on PR | optional | rendering regressions (not prioritized — see §7) |
-| pre-prod smoke | between merge + prod | optional | Cloudflare edge / env-specific failures |
+| Gate                        | Where                | Required?                                         | Catches                                                |
+| --------------------------- | -------------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| lint + typecheck            | local + CI           | required (already wired — husky/lint-staged + CI) | syntactic / type drift                                 |
+| unit + integration          | local + CI           | required after §3 Phase 1                         | logic regressions, AI grounding, ownership, validation |
+| e2e on critical flow        | CI on PR             | required after §3 Phase 4                         | broken sign-in → navigate → AI progress path           |
+| post-edit hook              | local (agent loop)   | optional                                          | regressions at edit time                               |
+| visual diff (deterministic) | CI on PR             | optional                                          | rendering regressions (not prioritized — see §7)       |
+| pre-prod smoke              | between merge + prod | optional                                          | Cloudflare edge / env-specific failures                |
 
 ## 6. Cookbook Patterns
 
@@ -180,13 +181,13 @@ TypeScript helpers like the prompt builder (R1 grounding):
   survives as readable text (control chars collapsed to spaces). This is the
   prompt-injection-via-stored-field guard. Verify the test bites by temporarily
   making `sanitise` return its input unchanged — the case must fail.
-- **Optional-omission.** With `engine_code` / `vin_number` null *or
-  whitespace-only* (the builder uses `?.trim()`), assert the `engine code:` /
+- **Optional-omission.** With `engine_code` / `vin_number` null _or
+  whitespace-only_ (the builder uses `?.trim()`), assert the `engine code:` /
   `VIN:` labels are absent.
 - **No mocks needed.** The `astro:env/server` alias in `vitest.config.ts`
   satisfies `ai.ts`'s top-level OpenAI construction at import time.
 - **Import vitest symbols explicitly** (`import { describe, it, expect } from
-  "vitest"`) — `globals` is off, which keeps eslint and tsconfig clean.
+"vitest"`) — `globals` is off, which keeps eslint and tsconfig clean.
 
 ### 6.2 Adding an integration test (API route)
 
@@ -205,13 +206,13 @@ chat endpoint's guard table + key non-leak (R1/R2):
   on import. Use `vi.mocked(fn)` to set per-test return values;
   `vi.resetAllMocks()` in `beforeEach`, then re-establish happy-path defaults.
 - **Pin the full guard table.** One `it` per branch in route order: 401 (no
-  user) → 400 (bad JSON: `json` rejects) → 400 (zod: assert the *first issue
-  message*) → 400 (no car) → 503 (`createClient` null) → 404 (`getCarById`
+  user) → 400 (bad JSON: `json` rejects) → 400 (zod: assert the _first issue
+  message_) → 400 (no car) → 503 (`createClient` null) → 404 (`getCarById`
   null) → 500 (`createChatStream` throws) → 200 (stream). Assert `res.status`
   and the parsed body.
 - **"Dependency not called" is the R1 guard.** On the 404 foreign-car case,
   assert `expect(createChatStream).not.toHaveBeenCalled()` — ownership must
-  short-circuit *before* the model is touched, not merely return 404. On the
+  short-circuit _before_ the model is touched, not merely return 404. On the
   200 case, assert `createChatStream` received the resolved owned `Car`.
 - **Drain SSE with `res.text()`.** The success path returns
   `new Response(readable)`; `await res.text()` collects the frames. Assert it
@@ -260,7 +261,7 @@ here capturing anything surprising the rollout phase taught.)
   "green with no tests" gate.
 - `astro:env/server` is a virtual module that doesn't exist in Vitest's Node
   runtime — `resolve.alias` it to `src/test/__mocks__/astro-env-server.ts`
-  (non-empty placeholder secrets) *before* any spec imports a service, or the
+  (non-empty placeholder secrets) _before_ any spec imports a service, or the
   import throws at module evaluation.
 - A streaming mock can be a **sync** `function*`; `for await` accepts sync
   iterables. An `async function*` with no `await` trips
