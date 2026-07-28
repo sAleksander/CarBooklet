@@ -59,6 +59,16 @@ const reactConfig = tseslint.config({
   },
 });
 
+const e2eConfig = tseslint.config({
+  files: ["e2e/**/*.ts", "playwright.config.ts"],
+  rules: {
+    // A Playwright fixture is `async ({...}, use) => {...}`. The React hooks
+    // rule reads that `use` parameter as React 19's `use()` hook and demands a
+    // component/hook name. There is no React in the E2E project.
+    "react-hooks/rules-of-hooks": "off",
+  },
+});
+
 const astroConfig = tseslint.config({
   files: ["**/*.astro"],
   rules: {
@@ -74,6 +84,7 @@ export default tseslint.config(
   includeIgnoreFile(gitignorePath),
   baseConfig,
   reactConfig,
+  e2eConfig,
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,

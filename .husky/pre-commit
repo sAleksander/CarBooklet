@@ -1,1 +1,15 @@
+set -e
+
+# Auto-fix & format staged files first (fast, per-file)
+echo "▶ lint-staged"
 npx lint-staged
+
+# Full safe-gate — one last check of the whole project before the commit lands
+echo "▶ lint"
+npm run lint
+
+echo "▶ typecheck"
+npm run typecheck
+
+echo "▶ tests"
+npm test

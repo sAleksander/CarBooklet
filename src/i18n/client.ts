@@ -14,7 +14,7 @@ export function createClientI18n(locale: Locale) {
     defaultNS: NS,
     resources,
     interpolation: { escapeValue: false },
-    initImmediate: false,
+    initAsync: false,
   });
   return instance;
 }
