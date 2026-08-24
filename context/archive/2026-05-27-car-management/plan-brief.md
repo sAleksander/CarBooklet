@@ -19,20 +19,21 @@ Build full car CRUD (add, view, edit, delete, select) on a dedicated `/cars` pag
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| Selected car storage | HttpOnly cookie (`selected_car_id`) | SSR-readable without extra DB fetch; consistent with cookie-based auth pattern |
-| Landing page after login | `/dashboard` (redirects to `/cars` if no car) | Dashboard stays the user's home; `/cars` is the onboarding funnel |
-| Edit car | Included in S-01 | Complete CRUD prevents frustrating typo-correction gap |
-| Delete confirmation | Required (AlertDialog) | Cascade-deletes future entries — unrecoverable |
-| Car switcher location | `/cars` page + dashboard (not Topbar) | Mobile-first: Topbar is too narrow; `/cars` is the natural management hub |
-| Form layout | Single-page, all 9 fields | No wizard state overhead for a 9-field form |
-| Error handling | Inline error on form/action | Contextual; uses shadcn component model |
-| API response format | JSON (not FormData + redirect) | React components call these endpoints via `fetch()` |
+| Decision                 | Choice                                        | Why (1 sentence)                                                               |
+| ------------------------ | --------------------------------------------- | ------------------------------------------------------------------------------ |
+| Selected car storage     | HttpOnly cookie (`selected_car_id`)           | SSR-readable without extra DB fetch; consistent with cookie-based auth pattern |
+| Landing page after login | `/dashboard` (redirects to `/cars` if no car) | Dashboard stays the user's home; `/cars` is the onboarding funnel              |
+| Edit car                 | Included in S-01                              | Complete CRUD prevents frustrating typo-correction gap                         |
+| Delete confirmation      | Required (AlertDialog)                        | Cascade-deletes future entries — unrecoverable                                 |
+| Car switcher location    | `/cars` page + dashboard (not Topbar)         | Mobile-first: Topbar is too narrow; `/cars` is the natural management hub      |
+| Form layout              | Single-page, all 9 fields                     | No wizard state overhead for a 9-field form                                    |
+| Error handling           | Inline error on form/action                   | Contextual; uses shadcn component model                                        |
+| API response format      | JSON (not FormData + redirect)                | React components call these endpoints via `fetch()`                            |
 
 ## Scope
 
 **In scope:**
+
 - `src/env.d.ts` — add `selectedCarId` to `App.Locals`
 - `src/types.ts` — add `CarFormData`
 - `src/lib/services/cars.ts` — CRUD service (getCars, getCarById, createCar, updateCar, deleteCar)
@@ -55,11 +56,11 @@ Three-phase delivery: backend-first (API + service + middleware), then UI (React
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Backend foundation | 5 API routes + service + middleware update | Stale cookie on delete must clear the cookie; easy to miss |
-| 2. Car management UI | `/cars` page with full interactive CRUD | shadcn install must run before `npm run build` |
-| 3. Dashboard integration | Dashboard shows selected car; redirects when none | Stale-cookie guard (cookie points to deleted car) |
+| Phase                    | What it delivers                                  | Key risk                                                   |
+| ------------------------ | ------------------------------------------------- | ---------------------------------------------------------- |
+| 1. Backend foundation    | 5 API routes + service + middleware update        | Stale cookie on delete must clear the cookie; easy to miss |
+| 2. Car management UI     | `/cars` page with full interactive CRUD           | shadcn install must run before `npm run build`             |
+| 3. Dashboard integration | Dashboard shows selected car; redirects when none | Stale-cookie guard (cookie points to deleted car)          |
 
 **Prerequisites:** F-01 done (cars table live, types exported). Local Supabase running.  
 **Estimated effort:** ~2 sessions (Phase 1 is the bulk; Phases 2–3 are incremental)

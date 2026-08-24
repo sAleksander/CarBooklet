@@ -115,11 +115,11 @@ export interface CarFormData {
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Car, CarFormData } from "@/types";
 
-export async function getCars(supabase: SupabaseClient): Promise<Car[]>
-export async function getCarById(supabase: SupabaseClient, id: string): Promise<Car | null>
-export async function createCar(supabase: SupabaseClient, data: CarFormData): Promise<Car>
-export async function updateCar(supabase: SupabaseClient, id: string, data: Partial<CarFormData>): Promise<Car>
-export async function deleteCar(supabase: SupabaseClient, id: string): Promise<void>
+export async function getCars(supabase: SupabaseClient): Promise<Car[]>;
+export async function getCarById(supabase: SupabaseClient, id: string): Promise<Car | null>;
+export async function createCar(supabase: SupabaseClient, data: CarFormData): Promise<Car>;
+export async function updateCar(supabase: SupabaseClient, id: string, data: Partial<CarFormData>): Promise<Car>;
+export async function deleteCar(supabase: SupabaseClient, id: string): Promise<void>;
 ```
 
 Each function throws an `Error` with the Supabase error message on DB failure. Callers catch and return 500.
@@ -199,6 +199,7 @@ Cookie set: `context.cookies.set("selected_car_id", params.id, { path: "/", http
 **Intent**: Resolve `selectedCarId` from the cookie on every request so all downstream pages read it from `context.locals`. Also protect `/cars`.
 
 **Changes**:
+
 - Add `"/cars"` to `PROTECTED_ROUTES`.
 - Place the `selectedCarId` assignment AFTER the entire if/else block (outside both branches) — cookie reading does not depend on Supabase being configured:
 
@@ -209,7 +210,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const supabase = createClient(context.request.headers, context.cookies);
 
   if (supabase) {
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     context.locals.user = user ?? null;
   } else {
     context.locals.user = null;
@@ -268,9 +271,10 @@ This adds to `src/components/ui/`: `input.tsx`, `label.tsx`, `select.tsx`, `aler
 **Intent**: Reusable controlled form for both adding a new car and editing an existing one. Add mode: empty form, calls `POST /api/cars`. Edit mode: pre-filled form, calls `PATCH /api/cars/[id]`. Shows inline error on API failure.
 
 **Props**:
+
 ```typescript
 interface CarFormProps {
-  car?: Car;           // undefined = add mode; defined = edit mode
+  car?: Car; // undefined = add mode; defined = edit mode
   onSuccess: (car: Car) => void;
   onCancel?: () => void;
 }
@@ -279,6 +283,7 @@ interface CarFormProps {
 **Fields** (in order): brand (required), model (required), production_year (required), registration_number (optional), engine_type (Select, required), engine_capacity (required), engine_power (required), engine_code (optional), vin_number (optional).
 
 **Behavior**:
+
 - Controlled state for all fields, initialized from `car` prop when in edit mode.
 - Client-side required-field validation before calling API (shows inline field errors).
 - `isLoading` state disables the submit button during fetch.
@@ -293,6 +298,7 @@ interface CarFormProps {
 **Intent**: shadcn AlertDialog asking the user to confirm deletion. Mentions that all linked maintenance entries will also be deleted (cascade warning — relevant once S-03/S-04 land, surfaced proactively).
 
 **Props**:
+
 ```typescript
 interface DeleteCarDialogProps {
   car: Car;
@@ -312,6 +318,7 @@ AlertDialog title: `"Delete {car.brand} {car.model}?"`. Description includes the
 **Intent**: Client-side interactive car management. Receives initial data as props (server-rendered), manages all mutations locally. After any mutation it re-fetches the car list from `GET /api/cars` to stay in sync.
 
 **Props**:
+
 ```typescript
 interface CarListProps {
   initialCars: Car[];
@@ -322,6 +329,7 @@ interface CarListProps {
 **Internal state**: `cars`, `selectedCarId`, `editingCarId | null`, `deletingCar: Car | null`, `showAddForm: boolean`, `isLoading: boolean`, `error: string | null`.
 
 **Rendered layout**:
+
 - "Add car" button → toggles `showAddForm`.
 - `showAddForm` → renders `<CarForm onSuccess={handleAddSuccess} onCancel={() => setShowAddForm(false)} />`.
 - List of car cards, each showing brand, model, year + three action buttons:
@@ -343,6 +351,7 @@ interface CarListProps {
 **Intent**: Protected SSR page. Fetches the user's car list server-side (initial render without flicker) and passes it to `<CarList client:load>` along with the current `selectedCarId` from locals.
 
 **Contract**:
+
 ```astro
 ---
 import Layout from "@/layouts/Layout.astro";
@@ -354,6 +363,7 @@ const supabase = createClient(Astro.request.headers, Astro.cookies);
 const cars = supabase ? await getCars(supabase) : [];
 const { selectedCarId } = Astro.locals;
 ---
+
 <Layout title="My Cars">
   <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} />
 </Layout>
@@ -392,6 +402,7 @@ Update `/dashboard` to redirect to `/cars` when no car is selected (or when the 
 **Intent**: Dashboard becomes car-aware. If `selectedCarId` is null, redirect to `/cars`. If the cookie exists but the car is no longer in the user's list (stale cookie), also redirect to `/cars`. Otherwise display the car's brand, model, and year with a "Change car" link.
 
 **Contract** (server-side logic in frontmatter):
+
 ```typescript
 const { user, selectedCarId } = Astro.locals;
 
