@@ -70,6 +70,7 @@ Add deadline-specific types to `src/types.ts` and a `getCarDeadlines()` function
 **Intent**: Export a `DeadlineStatus` discriminant and three deadline interfaces — one per entry type — composed into a `CarDeadlines` aggregate that `getCarDeadlines()` returns and `dashboard.astro` consumes.
 
 **Contract**:
+
 - `DeadlineStatus = 'no_data' | 'no_next_date' | 'red' | 'yellow' | 'green'`
   - `'no_data'` — no relevant entry exists for this car
   - `'no_next_date'` — inspection-only: entry exists but `next_inspection_date` is null
@@ -90,6 +91,7 @@ Add deadline-specific types to `src/types.ts` and a `getCarDeadlines()` function
 **Contract**: `getCarDeadlines(supabase: SupabaseClient, carId: string, userId: string): Promise<CarDeadlines>`
 
 Three parallel Supabase queries via `Promise.all`:
+
 1. `oil_change_entries` — `ORDER BY conducted_at DESC LIMIT 1`
 2. `inspection_entries` — `ORDER BY conducted_at DESC LIMIT 1`
 3. `insurance_entries` — `ORDER BY renewal_date DESC LIMIT 1`
@@ -97,10 +99,12 @@ Three parallel Supabase queries via `Promise.all`:
 All three use `.eq("car_id", carId).eq("user_id", userId)`. All throw on `res.error`. Use `data?.[0] ?? null` to extract the single row.
 
 Internal helpers (unexported, defined before the function):
+
 - `addOneYear(dateStr: string): string` — returns `dateStr` with year incremented by 1, formatted as `YYYY-MM-DD`
 - `computeDeadlineStatus(dueDateStr: string | null): DeadlineStatus` — returns `'no_data'` when null; otherwise normalizes today to midnight, computes daysUntil, and returns `'red'` / `'yellow'` / `'green'` per the 30/90-day thresholds
 
 Return construction:
+
 - `oilChange`: `nextDueDate = oil ? addOneYear(oil.conducted_at) : null`; `nextDueMileage = oil?.mileage != null ? oil.mileage + 10_000 : null`; `status = computeDeadlineStatus(nextDueDate)`
 - `inspection`: if `!insp` → `'no_data'`; else if `!insp.next_inspection_date` → `'no_next_date'`; else → `computeDeadlineStatus(insp.next_inspection_date)`
 - `insurance`: `status = ins ? computeDeadlineStatus(ins.renewal_date) : 'no_data'`
@@ -136,6 +140,7 @@ Replace `dashboard.astro` with a full-page layout that renders three deadline ca
 **Intent**: A reusable status-colored card container for displaying deadline information. Accepts a title and a `DeadlineStatus` value; renders a bordered card tinted to match the urgency level, with a slot for type-specific content.
 
 **Contract**:
+
 - Props: `{ title: string; status: DeadlineStatus }`
 - Border and background tint map to status:
   - `'red'` → destructive/red tint (e.g., `border-red-400/50 bg-red-500/10`)
@@ -155,6 +160,7 @@ Replace `dashboard.astro` with a full-page layout that renders three deadline ca
 **Contract**:
 
 Frontmatter changes:
+
 - Import `Topbar` from `@/components/Topbar.astro`
 - Import `DeadlineCard` from `@/components/DeadlineCard.astro`
 - Import `getCarDeadlines` from `@/lib/services/entries`
@@ -164,6 +170,7 @@ Frontmatter changes:
 - Keep existing `getCarById` call and ownership check (`car?.user_id !== user.id`)
 
 Template structure (mirrors `entries.astro` layout):
+
 ```
 <Layout title="Dashboard — {car.brand} {car.model}">
   <div class="bg-cosmic min-h-screen p-4">
@@ -194,6 +201,7 @@ Template structure (mirrors `entries.astro` layout):
 ```
 
 Slot content per card:
+
 - **Oil change**: if `no_data` → "No oil change entries logged." else → "Last: {lastConductedAt}" + "Next due: {nextDueDate}" + (if `nextDueMileage`) "or at ~{nextDueMileage.toLocaleString()} km"
 - **Inspection**: if `no_data` → "No inspection entries logged." | if `no_next_date` → "Last: {lastConductedAt}" + "Next date not set." | else → "Next inspection: {nextInspectionDate}"
 - **Insurance**: if `no_data` → "No insurance entries logged." | else → "Renewal: {renewalDate}" + (if `insurer`) insurer name

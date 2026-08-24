@@ -16,26 +16,28 @@ S-06 replaces the placeholder dashboard page with a real deadline surface (FR-01
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Scope | Selected car only | Fits existing selected-car paradigm; no extra queries needed | Plan |
-| Urgency thresholds | Overdue + ≤30d = red; ≤90d = yellow; >90d = green | Standard maintenance reminder cadence | Plan |
-| Oil change urgency | Date-only (conducted_at + 1yr) | App has no current odometer — mileage threshold is informational only | Plan |
-| Missing next_inspection_date | Show last date + "next date not set" | Honest; avoids fabricating a deadline | Plan |
-| Empty state | Show card with "No data" placeholder | Consistent layout; prompts user to log | Plan |
-| Service layer | New `getCarDeadlines()` in entries.ts | Single fetch point; keeps dashboard template clean | Plan |
-| Rendering | Pure Astro SSR, no React island | Cards are static; no interactivity needed | Plan |
-| Insurance query order | `ORDER BY renewal_date DESC` | Surfaces the active (latest-expiry) policy, not the most recently logged | Plan |
+| Decision                     | Choice                                            | Why (1 sentence)                                                         | Source |
+| ---------------------------- | ------------------------------------------------- | ------------------------------------------------------------------------ | ------ |
+| Scope                        | Selected car only                                 | Fits existing selected-car paradigm; no extra queries needed             | Plan   |
+| Urgency thresholds           | Overdue + ≤30d = red; ≤90d = yellow; >90d = green | Standard maintenance reminder cadence                                    | Plan   |
+| Oil change urgency           | Date-only (conducted_at + 1yr)                    | App has no current odometer — mileage threshold is informational only    | Plan   |
+| Missing next_inspection_date | Show last date + "next date not set"              | Honest; avoids fabricating a deadline                                    | Plan   |
+| Empty state                  | Show card with "No data" placeholder              | Consistent layout; prompts user to log                                   | Plan   |
+| Service layer                | New `getCarDeadlines()` in entries.ts             | Single fetch point; keeps dashboard template clean                       | Plan   |
+| Rendering                    | Pure Astro SSR, no React island                   | Cards are static; no interactivity needed                                | Plan   |
+| Insurance query order        | `ORDER BY renewal_date DESC`                      | Surfaces the active (latest-expiry) policy, not the most recently logged | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `DeadlineStatus`, `OilChangeDeadline`, `InspectionDeadline`, `InsuranceDeadline`, `CarDeadlines` types in `src/types.ts`
 - `getCarDeadlines()` service function in `src/lib/services/entries.ts`
 - `src/components/DeadlineCard.astro` — status-colored card with slot
 - Full redesign of `src/pages/dashboard.astro` — full-page layout, Topbar, 3 deadline cards
 
 **Out of scope:**
+
 - No schema changes
 - No configurable thresholds
 - No multi-car overview
@@ -48,10 +50,10 @@ S-06 replaces the placeholder dashboard page with a real deadline surface (FR-01
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Service + types | `getCarDeadlines()` + deadline types; full data contract ready | Status computation logic must handle null dates and the inspection "no_next_date" case correctly |
-| 2. Dashboard redesign | Full-page dashboard with 3 deadline cards; Topbar added | Layout consistency with rest of app; urgency color mapping |
+| Phase                 | What it delivers                                               | Key risk                                                                                         |
+| --------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 1. Service + types    | `getCarDeadlines()` + deadline types; full data contract ready | Status computation logic must handle null dates and the inspection "no_next_date" case correctly |
+| 2. Dashboard redesign | Full-page dashboard with 3 deadline cards; Topbar added        | Layout consistency with rest of app; urgency color mapping                                       |
 
 **Prerequisites:** S-04 and S-05 both done (all entry tables populated and entry management working)
 **Estimated effort:** ~1 session across 2 phases
