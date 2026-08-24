@@ -14,7 +14,7 @@ prose (test-plan §1, §7).
 - **Zero test infrastructure.** No `vitest.config.*`, no `*.test.*` files, no
   test dependency, no `test` script in `package.json` (`package.json:5-13`).
 - **Chat route is well-guarded already** (`src/pages/api/ai/chat.ts:11-50`).
-  The job of this phase is to *pin that contract against regression*, not to
+  The job of this phase is to _pin that contract against regression_, not to
   add safety the code lacks.
 - **Ownership is enforced server-side.** `selected_car_id` rides an httpOnly
   cookie read by middleware into `locals.selectedCarId`; the route re-validates
@@ -51,7 +51,7 @@ prose (test-plan §1, §7).
   correct (not miniflare) for these unit/integration targets.
 - Lint is `eslint .` (`package.json:11`) over all files including tests.
   Import vitest symbols explicitly (`import { describe, it, expect, vi } from
-  "vitest"`) rather than relying on `globals: true` — avoids both eslint
+"vitest"`) rather than relying on `globals: true` — avoids both eslint
   no-undef noise and a tsconfig `types` edit.
 
 ## Desired End State
@@ -212,6 +212,7 @@ fixture car, with the oracle sourced from the fixture (not the function).
 
 **Contract**: Build a fixture `Car` (all required fields + both optional
 `engine_code`, `vin_number`). Cases:
+
 - **All fields present** — output contains `production_year`, `brand`, `model`,
   `engine_type`, `engine_capacity`, `engine_power`, `engine_code`, `vin_number`
   values; the literal expected values come from the fixture.
@@ -265,19 +266,20 @@ across auth, validation, ownership, and error-leak paths.
 mock context (`locals.user`, `locals.selectedCarId`, `request` with `json()` +
 `headers`, `cookies`). Import `POST` from `@/pages/api/ai/chat`. Cases (assert
 status + parsed JSON body, or SSE text):
+
 - **401** — `locals.user = null` → `{error:"Unauthorized"}`.
 - **400 invalid JSON** — `request.json()` rejects → `{error:"Invalid JSON"}`.
 - **400 zod** — empty/over-2000-char prompt → first zod issue message.
 - **400 no car** — `locals.selectedCarId = null` → `{error:"No car selected"}`.
 - **503** — `createClient` returns `null` → `{error:"Service unavailable"}`.
 - **404 foreign car** — `getCarById` resolves `null` → `{error:"Car not
-  found"}`, **and `createChatStream` was not called** (R1 regression guard).
+found"}`, **and `createChatStream` was not called** (R1 regression guard).
 - **200 owned car** — `getCarById` returns the fixture car, `createChatStream`
   returns an async generator yielding one `{choices:[{delta:{content:"hi"}}]}`;
   `res.text()` contains `data: {"text":"hi"}` and `data: [DONE]`; assert
   `createChatStream` received the fixture car (grounded on the owned car).
 - **500 + R2 non-leak** — `createChatStream` throws `new Error("401 Invalid
-  API key: sk-or-test-LEAK")`; assert status 500, body exactly
+API key: sk-or-test-LEAK")`; assert status 500, body exactly
   `{error:"AI service error"}`, and the body string does **not** contain
   `sk-or-test-LEAK`. (console.error firing server-side is expected, not
   suppressed.)

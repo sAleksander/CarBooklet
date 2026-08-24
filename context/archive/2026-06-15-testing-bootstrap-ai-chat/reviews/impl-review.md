@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Bootstrap Test Runner + AI Chat Envelope
 
 - **Plan**: context/changes/testing-bootstrap-ai-chat/plan.md
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | PASS |
-| Scope Discipline | PASS |
-| Safety & Quality | PASS |
-| Architecture | PASS |
-| Pattern Consistency | PASS |
-| Success Criteria | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | PASS    |
+| Scope Discipline    | PASS    |
+| Safety & Quality    | PASS    |
+| Architecture        | PASS    |
+| Pattern Consistency | PASS    |
+| Success Criteria    | PASS    |
 
 ## Summary
 
@@ -34,6 +35,7 @@ Success criteria re-run during review: `npm test` 14/14 (15/15 after triage
 fixes), `npm run lint` 0 errors, `npm run build` 0.
 
 Strong points confirmed by the agents:
+
 - R2 (key non-leak) asserted against a real secret-bearing SDK error through the
   route's actual catch path — not over-mocked; same for the mid-stream frame.
 - R1 (ownership short-circuit) asserts `createChatStream` is NOT called for a
@@ -47,7 +49,7 @@ Strong points confirmed by the agents:
 - **Severity**: 💡 OBSERVATION
 - **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped
 - **Dimension**: Success Criteria
-- **Location**: src/lib/services/ai.ts:36-38 / src/test/__mocks__/astro-env-server.ts:8
+- **Location**: src/lib/services/ai.ts:36-38 / src/test/**mocks**/astro-env-server.ts:8
 - **Detail**: The test double always resolves `OPENROUTER_API_KEY` to a non-empty
   placeholder, so the `if (!OPENROUTER_API_KEY) throw` guard in `createChatStream`
   was never covered. (The guard is otherwise hard to reach: an empty key makes

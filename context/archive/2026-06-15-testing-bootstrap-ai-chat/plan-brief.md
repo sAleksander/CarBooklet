@@ -16,7 +16,7 @@ the model's prose (test-plan §1, §7).
 No `vitest.config`, no `*.test.*`, no test dep or script. The chat route is
 already well-guarded (`src/pages/api/ai/chat.ts:11-50`) and ownership is
 enforced server-side via a two-column `getCarById` filter — so the job is to
-*pin that contract against regression*, not to add missing safety.
+_pin that contract against regression_, not to add missing safety.
 
 ## Desired End State
 
@@ -27,14 +27,14 @@ non-leak. The test-plan §6 cookbook is filled with the patterns established and
 
 ## Key Decisions Made
 
-| Decision | Choice | Why | Source |
-| --- | --- | --- | --- |
-| Test runner | Vitest, `environment: "node"` | Vite-native; `nodejs_compat` makes Node env correct | Research |
-| Virtual module | Alias `astro:env/server` → test double | It doesn't exist in Vitest; importing services throws otherwise | Research |
-| Grounding test | Export `buildSystemPrompt` + `sanitise` | Cheapest real signal — pure fn, fixture oracle, no mocks | Plan |
-| Test location | Centralized `src/test/` mirroring `src/` | Keeps source dirs test-free; one convention for Phases 2-4 | Plan |
-| Coverage | Defer to §3 Phase 4 (CI gate) | Keep bootstrap lean; no premature thresholds on 2 files | Plan |
-| Integration style | Invoke `POST` directly, `vi.mock` boundary services | No HTTP server/miniflare needed; exercises real guard logic | Plan |
+| Decision          | Choice                                              | Why                                                             | Source   |
+| ----------------- | --------------------------------------------------- | --------------------------------------------------------------- | -------- |
+| Test runner       | Vitest, `environment: "node"`                       | Vite-native; `nodejs_compat` makes Node env correct             | Research |
+| Virtual module    | Alias `astro:env/server` → test double              | It doesn't exist in Vitest; importing services throws otherwise | Research |
+| Grounding test    | Export `buildSystemPrompt` + `sanitise`             | Cheapest real signal — pure fn, fixture oracle, no mocks        | Plan     |
+| Test location     | Centralized `src/test/` mirroring `src/`            | Keeps source dirs test-free; one convention for Phases 2-4      | Plan     |
+| Coverage          | Defer to §3 Phase 4 (CI gate)                       | Keep bootstrap lean; no premature thresholds on 2 files         | Plan     |
+| Integration style | Invoke `POST` directly, `vi.mock` boundary services | No HTTP server/miniflare needed; exercises real guard logic     | Plan     |
 
 ## Scope
 
@@ -57,10 +57,10 @@ exist before any spec imports a service.
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Bootstrap | `npm test` runs; config + alias + double + exports | Vitest/vite version alignment; alias must resolve |
-| 2. Unit (R1) | Grounding/sanitisation/optional-omission spec | Oracle must come from fixture, not the function |
+| Phase                  | What it delivers                                       | Key risk                                          |
+| ---------------------- | ------------------------------------------------------ | ------------------------------------------------- |
+| 1. Bootstrap           | `npm test` runs; config + alias + double + exports     | Vitest/vite version alignment; alias must resolve |
+| 2. Unit (R1)           | Grounding/sanitisation/optional-omission spec          | Oracle must come from fixture, not the function   |
 | 3. Integration (R1+R2) | Guard table + foreign-car short-circuit + key non-leak | Mock context fidelity; SSE drain via `res.text()` |
 
 **Prerequisites:** None beyond the existing repo + `npm install`.
