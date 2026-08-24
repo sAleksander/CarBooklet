@@ -64,10 +64,11 @@ Add one React island that hosts the footer Edit/Delete bar, the inline (replace-
 **Intent**: Provide inline edit + confirmed delete for a single entry on the detail page, reusing the existing per-type edit forms and the existing PATCH/DELETE endpoints. Holds the editing toggle, renders the Astro read view (passed as children) when not editing, and the correct edit form when editing.
 
 **Contract**: A React component, props `{ entry: Entry; children: React.ReactNode }`.
+
 - State: `editing: boolean`, plus delete state mirroring the orchestrator (`confirmOpen`/`deletingError`/`isDeleting`).
 - **Read mode** (`!editing`): render `{children}` (the Astro read view) followed by a footer action bar (separated by the existing `hr` glass style) with an **Edit** button (`onClick → setEditing(true)`) and a destructive **Delete** button (`onClick → open confirm dialog`).
 - **Edit mode** (`editing`): narrow on `entry.entry_type` and render the matching form — `repair → RepairEntryEditForm`, `oil_change → OilChangeEntryEditForm`, `inspection → InspectionEntryEditForm`, `insurance → InsuranceEntryEditForm` — passing `entry={entry}`, `onSuccess={() => window.location.reload()}`, `onCancel={() => setEditing(false)}`. The discriminated union narrows each branch so the typed `entry` matches each form's prop type.
-- **Delete**: reuse the `AlertDialog` pattern from `RepairEntries.tsx:100-133` (title "Delete entry", "This cannot be undone.", Cancel + destructive Delete, disabled while in flight, inline error on failure). On confirm, `fetch(\`/api/entries/${slug(entry.entry_type)}?id=${entry.id}\`, { method: "DELETE" })`; on `res.status === 204` → `window.location.href = "/entries"`; otherwise surface `json.error`.
+- **Delete**: reuse the `AlertDialog` pattern from `RepairEntries.tsx:100-133` (title "Delete entry", "This cannot be undone.", Cancel + destructive Delete, disabled while in flight, inline error on failure). On confirm, `fetch(\`/api/entries/${slug(entry.entry_type)}?id=${entry.id}\`, { method: "DELETE" })`; on `res.status === 204`→`window.location.href = "/entries"`; otherwise surface `json.error`.
 - **Slug map**: `const API_SLUG: Record<Entry["entry_type"], string> = { repair: "repair", oil_change: "oil-change", inspection: "inspection", insurance: "insurance" }`.
 
 Per `CLAUDE.md` this is interactive → React, lives in `src/components/`, uses `cn()` for any class merging, no `"use client"` directive.

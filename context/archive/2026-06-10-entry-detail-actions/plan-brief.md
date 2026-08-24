@@ -16,15 +16,15 @@ The detail page gains a footer action bar with Edit and Delete. Edit swaps the r
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| Edit UX on detail page | Inline, replace read view | User wanted editing in place rather than a modal | Plan |
-| Read view during edit | Astro view passed as island children, swapped for form | Keeps `EntryDetail.astro` the single render source — no React duplication | Plan |
-| After successful edit | `window.location.reload()` | SSR re-renders fresh fields; no client-side patch logic | Plan |
-| After successful delete | Redirect to `/entries` | Entry is gone; return to its list is the natural continuation | Plan |
-| Action placement | Footer action bar | Clear content-vs-actions separation on the detail card | Plan |
-| Delete confirmation | Keep the existing `AlertDialog` | Guards an irreversible action; reuses a proven pattern | Plan |
-| List-side cleanup | Remove entirely (buttons + orchestrator code) | No dead code; orchestrators shrink to create-form + list | Plan |
+| Decision                | Choice                                                 | Why (1 sentence)                                                          | Source |
+| ----------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------- | ------ |
+| Edit UX on detail page  | Inline, replace read view                              | User wanted editing in place rather than a modal                          | Plan   |
+| Read view during edit   | Astro view passed as island children, swapped for form | Keeps `EntryDetail.astro` the single render source — no React duplication | Plan   |
+| After successful edit   | `window.location.reload()`                             | SSR re-renders fresh fields; no client-side patch logic                   | Plan   |
+| After successful delete | Redirect to `/entries`                                 | Entry is gone; return to its list is the natural continuation             | Plan   |
+| Action placement        | Footer action bar                                      | Clear content-vs-actions separation on the detail card                    | Plan   |
+| Delete confirmation     | Keep the existing `AlertDialog`                        | Guards an irreversible action; reuses a proven pattern                    | Plan   |
+| List-side cleanup       | Remove entirely (buttons + orchestrator code)          | No dead code; orchestrators shrink to create-form + list                  | Plan   |
 
 ## Scope
 
@@ -38,10 +38,10 @@ The detail page renders `EntryDetail.astro` (read view) as **children** of a new
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Detail-page actions island | Inline edit + confirmed delete on the detail page, wired into the route | Astro-children-into-React-island toggle behaving correctly; correct API slug for oil change |
-| 2. Strip edit/delete from list side | Buttons gone from 4 lists; edit/delete state gone from 4 orchestrators | Leftover unused imports/props (caught by lint) |
+| Phase                               | What it delivers                                                        | Key risk                                                                                    |
+| ----------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| 1. Detail-page actions island       | Inline edit + confirmed delete on the detail page, wired into the route | Astro-children-into-React-island toggle behaving correctly; correct API slug for oil change |
+| 2. Strip edit/delete from list side | Buttons gone from 4 lists; edit/delete state gone from 4 orchestrators  | Leftover unused imports/props (caught by lint)                                              |
 
 **Prerequisites:** S-03 (entry detail route) — shipped. No new deps.
 **Estimated effort:** ~1 session across 2 phases.

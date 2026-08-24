@@ -1,10 +1,10 @@
 ---
 change_id: entry-detail-actions
 title: Move edit/delete from entries list to the entry detail page
-status: impl_reviewed
+status: archived
 created: 2026-06-10
-updated: 2026-06-10
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T15:46:24Z
 ---
 
 ## Notes
