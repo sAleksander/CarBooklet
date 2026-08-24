@@ -16,13 +16,13 @@ A user with at least one entry sees a compact card (type label, `conducted_at` d
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| "Most recent" ordering | `conducted_at` desc | Consistent with every existing list and deadline query | Plan |
-| Widget interaction | Compact card linking to `/entries/[type]/[id]` | Reuses the shipped detail route; matches the clickable-card pattern | Plan |
-| Empty state | Hide the widget entirely | User's choice — no card when the car has zero entries | Plan |
-| Tie-break (same date) | Fixed type priority `repair > oil_change > inspection > insurance` | Deterministic and test-stable; matches `EntryType` declaration order | Plan |
-| Summary line | Type-specific key field (description / oil_details / result / insurer) | Mirrors what each list card already surfaces | Plan |
+| Decision               | Choice                                                                 | Why (1 sentence)                                                     | Source |
+| ---------------------- | ---------------------------------------------------------------------- | -------------------------------------------------------------------- | ------ |
+| "Most recent" ordering | `conducted_at` desc                                                    | Consistent with every existing list and deadline query               | Plan   |
+| Widget interaction     | Compact card linking to `/entries/[type]/[id]`                         | Reuses the shipped detail route; matches the clickable-card pattern  | Plan   |
+| Empty state            | Hide the widget entirely                                               | User's choice — no card when the car has zero entries                | Plan   |
+| Tie-break (same date)  | Fixed type priority `repair > oil_change > inspection > insurance`     | Deterministic and test-stable; matches `EntryType` declaration order | Plan   |
+| Summary line           | Type-specific key field (description / oil_details / result / insurer) | Mirrors what each list card already surfaces                         | Plan   |
 
 ## Scope
 
@@ -36,10 +36,10 @@ A user with at least one entry sees a compact card (type label, `conducted_at` d
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. `getLastEntry` service | Cross-table most-recent-entry resolver | Tie-break determinism on same-day entries |
-| 2. Widget + wiring | `LastEntryCard.astro` rendered on the dashboard | Hidden-when-null behavior; correct detail-route link |
+| Phase                     | What it delivers                                | Key risk                                             |
+| ------------------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| 1. `getLastEntry` service | Cross-table most-recent-entry resolver          | Tie-break determinism on same-day entries            |
+| 2. Widget + wiring        | `LastEntryCard.astro` rendered on the dashboard | Hidden-when-null behavior; correct detail-route link |
 
 **Prerequisites:** S-02 (sidebar/`AppLayout`) and `entry-detail-route` shipped — both done.
 **Estimated effort:** ~1 short session across 2 phases.
