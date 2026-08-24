@@ -16,23 +16,25 @@ The repo has `supabase/config.toml` and an SSR Supabase client (`src/lib/supabas
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-| --- | --- | --- |
-| "Other identifying data" (FR-002) | 9 columns: brand, model, year, reg. no., engine type/capacity/power/code, VIN | User specified these fields explicitly; all are load-bearing for S-01 UI and S-02 AI context |
-| Year field type | TEXT | Roadmap F-01 risk note resolved: free-text strings for make, model, year in v1 |
-| engine_type storage | PostgreSQL enum (`electric`, `gas`, `diesel`, `lpg`) | Database enforces valid values; AI prompt gets a clean identifier |
-| engine_capacity / engine_power storage | TEXT ("1.2L", "75hp") | No numeric queries exist in any v1 roadmap slice; frontend validates format in S-01 |
-| Timestamps | created_at + updated_at (trigger) | Enables sort-by-recently-modified in S-01; standard pattern for F-02 reuse |
-| TypeScript types | Included in this change | Single source of truth for `Car` shape available to all downstream slices from day one |
-| Delete behaviour | ON DELETE CASCADE (user → cars) | User deletion cleans up all rows; no orphan data |
+| Decision                               | Choice                                                                        | Why (1 sentence)                                                                             |
+| -------------------------------------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| "Other identifying data" (FR-002)      | 9 columns: brand, model, year, reg. no., engine type/capacity/power/code, VIN | User specified these fields explicitly; all are load-bearing for S-01 UI and S-02 AI context |
+| Year field type                        | TEXT                                                                          | Roadmap F-01 risk note resolved: free-text strings for make, model, year in v1               |
+| engine_type storage                    | PostgreSQL enum (`electric`, `gas`, `diesel`, `lpg`)                          | Database enforces valid values; AI prompt gets a clean identifier                            |
+| engine_capacity / engine_power storage | TEXT ("1.2L", "75hp")                                                         | No numeric queries exist in any v1 roadmap slice; frontend validates format in S-01          |
+| Timestamps                             | created_at + updated_at (trigger)                                             | Enables sort-by-recently-modified in S-01; standard pattern for F-02 reuse                   |
+| TypeScript types                       | Included in this change                                                       | Single source of truth for `Car` shape available to all downstream slices from day one       |
+| Delete behaviour                       | ON DELETE CASCADE (user → cars)                                               | User deletion cleans up all rows; no orphan data                                             |
 
 ## Scope
 
 **In scope:**
+
 - `supabase/migrations/20260527000000_cars_schema.sql` — enum, table, RLS, trigger
 - `src/types.ts` — `Car` interface, `EngineType` union
 
 **Out of scope:**
+
 - UI or API routes (S-01)
 - Seed data or test fixtures
 - Database-level validation of `engine_capacity` / `engine_power` format (frontend, S-01)
@@ -45,10 +47,10 @@ Single SQL migration file in dependency order (enum → table → RLS → polici
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
-| 1. Database Migration | `cars` table live in local Supabase with enum, RLS, and trigger | Local Supabase must be running (`npx supabase start` requires Docker + ~7 GB RAM) |
-| 2. TypeScript Type Definition | `Car` + `EngineType` exported from `src/types.ts` | File doesn't exist yet — must be created, not edited |
+| Phase                         | What it delivers                                                | Key risk                                                                          |
+| ----------------------------- | --------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| 1. Database Migration         | `cars` table live in local Supabase with enum, RLS, and trigger | Local Supabase must be running (`npx supabase start` requires Docker + ~7 GB RAM) |
+| 2. TypeScript Type Definition | `Car` + `EngineType` exported from `src/types.ts`               | File doesn't exist yet — must be created, not edited                              |
 
 **Prerequisites:** Docker running, `npx supabase start` completed, local Supabase accessible at http://localhost:54323  
 **Estimated effort:** ~1 session, 2 phases (migration file is the bulk of the work; types are minutes)
