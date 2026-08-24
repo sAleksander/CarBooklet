@@ -72,6 +72,7 @@ Add `update*Entry` and `delete*Entry` service functions for all 4 types, and add
 **Intent**: Add `update*Entry(supabase, entryId, userId, data)` and `delete*Entry(supabase, entryId, userId)` for each of the 4 types. Both functions filter by `userId` as an application-layer ownership check on top of RLS.
 
 **Contract**:
+
 - `updateRepairEntry(supabase: SupabaseClient, entryId: string, userId: string, data: RepairEntryFormData): Promise<RepairEntry | null>` — UPDATE `repair_entries` WHERE `id = entryId` AND `user_id = userId`, `.select().single()`. On PGRST116 return null; on other errors throw. Return row + `entry_type: 'repair' as const`.
 - `deleteRepairEntry(supabase: SupabaseClient, entryId: string, userId: string): Promise<void>` — DELETE WHERE `id = entryId` AND `user_id = userId`. Throw on `res.error`.
 - Repeat the same two functions for oil change (`oil_change_entries`, `entry_type: 'oil_change'`), inspection (`inspection_entries`, `entry_type: 'inspection'`), and insurance (`insurance_entries`, `entry_type: 'insurance'`).
@@ -83,6 +84,7 @@ Add `update*Entry` and `delete*Entry` service functions for all 4 types, and add
 **Intent**: Allow updating and deleting individual repair entries by their UUID. Both handlers verify the entry belongs to the authenticated user via the service layer.
 
 **Contract**:
+
 - `PATCH`: Parse body, validate with Zod:
   ```ts
   z.object({
@@ -90,8 +92,11 @@ Add `update*Entry` and `delete*Entry` service functions for all 4 types, and add
     conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     mileage: z.number().int().min(0).nullable().optional(),
     description: z.string().min(1, "Description is required"),
-    cause: z.string().nullish().transform(v => v ?? null),
-  })
+    cause: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? null),
+  });
   ```
   Call `updateRepairEntry(supabase, id, user.id, { conducted_at, mileage, description, cause })`. If null → 404 `{ error: "Entry not found" }`. Return `{ entry }` with status 200.
 - `DELETE`: Read `id` from `new URL(context.request.url).searchParams.get("id")`. Validate as UUID. Call `deleteRepairEntry(supabase, id, user.id)`. Return `new Response(null, { status: 204 })`.
@@ -156,6 +161,7 @@ Install the shadcn `Dialog` component, then create 4 `*EntryEditForm.tsx` compon
 **Intent**: Edit form for repair entries. Pre-populates all fields from the passed entry and sends PATCH on submit. Structurally mirrors `RepairEntryForm.tsx` but with initial state from the entry and PATCH semantics.
 
 **Contract**:
+
 - Props: `{ entry: RepairEntry; onSuccess: (entry: RepairEntry) => void; onCancel: () => void }`
 - Initial form state: `{ conducted_at: entry.conducted_at, description: entry.description, cause: entry.cause ?? '', mileage: entry.mileage }`
 - Submits `PATCH /api/entries/repair` body: `{ id: entry.id, conducted_at, description, cause, mileage }`.
@@ -212,6 +218,7 @@ Add Edit/Delete action buttons to all 4 entry list components and add the modal/
 **Intent**: Add `onEdit` and `onDelete` callback props and render Edit + Delete action buttons in the card header row, on the right side next to (or replacing) the mileage.
 
 **Contract**:
+
 - New props: `onEdit: (entry: RepairEntry) => void; onDelete: (entry: RepairEntry) => void`.
 - Card header `<div>`: update to `<div className="mb-1 flex items-center gap-2">`. Date on the left. On the right: mileage (if non-null), then `<Button variant="ghost" size="sm">Edit</Button>` and `<Button variant="ghost" size="sm" className="text-destructive hover:text-destructive">Delete</Button>`.
 - Clicking Edit calls `onEdit(entry)`; clicking Delete calls `onDelete(entry)`.
@@ -241,6 +248,7 @@ Add Edit/Delete action buttons to all 4 entry list components and add the modal/
 **Intent**: Add state for the active edit and delete targets, and render the `Dialog` (edit) and `AlertDialog` (delete) modals.
 
 **Contract**:
+
 - New state: `editingEntry: RepairEntry | null` (default null), `deletingEntry: RepairEntry | null` (default null), `isDeleting: boolean` (default false), `deleteError: string | null` (default null).
 - Pass `onEdit={(e) => setEditingEntry(e)}` and `onDelete={(e) => setDeletingEntry(e)}` to `<RepairEntryList>`.
 - **Edit Dialog**: `<Dialog open={editingEntry !== null} onOpenChange={(open) => { if (!open) setEditingEntry(null); }}>`. Inside `<DialogContent>`: `<DialogHeader><DialogTitle>Edit repair entry</DialogTitle></DialogHeader>` and `<RepairEntryEditForm entry={editingEntry!} onSuccess={(updated) => { setEntries(prev => prev.map(e => e.id === updated.id ? updated : e)); setEditingEntry(null); }} onCancel={() => setEditingEntry(null)} />`.
