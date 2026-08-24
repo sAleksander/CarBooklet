@@ -71,6 +71,7 @@ Add 6 service functions to `entries.ts` and create 3 new API route files. After 
 **Intent**: Add `get` and `create` pairs for oil change, inspection, and insurance entries. Each pair follows the established `getRepairEntries`/`createRepairEntry` pattern exactly, differing only in the table name and injected `entry_type` const.
 
 **Contract**:
+
 - `getOilChangeEntries(supabase: SupabaseClient, carId: string, userId: string): Promise<OilChangeEntry[]>` — SELECT from `oil_change_entries`, filter `car_id = carId` and `user_id = userId`, order by `conducted_at` DESC. Map rows: inject `entry_type: 'oil_change' as const`.
 - `createOilChangeEntry(supabase: SupabaseClient, userId: string, carId: string, data: OilChangeEntryFormData): Promise<OilChangeEntry>` — INSERT with `user_id` + `car_id` + spread `data`, SELECT single. Return with `entry_type: 'oil_change' as const`.
 - Repeat the same structure for `getInspectionEntries`/`createInspectionEntry` (`inspection_entries`, `entry_type: 'inspection' as const`) and `getInsuranceEntries`/`createInsuranceEntry` (`insurance_entries`, `entry_type: 'insurance' as const`).
@@ -84,6 +85,7 @@ Add 6 service functions to `entries.ts` and create 3 new API route files. After 
 **Intent**: GET and POST for oil change entries. Direct copy of `repair.ts` with the oil-change Zod schema.
 
 **Contract**:
+
 - GET: `car_id` UUID from query params → `getOilChangeEntries(supabase, carId, user.id)` → `{ entries }`.
 - POST Zod schema:
   ```ts
@@ -91,8 +93,11 @@ Add 6 service functions to `entries.ts` and create 3 new API route files. After 
     car_id: z.string().uuid(),
     conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     mileage: z.number().int().min(0).nullable().optional(),
-    oil_details: z.string().nullish().transform(v => v ?? null),
-  })
+    oil_details: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? null),
+  });
   ```
 - Ownership check: `car?.user_id !== user.id → 404`.
 - Returns `{ entry }` with status 201.
@@ -104,15 +109,25 @@ Add 6 service functions to `entries.ts` and create 3 new API route files. After 
 **Intent**: GET and POST for inspection entries, with `result` restricted to "Passed" or "Failed".
 
 **Contract**:
+
 - POST Zod schema:
   ```ts
   z.object({
     car_id: z.string().uuid(),
     conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     mileage: z.number().int().min(0).nullable().optional(),
-    result: z.enum(["Passed", "Failed"]).nullable().optional().transform(v => v ?? null),
-    next_inspection_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().transform(v => v ?? null),
-  })
+    result: z
+      .enum(["Passed", "Failed"])
+      .nullable()
+      .optional()
+      .transform((v) => v ?? null),
+    next_inspection_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable()
+      .optional()
+      .transform((v) => v ?? null),
+  });
   ```
 - Calls `createInspectionEntry`. Returns `{ entry }` with 201.
 
@@ -123,16 +138,25 @@ Add 6 service functions to `entries.ts` and create 3 new API route files. After 
 **Intent**: GET and POST for insurance entries, with `renewal_date` required.
 
 **Contract**:
+
 - POST Zod schema:
   ```ts
   z.object({
     car_id: z.string().uuid(),
     conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     mileage: z.number().int().min(0).nullable().optional(),
-    insurer: z.string().nullish().transform(v => v ?? null),
-    policy_start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional().transform(v => v ?? null),
-    renewal_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Renewal date must be YYYY-MM-DD'),
-  })
+    insurer: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? null),
+    policy_start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullable()
+      .optional()
+      .transform((v) => v ?? null),
+    renewal_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Renewal date must be YYYY-MM-DD"),
+  });
   ```
 - Calls `createInsuranceEntry`. Returns `{ entry }` with 201.
 
@@ -170,6 +194,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Form for adding an oil change entry. `oil_details` is the only type-specific field (optional text area). Follows `RepairEntryForm` pattern exactly.
 
 **Contract**:
+
 - Props: `{ carId: string; onSuccess: (entry: OilChangeEntry) => void }`
 - Form state: `conducted_at` defaults to today, `oil_details: ''`, `mileage: null`.
 - POSTs to `/api/entries/oil-change`. No client-side required-field validation beyond non-empty `conducted_at`.
@@ -182,6 +207,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Display list of oil change entries. Shows date, mileage (if non-null), oil details (if non-null).
 
 **Contract**:
+
 - Props: `{ entries: OilChangeEntry[] }`.
 - Empty state: "No oil change entries yet. Log your first one above."
 - Per entry: formatted `conducted_at`, mileage labeled "Mileage:", `oil_details` labeled "Details:".
@@ -193,6 +219,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Orchestrator island. Owns entries state and form-reset key. Mirrors `RepairEntries` exactly.
 
 **Contract**:
+
 - Props: `{ initialEntries: OilChangeEntry[]; carId: string }`.
 - State: `entries`, `formKey`.
 - `handleSuccess(entry)`: prepend entry, increment formKey.
@@ -205,6 +232,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Form for adding an inspection entry. Type-specific fields: `result` as a Pass/Fail select, `next_inspection_date` as a date input.
 
 **Contract**:
+
 - Props: `{ carId: string; onSuccess: (entry: InspectionEntry) => void }`
 - Form state: `conducted_at` = today, `result: null`, `next_inspection_date: ''`, `mileage: null`.
 - `result` rendered as `<Select>` (shadcn/ui). Options: a placeholder "Select result" (value `""`), "Passed", "Failed". On change, set to the string value or null if the placeholder is selected.
@@ -218,6 +246,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Display list of inspection entries. Shows date, result (if non-null), next inspection date (if non-null), mileage (if non-null).
 
 **Contract**:
+
 - Props: `{ entries: InspectionEntry[] }`.
 - Empty state: "No inspection entries yet. Log your first one above."
 - Per entry: date, result labeled "Result:", `next_inspection_date` labeled "Next due:", mileage.
@@ -237,6 +266,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Form for adding an insurance entry. Type-specific fields: `insurer` (optional text), `policy_start_date` (optional date), `renewal_date` (required date).
 
 **Contract**:
+
 - Props: `{ carId: string; onSuccess: (entry: InsuranceEntry) => void }`
 - Form state: `conducted_at` = today, `insurer: ''`, `policy_start_date: ''`, `renewal_date: ''`, `mileage: null`.
 - Client-side validation: `renewal_date` must be non-empty.
@@ -250,6 +280,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Display list of insurance entries. Shows date, insurer (if non-null), policy start date (if non-null), renewal date (always shown — it is required), mileage (if non-null).
 
 **Contract**:
+
 - Props: `{ entries: InsuranceEntry[] }`.
 - Empty state: "No insurance entries yet. Log your first one above."
 - Per entry: date, insurer labeled "Insurer:", policy start labeled "Policy from:", renewal labeled "Renewal:".
@@ -269,6 +300,7 @@ Create the three new per-type component triads (form + list + orchestrator) and 
 **Intent**: Top-level island. Owns the active tab and renders the correct per-type orchestrator. Receives server-pre-fetched initial entries for all four types.
 
 **Contract**:
+
 - Props:
   ```ts
   {
@@ -318,6 +350,7 @@ Update `entries.astro` to server-fetch all four entry types in parallel, mount `
 **Intent**: Expand the server-side pre-fetch from 1 entry type to 4, replace the `RepairEntries` island with `EntriesTabs`, and update the page heading.
 
 **Contract**:
+
 - Import `getOilChangeEntries`, `getInspectionEntries`, `getInsuranceEntries` from `@/lib/services/entries`.
 - Import `EntriesTabs` from `@/components/entries/EntriesTabs`.
 - Replace the `Promise.all` to fetch all 5 items concurrently:

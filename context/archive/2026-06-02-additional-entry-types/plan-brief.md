@@ -16,19 +16,20 @@ A user opens `/entries` and sees four tabs: Repairs | Oil Changes | Inspections 
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) |
-|---|---|---|
-| Page layout | Tabs on /entries | Single nav item, all history in one place, mirrors common mobile car apps. |
-| Inspection result field | Pass/Fail select (stored "Passed"/"Failed") | Unambiguous, maps directly to the Polish inspection outcome, no free-text queries needed. |
-| Default tab | Repairs | No behavioral regression; repair is the primary entry type. |
-| API route structure | 3 separate routes (pattern: repair.ts) | Matches established pattern; each route is independently testable. |
-| Island design | Single EntriesTabs island + 4 per-type orchestrators | Tab state in one place; each type's form/list is still independently changeable. |
-| List components | Per-type (OilChangeEntryList, etc.) | Each list is tailored to its type; avoids premature abstraction at 4 types. |
-| Topbar | No change | Single "Entries" link stays; no nav changes needed. |
+| Decision                | Choice                                               | Why (1 sentence)                                                                          |
+| ----------------------- | ---------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Page layout             | Tabs on /entries                                     | Single nav item, all history in one place, mirrors common mobile car apps.                |
+| Inspection result field | Pass/Fail select (stored "Passed"/"Failed")          | Unambiguous, maps directly to the Polish inspection outcome, no free-text queries needed. |
+| Default tab             | Repairs                                              | No behavioral regression; repair is the primary entry type.                               |
+| API route structure     | 3 separate routes (pattern: repair.ts)               | Matches established pattern; each route is independently testable.                        |
+| Island design           | Single EntriesTabs island + 4 per-type orchestrators | Tab state in one place; each type's form/list is still independently changeable.          |
+| List components         | Per-type (OilChangeEntryList, etc.)                  | Each list is tailored to its type; avoids premature abstraction at 4 types.               |
+| Topbar                  | No change                                            | Single "Entries" link stays; no nav changes needed.                                       |
 
 ## Scope
 
 **In scope:**
+
 - 6 service functions (get + create for each of 3 new types)
 - 3 new API routes: /api/entries/oil-change, /api/entries/inspection, /api/entries/insurance
 - 9 new React component files (form + list + orchestrator per type)
@@ -36,6 +37,7 @@ A user opens `/entries` and sees four tabs: Repairs | Oil Changes | Inspections 
 - entries.astro update (4 parallel fetches + EntriesTabs mount)
 
 **Out of scope:**
+
 - Edit / delete of any entry type (S-05)
 - AI prompt injection of entry context (S-02 addendum)
 - Tab persistence in localStorage
@@ -47,11 +49,11 @@ Pure replication of the S-03 stack, three times over. The backend is three indep
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Service + API Routes | All 3 new entry types curl-verifiable; backend complete | Zod schema for inspection must restrict result to ["Passed", "Failed"] exactly |
-| 2. React Components | All 9 per-type components + EntriesTabs ready to mount | EntriesTabs props shape must match what entries.astro passes in Phase 3 |
-| 3. Astro Page Update | /entries shows 4 tabs; full smoke test | entries.astro Promise.all must not error if any one fetch fails (car not found → already redirected before fetches) |
+| Phase                   | What it delivers                                        | Key risk                                                                                                            |
+| ----------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| 1. Service + API Routes | All 3 new entry types curl-verifiable; backend complete | Zod schema for inspection must restrict result to ["Passed", "Failed"] exactly                                      |
+| 2. React Components     | All 9 per-type components + EntriesTabs ready to mount  | EntriesTabs props shape must match what entries.astro passes in Phase 3                                             |
+| 3. Astro Page Update    | /entries shows 4 tabs; full smoke test                  | entries.astro Promise.all must not error if any one fetch fails (car not found → already redirected before fetches) |
 
 **Prerequisites:** F-02 (schema live), S-01 (car management done), S-03 (repair entry pattern established) — all done.
 **Estimated effort:** ~1–2 sessions across 3 phases.

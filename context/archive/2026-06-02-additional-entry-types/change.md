@@ -2,10 +2,10 @@
 change_id: additional-entry-types
 roadmap_id: S-04
 title: "Additional entry types — oil change, inspection, and insurance entry logging"
-status: impl_reviewed
+status: archived
 created: 2026-06-02
-updated: 2026-06-02
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T15:43:57Z
 prd_refs:
   - FR-005
   - FR-006
