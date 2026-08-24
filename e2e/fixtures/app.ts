@@ -157,6 +157,26 @@ export const test = base.extend<AppFixtures>({
     // toggle's aria-label ("Show password") and fails on strict mode.
     // getByRole("textbox") is not the way out either: <input type="password">
     // has no implicit ARIA role, so no role locator can reach it.
+    // Wait for the island to HYDRATE before touching the form.
+    //
+    // SignInForm is `client:load` with controlled inputs. Anything typed before
+    // React mounts is written to the DOM and then discarded when the controlled
+    // inputs take over with their empty initial state — the form ends up
+    // showing "Email is required" over fields that were demonstrably filled a
+    // moment earlier. Verifying the typed value does not help: the whole
+    // fill-and-check can complete before hydration, and the wipe happens after.
+    //
+    // This is the hydration race e2e/README.md documents for island clicks,
+    // one step earlier in the flow, and it widens whenever the dev server is
+    // busy — which is exactly when several workers run in parallel.
+    //
+    // Astro server-renders each island with an `ssr` attribute and removes it
+    // once the component mounts, so "no islands left marked ssr" is the app's
+    // only honest "the form is interactive now" signal. A CSS locator is
+    // correct here despite the role-first rule: this is a framework marker,
+    // not application DOM structure, and no accessible equivalent exists.
+    await expect(page.locator("astro-island[ssr]")).toHaveCount(0, { timeout: 30_000 });
+
     await page.getByLabel("Email", { exact: true }).fill(user.email);
     await page.getByLabel("Password", { exact: true }).fill(user.password);
     await page.getByRole("button", { name: "Sign in" }).click();
@@ -170,7 +190,12 @@ export const test = base.extend<AppFixtures>({
     // freshly seeded user never has. Pinning a URL here would couple every
     // signed-in test to the car-selection rules. "Sign out" is rendered only by
     // the authenticated shell, so it means signed-in wherever we landed.
-    await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
+    //
+    // The generous timeout is not a disguised sleep — the wait is still on
+    // state. It covers a three-hop redirect chain in which the dev server may
+    // compile each route on demand, with several workers competing for it. The
+    // default 5s is a production-speed budget and fails here for no real reason.
+    await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible({ timeout: 30_000 });
 
     await use(page);
   },
