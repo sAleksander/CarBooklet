@@ -16,18 +16,19 @@ Four entry tables are live in Supabase, each with RLS, triggers, and a FK to `pu
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Schema shape | Separate table per entry type | Avoids nullable spread and keeps each table's contract clean | Plan |
-| RLS approach | `user_id` directly on each table | Consistent with cars-schema pattern; simpler policy expressions | Plan |
-| Oil change "next due" | Computed at query time (conducted_at + 1y, mileage + 10 000 km) | No extra column needed; derivable from the entry data that's already stored | Plan |
-| Shared base columns | `conducted_at DATE NOT NULL` + optional `mileage INTEGER` on all tables | User can backdate any entry; mileage enables interval-based oil change tracking | Plan |
-| TypeScript types | Separate interfaces + `Entry` discriminated union | Enables TypeScript narrowing per entry type; maps 1:1 to the four tables | Plan |
-| Insurance fields | `policy_start_date` (nullable) + `renewal_date NOT NULL` + `insurer` (nullable) | Covers PRD "policy period" and the dashboard-critical renewal date | Plan |
+| Decision              | Choice                                                                          | Why (1 sentence)                                                                | Source |
+| --------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------ |
+| Schema shape          | Separate table per entry type                                                   | Avoids nullable spread and keeps each table's contract clean                    | Plan   |
+| RLS approach          | `user_id` directly on each table                                                | Consistent with cars-schema pattern; simpler policy expressions                 | Plan   |
+| Oil change "next due" | Computed at query time (conducted_at + 1y, mileage + 10 000 km)                 | No extra column needed; derivable from the entry data that's already stored     | Plan   |
+| Shared base columns   | `conducted_at DATE NOT NULL` + optional `mileage INTEGER` on all tables         | User can backdate any entry; mileage enables interval-based oil change tracking | Plan   |
+| TypeScript types      | Separate interfaces + `Entry` discriminated union                               | Enables TypeScript narrowing per entry type; maps 1:1 to the four tables        | Plan   |
+| Insurance fields      | `policy_start_date` (nullable) + `renewal_date NOT NULL` + `insurer` (nullable) | Covers PRD "policy period" and the dashboard-critical renewal date              | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `repair_entries` table: `conducted_at`, `mileage`, `description NOT NULL`, `cause`
 - `oil_change_entries` table: `conducted_at`, `mileage`, `oil_details`
 - `inspection_entries` table: `conducted_at`, `mileage`, `result`, `next_inspection_date`
@@ -36,6 +37,7 @@ Four entry tables are live in Supabase, each with RLS, triggers, and a FK to `pu
 - TypeScript types: `EntryType`, 4 entry interfaces, `Entry` union, 4 form data interfaces
 
 **Out of scope:**
+
 - No UI, API routes, or service files
 - No `entry_type` enum at DB level (separate tables make it redundant)
 - No next-change-date column on oil_change_entries
@@ -48,10 +50,10 @@ One SQL migration file creates all four tables sequentially (they have no mutual
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Database Migration | 4 tables, 16 RLS policies, 4 triggers in one SQL file | Migration filename must match the actual apply date (prefix must be after F-01's `20260527…`) |
-| 2. TypeScript Types | BaseEntry + 4 entry interfaces + Entry union + 4 form DTOs in src/types.ts | None significant — lint confirms correctness |
+| Phase                 | What it delivers                                                           | Key risk                                                                                      |
+| --------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| 1. Database Migration | 4 tables, 16 RLS policies, 4 triggers in one SQL file                      | Migration filename must match the actual apply date (prefix must be after F-01's `20260527…`) |
+| 2. TypeScript Types   | BaseEntry + 4 entry interfaces + Entry union + 4 form DTOs in src/types.ts | None significant — lint confirms correctness                                                  |
 
 **Prerequisites:** F-01 must be applied (`public.cars` and `public.set_updated_at()` must exist)
 **Estimated effort:** ~1 session across 2 phases (mirrors the cars-schema effort)

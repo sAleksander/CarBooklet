@@ -2,10 +2,10 @@
 change_id: entries-schema
 roadmap_id: F-02
 title: "Entries data schema — Supabase migration + RLS"
-status: impl_reviewed
+status: archived
 created: 2026-05-28
-updated: 2026-05-28
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T15:46:24Z
 prd_refs:
   - FR-003
   - FR-005

@@ -1,22 +1,23 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Entries Schema
 
 - **Plan**: context/changes/entries-schema/plan.md
 - **Scope**: Phases 1–2 of 2 (full plan)
 - **Date**: 2026-05-28
 - **Verdict**: NEEDS ATTENTION
-- **Findings**: 0 critical  2 warnings  2 observations
+- **Findings**: 0 critical 2 warnings 2 observations
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | PASS |
-| Scope Discipline | PASS |
-| Safety & Quality | WARNING |
-| Architecture | WARNING |
-| Pattern Consistency | PASS |
-| Success Criteria | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | PASS    |
+| Scope Discipline    | PASS    |
+| Safety & Quality    | WARNING |
+| Architecture        | WARNING |
+| Pattern Consistency | PASS    |
+| Success Criteria    | PASS    |
 
 ## Findings
 
@@ -26,7 +27,7 @@
 - **Impact**: 🔎 MEDIUM — real tradeoff; pause to reason through it
 - **Dimension**: Architecture
 - **Location**: src/types.ts:45
-- **Detail**: The TypeScript Entry union uses entry_type as its discriminant, but none of the four DB tables have an entry_type column. A raw Supabase SELECT * returns rows where entry_type is undefined at runtime, silently breaking any switch(entry.entry_type) or if(entry.entry_type === 'repair') guard. This class of bug will appear in every S-03/S-04 service function unless the convention is established now.
+- **Detail**: The TypeScript Entry union uses entry_type as its discriminant, but none of the four DB tables have an entry_type column. A raw Supabase SELECT \* returns rows where entry_type is undefined at runtime, silently breaking any switch(entry.entry_type) or if(entry.entry_type === 'repair') guard. This class of bug will appear in every S-03/S-04 service function unless the convention is established now.
 - **Fix A ⭐ Recommended**: Inject the literal at the return site of each service function: `return { ...res.data, entry_type: 'repair' as const }`.
   - Strength: Zero schema change; each service function knows which table it queried; mirrors the established cars.ts service pattern.
   - Tradeoff: Convention must be followed by every S-03/S-04 implementer — not enforced by the DB.
