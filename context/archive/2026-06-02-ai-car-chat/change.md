@@ -2,10 +2,10 @@
 change_id: ai-car-chat
 roadmap_id: S-02
 title: "AI car chat — stream model-aware AI responses for the selected car"
-status: impl_reviewed
+status: archived
 created: 2026-06-02
-updated: 2026-06-02
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T15:43:57Z
 review: context/changes/ai-car-chat/reviews/impl-review.md
 prd_refs:
   - US-01

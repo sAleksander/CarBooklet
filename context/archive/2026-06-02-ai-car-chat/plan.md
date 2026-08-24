@@ -63,6 +63,7 @@ Update `createChatStream` to accept car context and build a model-aware system p
 **Intent**: Accept the selected car as a parameter and construct a system prompt that includes the car's make, model, year, and any non-null engine details. The LLM receives specific car context on every request rather than a generic prompt.
 
 **Contract**: Change the signature to `createChatStream(prompt: string, car: Car): Promise<...>`. Import the `Car` type from `@/types`. Before calling `client.chat.completions.create`, build the system prompt:
+
 - Always include: `{production_year} {brand} {model}`
 - Always include: engine type (e.g. "diesel"), engine capacity, engine power
 - Conditionally include `engine_code` and `vin_number` when non-null and non-empty
@@ -75,6 +76,7 @@ Update `createChatStream` to accept car context and build a model-aware system p
 **Intent**: Fetch the selected car from the database and pass it to the AI service so that every prompt is grounded in the user's actual car.
 
 **Contract**:
+
 - After the existing `context.locals.user` check (line 10), read `context.locals.selectedCarId`. Return `400 { error: "No car selected" }` if null.
 - Call `createClient(context.request.headers, context.cookies)` (already present for auth); use it to call `getCarById(supabase, selectedCarId)`. Return `400 { error: "Car not found" }` if the result is null.
 - Pass `car` as the second argument to `createChatStream(prompt, car)`.
@@ -120,6 +122,7 @@ Create the production chat page, add it to protected routes, add the Topbar link
 **Intent**: Production chat page for the selected car. Server-fetches the car for the heading; mounts `ChatDemo` as a React island. Follows the `/entries` page pattern exactly.
 
 **Contract**:
+
 - Frontmatter reads `Astro.locals.selectedCarId`; redirects to `/cars` if null.
 - Creates Supabase client, calls `getCarById(supabase, selectedCarId)`; redirects to `/cars` if null.
 - Template: `<Layout title="AI Chat">` wrapper, heading `{car.brand} {car.model} — AI Chat`, subheading or descriptor with `{car.production_year}`, then `<ChatDemo client:load />`.
