@@ -89,6 +89,7 @@ Replace the 10x Astro Starter boilerplate copy and feature cards in `Welcome.ast
 **Intent**: Swap the starter headline and tagline for CarBooklet copy, and remove the three feature card blocks below the hero — the landing page is hero + CTAs only per agreed scope.
 
 **Contract**:
+
 - `<h1>` text: replace "10x Astro Starter" with "CarBooklet".
 - `<p>` tagline text: replace the existing sentence with "Track your car's full service history — repairs, oil changes, inspections, and insurance — in one place."
 - Remove the entire feature-cards grid `<div>` (`mx-auto grid max-w-4xl …`) and its three child `<div>` blocks.

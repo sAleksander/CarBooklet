@@ -16,22 +16,24 @@ Visiting `/` while logged in → instant redirect to `/dashboard`. Visiting `/` 
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| Redirect placement | In `index.astro`, not middleware | Keeps middleware focused on protection; Astro SSR makes page-level redirect trivial | Plan |
-| Content depth | Hero + CTAs only (no feature cards) | PRD specifies "minimal"; clean signal without maintenance overhead | Plan |
-| Component structure | Rewrite Welcome.astro, keep `<Welcome />` in index | Minimal diff — one user of the component, no new files | Plan |
-| Headline | "CarBooklet" | Matches app name | Plan |
-| Tagline | "Track your car's full service history — repairs, oil changes, inspections, and insurance — in one place." | Directly names the app's purpose | Plan |
+| Decision            | Choice                                                                                                     | Why (1 sentence)                                                                    | Source |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- | ------ |
+| Redirect placement  | In `index.astro`, not middleware                                                                           | Keeps middleware focused on protection; Astro SSR makes page-level redirect trivial | Plan   |
+| Content depth       | Hero + CTAs only (no feature cards)                                                                        | PRD specifies "minimal"; clean signal without maintenance overhead                  | Plan   |
+| Component structure | Rewrite Welcome.astro, keep `<Welcome />` in index                                                         | Minimal diff — one user of the component, no new files                              | Plan   |
+| Headline            | "CarBooklet"                                                                                               | Matches app name                                                                    | Plan   |
+| Tagline             | "Track your car's full service history — repairs, oil changes, inspections, and insurance — in one place." | Directly names the app's purpose                                                    | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - Auth-state redirect at `/` (authenticated → `/dashboard`)
 - Rewrite `Welcome.astro` copy: headline + tagline
 - Remove feature cards from Welcome.astro
 
 **Out of scope:**
+
 - Changes to `src/middleware.ts` or `PROTECTED_ROUTES`
 - Any new components, routes, or layouts
 - Any API, data, or auth logic changes
@@ -42,9 +44,9 @@ Two edits, phased. Phase 1 adds one redirect check to `index.astro` frontmatter.
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Auth-State Redirect | `/` redirects logged-in users to `/dashboard` | None — one-line change using already-resolved locals |
+| Phase                   | What it delivers                                | Key risk                                              |
+| ----------------------- | ----------------------------------------------- | ----------------------------------------------------- |
+| 1. Auth-State Redirect  | `/` redirects logged-in users to `/dashboard`   | None — one-line change using already-resolved locals  |
 | 2. Landing Page Content | CarBooklet-branded hero + CTAs, no starter copy | Visual regression in Topbar (mitigated by smoke test) |
 
 **Prerequisites:** None — S-01 has no dependencies per roadmap.
