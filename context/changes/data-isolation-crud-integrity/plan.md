@@ -685,10 +685,10 @@ code lands, in that order.
 
 #### Automated
 
-- [ ] 1.1 Integration suite passes with Supabase up: `npm run test:integration`
-- [ ] 1.2 Fast suite passes with Docker stopped: `npm test`
-- [ ] 1.3 Linting passes: `npm run lint`
-- [ ] 1.4 Type checking passes: `npm run typecheck`
+- [x] 1.1 Integration suite passes with Supabase up: `npm run test:integration`
+- [x] 1.2 Fast suite passes with Docker stopped: `npm test`
+- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.4 Type checking passes: `npm run typecheck`
 
 #### Manual
 
