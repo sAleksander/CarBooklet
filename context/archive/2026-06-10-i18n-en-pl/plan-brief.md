@@ -16,15 +16,15 @@ A signed-in user toggles language in the sidebar; the cookie is set, the page re
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-| --- | --- | --- | --- |
-| i18n mechanism | i18next + react-i18next | User chose the mature library over a lighter custom dictionary | Plan |
-| Locale carrier | `lang` cookie, no URL change | Near-zero routing churn; reuses the proven cookie→locals→prop rail | Plan |
-| Default + detection | English default, cookie overrides | Deterministic, matches the current all-English app | Plan |
-| Localization scope | Static chrome + entry-type labels | Covers what users read in normal use; server errors out of scope | Plan |
-| Date/number formatting | Left as-is (no Intl locale) | Explicit user decision — overrides the "dates" part of the scope option | Plan |
-| Toggle placement | Sidebar footer (+ mobile drawer) | Consistent home for account-level controls; no-JS form like Sign out | Plan |
-| Surfaces in v1 | All (protected app + landing + auth) | Matches roadmap intent; no half-translated app | Plan |
+| Decision               | Choice                               | Why (1 sentence)                                                        | Source |
+| ---------------------- | ------------------------------------ | ----------------------------------------------------------------------- | ------ |
+| i18n mechanism         | i18next + react-i18next              | User chose the mature library over a lighter custom dictionary          | Plan   |
+| Locale carrier         | `lang` cookie, no URL change         | Near-zero routing churn; reuses the proven cookie→locals→prop rail      | Plan   |
+| Default + detection    | English default, cookie overrides    | Deterministic, matches the current all-English app                      | Plan   |
+| Localization scope     | Static chrome + entry-type labels    | Covers what users read in normal use; server errors out of scope        | Plan   |
+| Date/number formatting | Left as-is (no Intl locale)          | Explicit user decision — overrides the "dates" part of the scope option | Plan   |
+| Toggle placement       | Sidebar footer (+ mobile drawer)     | Consistent home for account-level controls; no-JS form like Sign out    | Plan   |
+| Surfaces in v1         | All (protected app + landing + auth) | Matches roadmap intent; no half-translated app                          | Plan   |
 
 ## Scope
 
@@ -38,11 +38,11 @@ Locale is resolved once in middleware from the `lang` cookie into `Astro.locals.
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-| --- | --- | --- |
+| Phase                          | What it delivers                                   | Key risk                                                           |
+| ------------------------------ | -------------------------------------------------- | ------------------------------------------------------------------ |
 | 1. Foundation + sidebar toggle | Full i18n machine proven end-to-end on the sidebar | i18next under SSR concurrency + island hydration parity — the crux |
-| 2. Protected app surfaces | Dashboard, entries, cars, AI chat translated | Large string sweep; wiring each island root correctly |
-| 3. Public surfaces | Landing + auth pages translated | Form-island hydration on auth pages |
+| 2. Protected app surfaces      | Dashboard, entries, cars, AI chat translated       | Large string sweep; wiring each island root correctly              |
+| 3. Public surfaces             | Landing + auth pages translated                    | Form-island hydration on auth pages                                |
 
 **Prerequisites:** S-05 (entry-detail-actions) should land first — it adds `EntryDetailEditor.tsx` and edits the entry list/orchestrator files that Phase 2 also touches.
 **Estimated effort:** ~2–3 sessions across 3 phases (Phase 1 is the hard part; 2–3 are breadth).
@@ -51,7 +51,7 @@ Locale is resolved once in middleware from the `lang` cookie into `Astro.locals.
 
 - **react-i18next + Astro SSR concurrency/hydration is the central risk.** This is the cost of choosing i18next over a lighter custom helper; Phase 1 front-loads and explicitly verifies it (no `changeLanguage()` on a shared SSR instance; `lang` prop + bundled resources for parity).
 - **S-05 overlaps Phase 2 files.** If S-05 hasn't merged, Phase 2 will conflict — sequence S-06 after it.
-- Assumes only island *roots* (not all 43 `.tsx`) need i18next wiring — true given the component tree, but the implementer must enumerate `client:` directives to confirm.
+- Assumes only island _roots_ (not all 43 `.tsx`) need i18next wiring — true given the component tree, but the implementer must enumerate `client:` directives to confirm.
 - Scope drift from the roadmap's "UI-layer-only" framing is mild here: cookie + middleware are light server touches, no DB/API contract changes.
 
 ## Success Criteria (Summary)

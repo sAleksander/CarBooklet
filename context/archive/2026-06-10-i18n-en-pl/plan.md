@@ -72,6 +72,7 @@ Stand up the full i18n machine and prove it on the sidebar: switch → cookie �
 **Intent**: One place that defines locales, default, namespaces, the bundled resources, and the two init paths (server-fixed vs client-singleton).
 
 **Contract**:
+
 - `config.ts` — exports `LOCALES = ["en","pl"] as const`, `DEFAULT_LOCALE = "en"`, a `Locale` type, the namespace list, and the imported resources object `{ en: {...}, pl: {...} }`.
 - `server.ts` — exports a `getT(locale)` returning a fixed-language translator (`i18next.getFixedT(locale, ns)` off an instance initialized once with all resources, or a per-request `createInstance`). MUST NOT mutate global language per request.
 - `client.ts` — exports an `initClientI18n(locale)` that configures the `react-i18next` singleton (`use(initReactI18next).init({ lng: locale, resources, fallbackLng: "en" })`) idempotently, for use by island roots.
@@ -108,6 +109,7 @@ Stand up the full i18n machine and prove it on the sidebar: switch → cookie �
 **Intent**: Add the visible control and translate the sidebar — the Phase-1 proof surface.
 
 **Contract**:
+
 - `AppSidebar.astro` — derive `const t = getT(Astro.locals.lang)`; replace hardcoded "Select a car"/"Sign out" and `userEmail` area with `t(...)` calls. Add a language toggle in the footer: a no-JS `<form method="POST" action="/api/lang/pl|en">` (two small buttons or a select-style control) styled like the Sign out control, highlighting the active locale.
 - `src/lib/nav.ts` — nav labels become translation keys (e.g. `labelKey: "nav.dashboard"`) resolved at render with `t`, OR keep `NAV_ITEMS` hrefs and map to keys in the sidebar. Choose the minimal change that keeps `MobileSidebarTrigger` working.
 - `MobileSidebarTrigger.tsx` — this is an island root: accept a `lang` prop (passed from `AppLayout.astro`), call `initClientI18n(lang)`, and translate its rendered nav/labels + include the same toggle. `AppLayout.astro` passes `lang={Astro.locals.lang}` to it.
