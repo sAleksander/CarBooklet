@@ -1,10 +1,10 @@
 ---
 change_id: sidebar-navigation
 title: Sidebar navigation
-status: impl_reviewed
+status: archived
 created: 2026-06-09
-updated: 2026-06-09
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T15:46:24Z
 ---
 
 ## Notes

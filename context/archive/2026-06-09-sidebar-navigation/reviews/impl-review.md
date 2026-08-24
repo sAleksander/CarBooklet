@@ -1,4 +1,5 @@
 <!-- IMPL-REVIEW-REPORT -->
+
 # Implementation Review: Sidebar Navigation
 
 - **Plan**: context/changes/sidebar-navigation/plan.md
@@ -9,14 +10,14 @@
 
 ## Verdicts
 
-| Dimension | Verdict |
-|-----------|---------|
-| Plan Adherence | WARNING |
-| Scope Discipline | PASS |
-| Safety & Quality | WARNING |
-| Architecture | PASS |
+| Dimension           | Verdict |
+| ------------------- | ------- |
+| Plan Adherence      | WARNING |
+| Scope Discipline    | PASS    |
+| Safety & Quality    | WARNING |
+| Architecture        | PASS    |
 | Pattern Consistency | WARNING |
-| Success Criteria | FAIL |
+| Success Criteria    | FAIL    |
 
 ## Findings
 
@@ -82,7 +83,7 @@
 - **Fix**: Replaced with `pathname === item.href || pathname.startsWith(item.href + "/")` in both components.
 - **Decision**: FIXED
 
-### F7 — --sidebar-* CSS vars absent from .dark block
+### F7 — --sidebar-\* CSS vars absent from .dark block
 
 - **Severity**: OBSERVATION
 - **Impact**: 🏃 LOW — quick decision; fix is obvious and narrowly scoped

@@ -9,6 +9,7 @@ Replace the per-page `Topbar.astro` horizontal nav with a persistent sidebar nav
 The app has one layout (`src/layouts/Layout.astro`) — a bare HTML document shell with a single `<slot />` and zero navigation awareness. The `Topbar.astro` horizontal nav is manually imported and rendered by three of the four protected pages; `cars.astro` has no navigation at all, making it an orphaned screen. There is no active-route highlighting anywhere.
 
 Every protected page follows this composition pattern inside `<Layout>`:
+
 ```
 <div class="bg-cosmic min-h-screen p-4">
   <Topbar />
@@ -25,6 +26,7 @@ The new layout restructures this into a horizontal split: sidebar column (fixed 
 ## Desired End State
 
 On every protected route (`/dashboard`, `/entries`, `/ai-chat`, `/cars`):
+
 - A persistent left sidebar is visible on desktop (≥ md breakpoint)
 - The sidebar contains: car-switcher widget at top, three nav items (Dashboard, Entries, AI Chat), user email + Sign Out at the bottom
 - The active nav item is visually highlighted (based on current `pathname`)
@@ -60,6 +62,7 @@ On every protected route (`/dashboard`, `/entries`, `/ai-chat`, `/cars`):
 **New `AppLayout.astro`** wraps `Layout.astro` and provides the authenticated app shell. It reads `user` and `pathname` from `Astro.locals` / `Astro.url` — no prop drilling from pages for auth state.
 
 **Two sidebar components:**
+
 - `AppSidebar.astro` — fully server-rendered desktop sidebar. Receives `pathname`, `userEmail`, and optional `selectedCar` as props. Uses shadcn CSS vars directly for styling. Handles active-state via `pathname.startsWith(item.href)`.
 - `MobileSidebarTrigger.tsx` — a minimal React island (`client:load`). Renders a hamburger `Button` and a `Sheet` containing the same nav items. The Sheet handles backdrop, animation, and focus trap natively.
 
@@ -126,7 +129,7 @@ Create the two sidebar components and the shared nav configuration they both con
 
 #### 1. Shared nav item configuration
 
-**File**: `src/lib/nav.ts` *(new)*
+**File**: `src/lib/nav.ts` _(new)_
 
 **Intent**: Centralise the three primary nav items so they are defined once and imported by both `AppSidebar.astro` and `MobileSidebarTrigger.tsx`, preventing the nav list from drifting out of sync.
 
@@ -134,11 +137,12 @@ Create the two sidebar components and the shared nav configuration they both con
 
 #### 2. Desktop sidebar component
 
-**File**: `src/components/AppSidebar.astro` *(new)*
+**File**: `src/components/AppSidebar.astro` _(new)_
 
 **Intent**: Server-rendered sidebar column for desktop. Reads `pathname` to compute active state; shows car-switcher, nav items, and user+sign-out footer.
 
 **Contract**:
+
 - Props interface: `{ pathname: string; userEmail: string; selectedCar?: Car }` — import `Car` from `@/types`
 - Renders as an `<aside>` with fixed width (~240 px), full height, and `bg-[var(--sidebar)]` background, `border-r border-[var(--sidebar-border)]`
 - **Car-switcher section** (sidebar header): an `<a href="/cars">` that displays `${selectedCar.brand} ${selectedCar.model}` when `selectedCar` is provided, or `"Select a car"` otherwise. Styled as a compact card/button.
@@ -147,11 +151,12 @@ Create the two sidebar components and the shared nav configuration they both con
 
 #### 3. Mobile sidebar trigger component
 
-**File**: `src/components/MobileSidebarTrigger.tsx` *(new)*
+**File**: `src/components/MobileSidebarTrigger.tsx` _(new)_
 
 **Intent**: React island rendering a hamburger button that opens a Sheet containing the same navigation. This is the only interactive sidebar code; it runs `client:load`.
 
 **Contract**:
+
 - Props interface mirrors AppSidebar: `{ pathname: string; userEmail: string; selectedCar?: Car }` — import `Car` from `@/types`
 - Imports: `Sheet`, `SheetContent`, `SheetTrigger`, `SheetHeader`, `SheetTitle` from `@/components/ui/sheet`; `Button` from `@/components/ui/button`; `Menu` from `lucide-react`; `NAV_ITEMS` from `@/lib/nav`; `cn` from `@/lib/utils`
 - `SheetTrigger`: a ghost `Button` with `<Menu>` icon and `sr-only` label
@@ -183,11 +188,12 @@ Introduce the `AppLayout.astro` authenticated app shell. It wraps `Layout.astro`
 
 #### 1. Authenticated app shell layout
 
-**File**: `src/layouts/AppLayout.astro` *(new)*
+**File**: `src/layouts/AppLayout.astro` _(new)_
 
 **Intent**: Single location for the dark cosmic wrapper, sidebar mount, and page-content slot for all authenticated pages. Desktop shows sidebar + main column; mobile shows a compact top bar with the hamburger trigger + the main column.
 
 **Contract**:
+
 - Props interface: `{ title?: string; selectedCar?: Car }` — import `Car` from `@/types`
 - Reads `pathname` from `Astro.url.pathname`; reads `user` from `Astro.locals`; passes `user?.email ?? ""` as `userEmail` to sidebar components
 - **Outer wrapper**: `<div class="bg-cosmic flex h-screen overflow-hidden">` — owns the cosmic background and prevents the full page from scrolling

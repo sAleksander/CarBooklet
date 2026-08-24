@@ -56,10 +56,12 @@ The critical architectural decision for this change is creating a new **authenti
 There is exactly **one layout file**: `src/layouts/Layout.astro`. It is a bare HTML shell — it accepts a `title?: string` prop, renders a global CSS import and a config-status banner, and exposes a single unnamed `<slot />`. It contains **zero navigation, zero auth awareness**.
 
 The `Topbar.astro` component self-sources auth state from `Astro.locals.user` (set by middleware) — no prop drilling needed. It renders:
+
 - **Authenticated**: user email · `/dashboard` · `/entries` · `/ai-chat` · Sign Out
 - **Unauthenticated**: "Not signed in" · `/auth/signin` · `/auth/signup`
 
 Notable gaps in current Topbar:
+
 1. **No `/cars` link** — the car-selection page is unreachable from the top nav
 2. **No active-route highlighting** — all links use identical static classes; `Astro.url.pathname` is never read
 
@@ -78,7 +80,7 @@ All authenticated pages follow this pattern inside `<Layout>`:
   <div class="bg-cosmic min-h-screen p-4">
     <Topbar />
     <div class="flex justify-center pt-8">
-      <div class="w-full max-w-2xl/3xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
+      <div class="max-w-2xl/3xl w-full rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
         <!-- page content -->
       </div>
     </div>
@@ -110,27 +112,32 @@ From `context/foundation/roadmap.md`:
 **Risk note** (roadmap.md:88): touches every protected page — FR-007 (car CRUD) and FR-008 (AI chat backend) must be smoke-tested after this slice ships.
 
 **Downstream slices unlocked by S-02:**
+
 - **S-03** (`entry-detail-route`, `proposed`): adds `/entries/[id]`, must be added to PROTECTED_ROUTES
 - **S-04** (`dashboard-last-entry`, `proposed`): adds "most recent entry" widget to `/dashboard`
 
 ### UI Component Inventory
 
 **shadcn components already installed** (`src/components/ui/`):
+
 - `button.tsx` — CVA variants (default, destructive, outline, secondary, ghost, link)
 - `dialog.tsx`, `alert-dialog.tsx` — modal patterns
 - `select.tsx`, `input.tsx`, `label.tsx`, `textarea.tsx` — form primitives
 
 **shadcn components needed for sidebar** (not yet installed):
+
 - `sidebar.tsx` — core structural shell (`npx shadcn@latest add sidebar`)
 - `scroll-area.tsx` — scrollable sidebar content (`npx shadcn@latest add scroll-area`)
 - `separator.tsx` — visual dividers (`npx shadcn@latest add separator`)
 - `tooltip.tsx` — hover hints for collapsed icon mode (`npx shadcn@latest add tooltip`)
 
 **CSS design tokens — sidebar vars already present** in `src/styles/global.css`:
+
 ```css
 --sidebar, --sidebar-foreground, --sidebar-primary, --sidebar-primary-foreground,
 --sidebar-accent, --sidebar-accent-foreground, --sidebar-border, --sidebar-ring
 ```
+
 These are seeded by the 10x-astro-starter template and will wire up automatically once `sidebar.tsx` is added.
 
 **Icons**: `lucide-react` is installed and in use across 5+ components. Sidebar nav icons (e.g. `LayoutDashboard`, `BookOpen`, `MessageSquare`, `Car`, `LogOut`) are available without adding a dependency.
@@ -156,6 +163,7 @@ These are seeded by the 10x-astro-starter template and will wire up automaticall
 ### Recommended approach: new `AppLayout.astro`
 
 Rather than modifying each page individually, introduce a new `src/layouts/AppLayout.astro` that wraps `Layout.astro` and provides the authenticated app shell (sidebar + main content area). Protected pages swap `<Layout>` for `<AppLayout>`. This:
+
 - Keeps `Layout.astro` as a pure document shell (auth pages, landing page continue using it unchanged)
 - Provides a single place to maintain the sidebar and app chrome
 - Eliminates the per-page Topbar import pattern and the `cars.astro` nav gap
@@ -166,12 +174,14 @@ Rather than modifying each page individually, introduce a new `src/layouts/AppLa
 ### Sidebar implementation options
 
 **Option A — shadcn `sidebar.tsx` (Astro wrapper)**
+
 - Install `sidebar.tsx` via `npx shadcn@latest add sidebar`
 - Wrap it in `src/components/Sidebar.astro` for SSR (reads `Astro.locals.user` and `Astro.url.pathname`)
 - Pros: CSS vars already seeded, consistent with existing shadcn pattern, handles mobile sheet via built-in Sheet component
 - Cons: shadcn's sidebar is a heavy React component — needs `client:load` or a hybrid approach
 
 **Option B — custom Astro component**
+
 - Build `src/components/Sidebar.astro` from scratch using Tailwind + lucide-react
 - SSR-friendly, no React needed for the static sidebar structure
 - Mobile collapse requires a small JS island (hamburger toggle)
@@ -188,21 +198,24 @@ Astro exposes `Astro.url.pathname` in any `.astro` file. A sidebar component can
 const { pathname } = Astro.url;
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: "LayoutDashboard" },
-  { href: "/entries",   label: "Entries",   icon: "BookOpen" },
-  { href: "/ai-chat",   label: "AI Chat",   icon: "MessageSquare" },
+  { href: "/entries", label: "Entries", icon: "BookOpen" },
+  { href: "/ai-chat", label: "AI Chat", icon: "MessageSquare" },
 ];
 ---
-{navItems.map(item => (
-  <a href={item.href} class:list={[
-    "nav-link",
-    pathname.startsWith(item.href) && "active"
-  ]}>...</a>
-))}
+
+{
+  navItems.map((item) => (
+    <a href={item.href} class:list={["nav-link", pathname.startsWith(item.href) && "active"]}>
+      ...
+    </a>
+  ))
+}
 ```
 
 ### `/cars` navigation decision
 
 `/cars` is currently absent from `Topbar` and from PRD FR-002's explicit section list. Two patterns are common:
+
 1. **Sidebar item**: "My Cars" as a navigation destination — simple, consistent
 2. **Global car-switcher**: a persistent "selected car" widget in the sidebar header/footer, with a link to `/cars` to change it — more prominent UX since every action in the app is scoped to a selected car
 
