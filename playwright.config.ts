@@ -27,7 +27,21 @@ export default defineConfig({
 
   // Chromium only. These tests protect application logic, not rendering
   // differences; a second browser would double the runtime for no extra signal.
-  projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
+  //
+  // `setup` runs first and writes playwright/.auth/user.json — a signed-in
+  // session for the shared test user, handed to every test in this project.
+  // Specs that need their own isolated user (cross-user isolation, anything
+  // that owns its data) opt back out: e2e/fixtures/app.ts resets storageState
+  // to empty for everything built on the `signedInPage` fixture, which is every
+  // spec in the suite today. See e2e/auth.setup.ts for why both exist.
+  projects: [
+    { name: "setup", testMatch: /auth\.setup\.ts/ },
+    {
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"], storageState: "playwright/.auth/user.json" },
+      dependencies: ["setup"],
+    },
+  ],
 
   webServer: {
     command: "npm run dev",

@@ -47,6 +47,22 @@ function adminClient() {
 }
 
 export const test = base.extend<AppFixtures>({
+  // Start from an EMPTY browser context, discarding the shared signed-in
+  // session that playwright.config.ts hands every test in the chromium project.
+  //
+  // That session belongs to one long-lived user (e2e/auth.setup.ts). Every
+  // fixture below seeds and deletes a user of its own, and a test that owns its
+  // data must be the only one holding a session — otherwise it opens holding a
+  // stranger's token and signs in over the top of it. Nothing today reads the
+  // wrong user's rows because of it, but the whole point of the per-test
+  // fixtures is that no state survives a test, and an inherited auth cookie is
+  // exactly that state.
+  //
+  // `{ cookies: [], origins: [] }` rather than `undefined`: it is Playwright's
+  // documented way to opt a file out of a project-level storageState, and it
+  // says "empty" outright instead of relying on how an unset option resolves.
+  storageState: { cookies: [], origins: [] },
+
   // Timestamp keeps it readable and sortable; the uuid slice keeps parallel
   // workers — and two re-runs inside the same millisecond — from colliding.
   //
