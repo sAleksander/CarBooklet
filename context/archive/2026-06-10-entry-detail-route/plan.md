@@ -85,6 +85,7 @@ Create the `/entries/[id]` page (SSR guard + car-scope check + 404 panel) and a 
 **Intent**: Present every field of a single entry in a readable full-screen layout, switching on `entry_type`. Non-interactive → `.astro` per `CLAUDE.md`. Empty/null fields render with an em-dash placeholder (per decision: "show all fields"). Multi-line text fields render with line breaks preserved.
 
 **Contract**: Props `{ entry: Entry }`. Renders the common fields (Date `conducted_at`, Mileage) then type-specific fields by switching on `entry.entry_type`:
+
 - `repair` → Description, Cause
 - `oil_change` → Oil details
 - `inspection` → Result, Next inspection date
@@ -99,6 +100,7 @@ Long-text fields (`description`, `cause`, `oil_details`) use a `whitespace-pre-w
 **Intent**: Server-render a single entry's detail, guarding auth/car-selection/ownership and scoping the entry to the currently selected car. Mirrors the SSR control flow of `entries.astro`.
 
 **Contract**: Reads `Astro.params.id`, `Astro.locals.user`, `Astro.locals.selectedCarId`. Control flow:
+
 1. No `selectedCarId` or no `supabase`/`user` → `Astro.redirect("/cars")` (mirrors `entries.astro:15-23`).
 2. Fetch the entry via `getEntryById(supabase, id, user.id)`.
 3. **Not found OR `entry.car_id !== selectedCarId`** (car-scope decision) → set `Astro.response.status = 404` and render the in-app not-found panel (message + link back to `/entries`) inside `AppLayout`.

@@ -16,24 +16,26 @@ Clicking anywhere on an entry card opens a branded `/entries/[id]` page showing 
 
 ## Key Decisions Made
 
-| Decision                        | Choice                                              | Why (1 sentence)                                                              | Source |
-| ------------------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------- | ------ |
-| Type resolution from `[id]`     | Query all 4 tables in parallel by id+user_id        | Keeps the URL exactly `/entries/[id]` per spec; type derived from data, trivial at this scale | Plan   |
-| Click target on the card        | Whole card is a link; Edit/Delete stop propagation  | Biggest hit target, matches US-02 "click any entry card"                      | Plan   |
-| Not-found / foreign-id UX        | Styled in-app 404 panel with back link (HTTP 404)   | Clear feedback that stays inside the app shell                               | Plan   |
-| Empty/null field display         | Show all fields, em-dash placeholder for blanks     | Predictable, consistent layout signaling the field exists but is blank        | Plan   |
-| Ownership scope                  | Scope to the currently selected car                 | Keeps the detail view consistent with the active car context                  | Plan   |
-| "Rich text" rendering            | Plain text with `whitespace-pre-wrap`               | Fields are plain TEXT, not markdown/HTML — no sanitization needed             | Research (codebase) |
+| Decision                    | Choice                                             | Why (1 sentence)                                                                              | Source              |
+| --------------------------- | -------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------- |
+| Type resolution from `[id]` | Query all 4 tables in parallel by id+user_id       | Keeps the URL exactly `/entries/[id]` per spec; type derived from data, trivial at this scale | Plan                |
+| Click target on the card    | Whole card is a link; Edit/Delete stop propagation | Biggest hit target, matches US-02 "click any entry card"                                      | Plan                |
+| Not-found / foreign-id UX   | Styled in-app 404 panel with back link (HTTP 404)  | Clear feedback that stays inside the app shell                                                | Plan                |
+| Empty/null field display    | Show all fields, em-dash placeholder for blanks    | Predictable, consistent layout signaling the field exists but is blank                        | Plan                |
+| Ownership scope             | Scope to the currently selected car                | Keeps the detail view consistent with the active car context                                  | Plan                |
+| "Rich text" rendering       | Plain text with `whitespace-pre-wrap`              | Fields are plain TEXT, not markdown/HTML — no sanitization needed                             | Research (codebase) |
 
 ## Scope
 
 **In scope:**
+
 - `getEntryById` service resolving across all 4 entry tables
 - `/entries/[id]` SSR page with car-scope guard + 404 panel
 - `EntryDetail.astro` non-interactive render component (all field types)
 - Making all 4 list-card components link to the detail page
 
 **Out of scope:**
+
 - DB / API / middleware changes
 - Edit or delete on the detail page (display only)
 - Markdown/HTML rendering or a rich-text editor
@@ -45,11 +47,11 @@ Bottom-up: a single service (`getEntryById`) resolves the type by querying all 4
 
 ## Phases at a Glance
 
-| Phase                          | What it delivers                                   | Key risk                                            |
-| ------------------------------ | -------------------------------------------------- | --------------------------------------------------- |
-| 1. Get-by-id service           | `getEntryById` resolving across 4 tables           | Forgetting to inject `entry_type` at the boundary   |
-| 2. Detail page + component     | `/entries/[id]` + `EntryDetail.astro` + 404 panel  | Car-scope/404 control flow; per-type field coverage |
-| 3. Clickable list cards        | All 4 cards link to detail, Edit/Delete preserved  | Edit/Delete must not trigger navigation             |
+| Phase                      | What it delivers                                  | Key risk                                            |
+| -------------------------- | ------------------------------------------------- | --------------------------------------------------- |
+| 1. Get-by-id service       | `getEntryById` resolving across 4 tables          | Forgetting to inject `entry_type` at the boundary   |
+| 2. Detail page + component | `/entries/[id]` + `EntryDetail.astro` + 404 panel | Car-scope/404 control flow; per-type field coverage |
+| 3. Clickable list cards    | All 4 cards link to detail, Edit/Delete preserved | Edit/Delete must not trigger navigation             |
 
 **Prerequisites:** S-02 (sidebar/AppLayout) shipped — done.
 **Estimated effort:** ~1 session across 3 phases.
