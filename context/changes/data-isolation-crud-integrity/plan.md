@@ -116,6 +116,15 @@ rejection test fails when the new migration is reverted.
 - **Not adding a `user_id` filter to `updateCar`/`deleteCar`.** Doing so would
   short-circuit ahead of RLS and stop the test from reaching the policy layer —
   the asymmetry is the thing under test, not a bug to fix first.
+
+  > **⚠️ Conflicts with `context/changes/swallowed-error-propagation/plan.md`.** That change's Phase 1
+  > _adds_ the `user_id` filter to both functions (treating its absence as the latent bug behind
+  > precedent D7), and also changes `deleteCar` to `.select("id")` + a boolean return so a zero-row
+  > delete stops reporting success. **The two plans are mutually exclusive as written and must be
+  > reconciled before either is implemented.** One possible resolution: assert RLS through a client
+  > that bypasses the service layer, so the policy layer stays under test while the service still
+  > carries defense in depth.
+
 - **No CI gate.** test-plan §3 assigns it to Phase 4.
 - **No re-testing of what E2E already covers** — the `/cars` garage listing, the
   `/entries/[type]/[id]` direct-URL 404, and the car-delete cascade blast radius.
