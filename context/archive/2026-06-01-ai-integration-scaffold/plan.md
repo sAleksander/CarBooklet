@@ -79,6 +79,7 @@ Install the `openai` npm package, register `OPENROUTER_API_KEY` in the env schem
 **Intent**: Declare `OPENROUTER_API_KEY` as a server-only secret in the `astro:env` schema so it is available via `import { OPENROUTER_API_KEY } from 'astro:env/server'` and validated at build time.
 
 **Contract**: Add inside the existing `env.schema` block alongside `SUPABASE_URL` and `SUPABASE_KEY`:
+
 ```ts
 OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret" }),
 ```
@@ -106,6 +107,7 @@ OPENROUTER_API_KEY: envField.string({ context: "server", access: "secret" }),
 **Intent**: Auth-guard the endpoint, validate the request body, call `createChatStream`, and return a `text/event-stream` response using a native `ReadableStream`. This is the only correct streaming primitive on the Cloudflare Workers runtime.
 
 **Contract**:
+
 - Export `POST: APIRoute`
 - Return `401` if `context.locals.user` is null
 - Parse body with `request.json()`, validate with Zod: `z.object({ prompt: z.string().min(1).max(2000) })`; return `400` on failure
