@@ -1,9 +1,9 @@
 ---
 change_id: data-isolation-crud-integrity
 title: Data isolation + CRUD integrity tests — cross-user IDOR (R3) and server-side validation (R5)
-status: preparing
+status: planned
 created: 2026-06-15
-updated: 2026-06-15
+updated: 2026-08-24
 archived_at: null
 ---
 
