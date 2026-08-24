@@ -74,6 +74,7 @@ Create the entries service and the `/api/entries/repair` route. After this phase
 **Intent**: Encapsulate all `repair_entries` Supabase queries. Mirrors `src/lib/services/cars.ts` exactly — functions accept `SupabaseClient` as first param and throw on Supabase error.
 
 **Contract**:
+
 - `getRepairEntries(supabase: SupabaseClient, carId: string): Promise<RepairEntry[]>` — SELECT `*` FROM `repair_entries` WHERE `car_id = carId` ORDER BY `conducted_at` DESC. Throws on `res.error`. Maps each row: `{ ...row, entry_type: 'repair' as const }`.
 - `createRepairEntry(supabase: SupabaseClient, userId: string, carId: string, data: RepairEntryFormData): Promise<RepairEntry>` — INSERT `{ user_id: userId, car_id: carId, ...data }`, SELECT single. Throws on error. Returns `{ ...row, entry_type: 'repair' as const }`.
 
@@ -84,18 +85,22 @@ Create the entries service and the `/api/entries/repair` route. After this phase
 **Intent**: Expose GET (list entries for a car) and POST (create a repair entry). Auth-guarded via `context.locals.user`. Zod-validates both endpoints' inputs.
 
 **Contract**:
+
 - Exports `GET: APIRoute` and `POST: APIRoute`.
 - Both return 401 if `!context.locals.user`. Both call `createClient(context.request.headers, context.cookies)` for DB.
 - **GET**: reads `car_id` from `new URL(context.request.url).searchParams.get('car_id')`. Returns 400 `{ error: 'car_id is required' }` if missing or not a valid UUID (validate with `z.string().uuid()`). Calls `getRepairEntries(supabase, carId)`. Returns `{ entries }`.
 - **POST**: parses request JSON (return 400 on invalid JSON). Zod schema:
   ```ts
   z.object({
-    car_id: z.string().uuid('Invalid car ID'),
-    conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be YYYY-MM-DD'),
+    car_id: z.string().uuid("Invalid car ID"),
+    conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
     mileage: z.number().int().min(0).nullable().optional(),
-    description: z.string().min(1, 'Description is required'),
-    cause: z.string().nullish().transform(v => v ?? null),
-  })
+    description: z.string().min(1, "Description is required"),
+    cause: z
+      .string()
+      .nullish()
+      .transform((v) => v ?? null),
+  });
   ```
   Calls `createRepairEntry(supabase, user.id, result.data.car_id, { conducted_at, mileage, description, cause })`. Returns `{ entry }` with status 201.
 
@@ -132,6 +137,7 @@ Build the client-side component tree: form, list, and orchestrating island. shad
 **Intent**: Controlled form for adding a repair entry. Follows `CarForm.tsx` pattern exactly. POSTs to `/api/entries/repair`. Calls `onSuccess(entry)` on success — the parent island handles list update and form reset via key change.
 
 **Contract**:
+
 - Props: `{ carId: string; onSuccess: (entry: RepairEntry) => void }`
 - Initial form state: `conducted_at` = today (`new Date().toISOString().slice(0, 10)`), `description: ''`, `cause: ''`, `mileage: null`
 - State: `form` (RepairEntryFormData), `fieldErrors` (partial record keyed by form field), `apiError` (string | null), `isLoading` (boolean)
@@ -148,6 +154,7 @@ Build the client-side component tree: form, list, and orchestrating island. shad
 **Intent**: Pure display component. Renders each entry as a card. Shows a contextual empty state when the array is empty.
 
 **Contract**:
+
 - Props: `{ entries: RepairEntry[] }`
 - Empty state: `<p className="text-muted-foreground text-sm">No repair entries yet. Log your first one above.</p>`
 - Per entry card: `conducted_at` formatted with `new Date(entry.conducted_at).toLocaleDateString()`, `description`, `cause` (only if non-null — label "Cause:"), `mileage` (only if non-null — label "Mileage:", value + " km")
@@ -159,6 +166,7 @@ Build the client-side component tree: form, list, and orchestrating island. shad
 **Intent**: Orchestrating island. Owns the `entries` array state and the `formKey` counter used to reset the form after a successful submit without needing a prop-drilling reset callback.
 
 **Contract**:
+
 - Props: `{ initialEntries: RepairEntry[]; carId: string }`
 - State: `entries` (initialized from `initialEntries`), `formKey` (number, starts at 0)
 - `handleSuccess(entry: RepairEntry)`: `setEntries(prev => [entry, ...prev])`, `setFormKey(k => k + 1)`
@@ -202,6 +210,7 @@ Mount the island on a protected Astro page, wire up `PROTECTED_ROUTES` and the T
 **Intent**: Server-render the page with the selected car's entries pre-loaded, so the island mounts with data and avoids a client-side loading flash. Mirrors `dashboard.astro` patterns.
 
 **Contract**:
+
 - Frontmatter reads `Astro.locals.selectedCarId`; if null, `return Astro.redirect("/cars")`
 - Creates Supabase client with `createClient(Astro.request.headers, Astro.cookies)`
 - Calls `getRepairEntries(supabase, selectedCarId)` and `getCarById(supabase, selectedCarId)` (for the page heading); if `getCarById` returns null, redirect to `/cars`

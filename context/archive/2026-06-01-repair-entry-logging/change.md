@@ -2,10 +2,10 @@
 change_id: repair-entry-logging
 roadmap_id: S-03
 title: "Repair entry logging — view and add repair entries for selected car"
-status: impl_reviewed
+status: archived
 created: 2026-06-01
-updated: 2026-06-01
-archived_at: null
+updated: 2026-08-24
+archived_at: 2026-08-24T15:46:24Z
 prd_refs:
   - FR-003
 unlocks:

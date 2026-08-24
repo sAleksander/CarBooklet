@@ -16,20 +16,21 @@ A user navigates to `/entries` via the Topbar, sees a form pre-filled with today
 
 ## Key Decisions Made
 
-| Decision | Choice | Why (1 sentence) | Source |
-|---|---|---|---|
-| `cause` field UI requirement | Optional | DB column is nullable; roadmap "must not be optional" note was a planning mistake | Plan |
-| Page placement | New `/entries` page | Clean separation from car management; scalable when S-04 adds more entry types | Plan |
-| Read scope | Add + list (create + view) | A form with no visible list can't confirm the entry was saved | Plan |
-| Text field component | shadcn Textarea (install) | Consistent styling with other shadcn inputs | Plan |
-| Post-submit behaviour | Clear form + prepend to list | Instant confirmation; user can add another entry without a click | Plan |
-| Date default | Today's date pre-filled | Most entries are logged the same day; reduces friction | Plan |
-| Topbar nav | Add "Entries" link | Directly discoverable; doesn't require visiting Dashboard first | Plan |
-| API auth | `context.locals.user` guard + `createClient` for DB | Matches the pattern fixed during ai-integration-scaffold impl-review | Plan |
+| Decision                     | Choice                                              | Why (1 sentence)                                                                  | Source |
+| ---------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------- | ------ |
+| `cause` field UI requirement | Optional                                            | DB column is nullable; roadmap "must not be optional" note was a planning mistake | Plan   |
+| Page placement               | New `/entries` page                                 | Clean separation from car management; scalable when S-04 adds more entry types    | Plan   |
+| Read scope                   | Add + list (create + view)                          | A form with no visible list can't confirm the entry was saved                     | Plan   |
+| Text field component         | shadcn Textarea (install)                           | Consistent styling with other shadcn inputs                                       | Plan   |
+| Post-submit behaviour        | Clear form + prepend to list                        | Instant confirmation; user can add another entry without a click                  | Plan   |
+| Date default                 | Today's date pre-filled                             | Most entries are logged the same day; reduces friction                            | Plan   |
+| Topbar nav                   | Add "Entries" link                                  | Directly discoverable; doesn't require visiting Dashboard first                   | Plan   |
+| API auth                     | `context.locals.user` guard + `createClient` for DB | Matches the pattern fixed during ai-integration-scaffold impl-review              | Plan   |
 
 ## Scope
 
 **In scope:**
+
 - `src/lib/services/entries.ts` — `getRepairEntries`, `createRepairEntry`
 - `src/pages/api/entries/repair.ts` — GET + POST
 - `src/components/entries/RepairEntryForm.tsx`, `RepairEntryList.tsx`, `RepairEntries.tsx`
@@ -39,6 +40,7 @@ A user navigates to `/entries` via the Topbar, sees a form pre-filled with today
 - `src/components/ui/textarea.tsx` — shadcn Textarea install
 
 **Out of scope:**
+
 - Edit / delete entries (S-05)
 - Other entry types: oil change, inspection, insurance (S-04)
 - Filtering, pagination, or search
@@ -51,11 +53,11 @@ Three-layer stack mirroring car management. Service accepts `SupabaseClient` as 
 
 ## Phases at a Glance
 
-| Phase | What it delivers | Key risk |
-|---|---|---|
-| 1. Service + API Routes | GET + POST `/api/entries/repair` verifiable via curl | `entry_type` virtual field injection easy to miss |
-| 2. React Components | RepairEntryForm + RepairEntryList + RepairEntries island | Textarea install must precede the form component |
-| 3. Astro Page + Navigation | `/entries` page + Topbar link + end-to-end smoke test | Topbar `selectedCarId` check path (no car → /cars redirect) |
+| Phase                      | What it delivers                                         | Key risk                                                    |
+| -------------------------- | -------------------------------------------------------- | ----------------------------------------------------------- |
+| 1. Service + API Routes    | GET + POST `/api/entries/repair` verifiable via curl     | `entry_type` virtual field injection easy to miss           |
+| 2. React Components        | RepairEntryForm + RepairEntryList + RepairEntries island | Textarea install must precede the form component            |
+| 3. Astro Page + Navigation | `/entries` page + Topbar link + end-to-end smoke test    | Topbar `selectedCarId` check path (no car → /cars redirect) |
 
 **Prerequisites:** F-02 (entries-schema) and S-01 (car-management) — both done.
 **Estimated effort:** ~1-2 sessions across 3 phases.
