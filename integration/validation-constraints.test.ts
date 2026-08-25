@@ -190,6 +190,39 @@ describe("R5 · validation constraints · the database as oracle", () => {
     });
   });
 
+  describe("optional columns the product actually leaves empty", () => {
+    // 20260825000001 dropped NOT NULL on both of these. Without the assertions
+    // below, reverting that migration would leave the entire suite green: the
+    // zod spec only proves the *edge* accepts null, and it accepted null before
+    // the migration too. This is the DB-side oracle for that change.
+
+    it("accepts an insurance entry with no insurer", async () => {
+      const created = await createInsuranceEntry(owner.client, owner.id, car.id, {
+        conducted_at: "2026-08-01",
+        mileage: 180_000,
+        insurer: null,
+        policy_start_date: null,
+        renewal_date: "2027-08-01",
+      });
+
+      const readBack = await getEntryById(owner.client, "insurance", created.id, owner.id);
+      expect(readBack).toMatchObject({ insurer: null, renewal_date: "2027-08-01" });
+    });
+
+    it("accepts an inspection entry with no result", async () => {
+      // The form's "Not recorded" option sends exactly this.
+      const created = await createInspectionEntry(owner.client, owner.id, car.id, {
+        conducted_at: "2026-08-02",
+        mileage: 181_000,
+        result: null,
+        next_inspection_date: null,
+      });
+
+      const readBack = await getEntryById(owner.client, "inspection", created.id, owner.id);
+      expect(readBack).toMatchObject({ result: null });
+    });
+  });
+
   describe("cars", () => {
     it("rejects an out-of-enum engine_type", async () => {
       // The cast is the point: `engine_type` is a Postgres enum, and nothing

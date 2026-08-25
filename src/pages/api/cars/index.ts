@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 import { getCars, createCar } from "@/lib/services/cars";
 
-const carSchema = z.object({
+export const carSchema = z.object({
   brand: z.string().min(1, "Brand is required"),
   model: z.string().min(1, "Model is required"),
   production_year: z.string().min(1, "Production year is required"),

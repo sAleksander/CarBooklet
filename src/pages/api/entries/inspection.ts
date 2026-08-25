@@ -12,10 +12,10 @@ import { getCarById } from "@/lib/services/cars";
 const carIdSchema = z.uuid();
 const entryIdSchema = z.uuid();
 
-const inspectionEntrySchema = z.object({
+export const inspectionEntrySchema = z.object({
   car_id: z.uuid(),
   conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(0).nullable().optional(),
+  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
   result: z
     .enum(["Passed", "Failed"])
     .nullable()
@@ -97,10 +97,10 @@ export const POST: APIRoute = async (context) => {
   }
 };
 
-const inspectionEntryPatchSchema = z.object({
+export const inspectionEntryPatchSchema = z.object({
   id: z.uuid(),
   conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(0).nullable().optional(),
+  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
   result: z
     .enum(["Passed", "Failed"])
     .nullable()

@@ -727,30 +727,30 @@ code lands, in that order.
 
 #### Automated
 
-- [x] 4.1 Integration suite passes: `npm run test:integration`
-- [x] 4.2 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 4.1 Integration suite passes: `npm run test:integration` — bc57e3d
+- [x] 4.2 Linting and type checking pass: `npm run lint && npm run typecheck` — bc57e3d
 
 #### Manual
 
-- [x] 4.3 Dropping the mileage CHECK turns the `mileage: 0` case red
-- [x] 4.4 `mileage: null` is asserted as accepted, not rejected
+- [x] 4.3 Dropping the mileage CHECK turns the `mileage: 0` case red — bc57e3d
+- [x] 4.4 `mileage: null` is asserted as accepted, not rejected — bc57e3d
 
 ### Phase 5: R5 zod ↔ DB parity
 
 #### Automated
 
-- [ ] 5.1 Migration applies cleanly from scratch: `npx supabase db reset`
-- [ ] 5.2 Fast suite passes including the new schema spec: `npm test`
-- [ ] 5.3 Integration suite passes: `npm run test:integration`
-- [ ] 5.4 E2E suite passes: `npm run test:e2e`
-- [ ] 5.5 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 5.1 Migration applies cleanly from scratch: `npx supabase db reset`
+- [x] 5.2 Fast suite passes including the new schema spec: `npm test`
+- [x] 5.3 Integration suite passes: `npm run test:integration`
+- [x] 5.4 E2E suite passes: `npm run test:e2e`
+- [x] 5.5 Linting and type checking pass: `npm run lint && npm run typecheck`
 
 #### Manual
 
-- [ ] 5.6 Insurance form with a blank insurer saves and renders correctly
-- [ ] 5.7 Inspection with result "Not recorded" saves cleanly
-- [ ] 5.8 Entry with mileage `0` returns a readable 400, not a 500
-- [ ] 5.9 Existing entries with insurer/result still display unchanged
+- [x] 5.6 Insurance form with a blank insurer saves and renders correctly
+- [x] 5.7 Inspection with result "Not recorded" saves cleanly
+- [x] 5.8 Entry with mileage `0` returns a readable 400, not a 500
+- [x] 5.9 Existing entries with insurer/result still display unchanged
 
 ### Phase 6: Cookbook + test-plan updates
 

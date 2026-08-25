@@ -12,10 +12,10 @@ import { getCarById } from "@/lib/services/cars";
 const carIdSchema = z.uuid();
 const entryIdSchema = z.uuid();
 
-const insuranceEntrySchema = z.object({
+export const insuranceEntrySchema = z.object({
   car_id: z.uuid(),
   conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(0).nullable().optional(),
+  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
   insurer: z
     .string()
     .nullish()
@@ -98,10 +98,10 @@ export const POST: APIRoute = async (context) => {
   }
 };
 
-const insuranceEntryPatchSchema = z.object({
+export const insuranceEntryPatchSchema = z.object({
   id: z.uuid(),
   conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(0).nullable().optional(),
+  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
   insurer: z
     .string()
     .nullish()

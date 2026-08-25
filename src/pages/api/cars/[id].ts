@@ -3,7 +3,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 import { getCarById, updateCar, deleteCar } from "@/lib/services/cars";
 
-const patchSchema = z.object({
+export const patchSchema = z.object({
   brand: z.string().min(1).optional(),
   model: z.string().min(1).optional(),
   production_year: z.string().min(1).optional(),
