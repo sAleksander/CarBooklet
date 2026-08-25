@@ -712,28 +712,28 @@ code lands, in that order.
 
 #### Automated
 
-- [x] 3.1 Migration applies cleanly from scratch: `npx supabase db reset`
-- [x] 3.2 Integration suite passes: `npm run test:integration`
-- [x] 3.3 E2E suite still passes: `npm run test:e2e`
-- [x] 3.4 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 3.1 Migration applies cleanly from scratch: `npx supabase db reset` — 2db9804
+- [x] 3.2 Integration suite passes: `npm run test:integration` — 2db9804
+- [x] 3.3 E2E suite still passes: `npm run test:e2e` — 2db9804
+- [x] 3.4 Linting and type checking pass: `npm run lint && npm run typecheck` — 2db9804
 
 #### Manual
 
-- [x] 3.5 The rejection test was observed failing before the migration existed
-- [x] 3.6 Reverting the migration turns the rejection test red again
-- [x] 3.7 Owner entry creation still works through the UI for all four types
+- [x] 3.5 The rejection test was observed failing before the migration existed — 2db9804
+- [x] 3.6 Reverting the migration turns the rejection test red again — 2db9804
+- [x] 3.7 Owner entry creation still works through the UI for all four types — 2db9804
 
 ### Phase 4: R5 CRUD integrity + DB-constraint oracle
 
 #### Automated
 
-- [ ] 4.1 Integration suite passes: `npm run test:integration`
-- [ ] 4.2 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 4.1 Integration suite passes: `npm run test:integration`
+- [x] 4.2 Linting and type checking pass: `npm run lint && npm run typecheck`
 
 #### Manual
 
-- [ ] 4.3 Dropping the mileage CHECK turns the `mileage: 0` case red
-- [ ] 4.4 `mileage: null` is asserted as accepted, not rejected
+- [x] 4.3 Dropping the mileage CHECK turns the `mileage: 0` case red
+- [x] 4.4 `mileage: null` is asserted as accepted, not rejected
 
 ### Phase 5: R5 zod ↔ DB parity
 
