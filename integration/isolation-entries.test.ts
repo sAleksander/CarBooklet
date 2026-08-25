@@ -286,6 +286,46 @@ describe("R3 · cross-user isolation · entries", () => {
       expect(raw.error).not.toBeNull();
       expect(raw.error?.code).toBe("42501");
     });
+
+    // ── The car-ownership gap ────────────────────────────────────────────────
+    //
+    // Everything above is B impersonating A. This is the subtler one: B writes
+    // an entry under B's *own* user id — so `WITH CHECK (auth.uid() = user_id)`
+    // is satisfied — but points `car_id` at A's car. No policy looks at
+    // `car_id`, so today the database accepts it. Only the POST route's 403
+    // pre-check stands in the way, and nothing forces a caller through that
+    // route.
+    //
+    // Note what A can and cannot see: the injected row carries B's `user_id`,
+    // so RLS hides it from A completely. She cannot detect the pollution on her
+    // own car through any query the app makes. Invisible to the victim is not
+    // the same as absent — which is why the assertion below reads ground truth
+    // through the admin client. That is the one job it has here.
+    describe("cross-car insert", () => {
+      it("rejects an entry B writes against A's car", async () => {
+        await expect(entry.create(users.userB.client, users.userB.id, carA.id, marker("cross-car"))).rejects.toThrow();
+
+        const landed = await users.admin
+          .from(ENTRY_TABLES[entry.type])
+          .select("id")
+          .eq("car_id", carA.id)
+          .eq("user_id", users.userB.id);
+
+        expect(landed.error).toBeNull();
+        expect(landed.data).toHaveLength(0);
+      });
+
+      it("rejects a raw cross-car insert carrying B's JWT", async () => {
+        const raw = await users.userB.client.from(ENTRY_TABLES[entry.type]).insert({
+          user_id: users.userB.id,
+          car_id: carA.id,
+          ...validEntryPayload(entry.type),
+        });
+
+        expect(raw.error).not.toBeNull();
+        expect(raw.error?.code).toBe("42501");
+      });
+    });
   });
 
   describe("aggregates", () => {

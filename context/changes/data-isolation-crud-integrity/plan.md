@@ -700,28 +700,28 @@ code lands, in that order.
 
 #### Automated
 
-- [x] 2.1 Integration suite passes: `npm run test:integration`
-- [x] 2.2 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 2.1 Integration suite passes: `npm run test:integration` — 809d5c2
+- [x] 2.2 Linting and type checking pass: `npm run lint && npm run typecheck` — 809d5c2
 
 #### Manual
 
-- [x] 2.3 Dropping an RLS SELECT policy turns the matching isolation test red
-- [x] 2.4 Replacing the delete read-back with "expect it to throw" is confirmed insufficient
+- [x] 2.3 Dropping an RLS SELECT policy turns the matching isolation test red — 809d5c2
+- [x] 2.4 Replacing the delete read-back with "expect it to throw" is confirmed insufficient — 809d5c2
 
 ### Phase 3: Close the entry-insert car-ownership gap
 
 #### Automated
 
-- [ ] 3.1 Migration applies cleanly from scratch: `npx supabase db reset`
-- [ ] 3.2 Integration suite passes: `npm run test:integration`
-- [ ] 3.3 E2E suite still passes: `npm run test:e2e`
-- [ ] 3.4 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 3.1 Migration applies cleanly from scratch: `npx supabase db reset`
+- [x] 3.2 Integration suite passes: `npm run test:integration`
+- [x] 3.3 E2E suite still passes: `npm run test:e2e`
+- [x] 3.4 Linting and type checking pass: `npm run lint && npm run typecheck`
 
 #### Manual
 
-- [ ] 3.5 The rejection test was observed failing before the migration existed
-- [ ] 3.6 Reverting the migration turns the rejection test red again
-- [ ] 3.7 Owner entry creation still works through the UI for all four types
+- [x] 3.5 The rejection test was observed failing before the migration existed
+- [x] 3.6 Reverting the migration turns the rejection test red again
+- [x] 3.7 Owner entry creation still works through the UI for all four types
 
 ### Phase 4: R5 CRUD integrity + DB-constraint oracle
 
