@@ -685,28 +685,28 @@ code lands, in that order.
 
 #### Automated
 
-- [x] 1.1 Integration suite passes with Supabase up: `npm run test:integration`
-- [x] 1.2 Fast suite passes with Docker stopped: `npm test`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Type checking passes: `npm run typecheck`
+- [x] 1.1 Integration suite passes with Supabase up: `npm run test:integration` — d16fdfc
+- [x] 1.2 Fast suite passes with Docker stopped: `npm test` — d16fdfc
+- [x] 1.3 Linting passes: `npm run lint` — d16fdfc
+- [x] 1.4 Type checking passes: `npm run typecheck` — d16fdfc
 
 #### Manual
 
-- [ ] 1.5 Stopped Supabase produces the guard's actionable message, not a timeout
-- [ ] 1.6 A non-localhost `SUPABASE_URL` aborts the run
-- [ ] 1.7 No leftover test users after a run
+- [x] 1.5 Stopped Supabase produces the guard's actionable message, not a timeout — d16fdfc
+- [x] 1.6 A non-localhost `SUPABASE_URL` aborts the run — d16fdfc
+- [x] 1.7 No leftover test users after a run — d16fdfc
 
 ### Phase 2: R3 cross-user isolation matrix
 
 #### Automated
 
-- [ ] 2.1 Integration suite passes: `npm run test:integration`
-- [ ] 2.2 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 2.1 Integration suite passes: `npm run test:integration`
+- [x] 2.2 Linting and type checking pass: `npm run lint && npm run typecheck`
 
 #### Manual
 
-- [ ] 2.3 Dropping an RLS SELECT policy turns the matching isolation test red
-- [ ] 2.4 Replacing the delete read-back with "expect it to throw" is confirmed insufficient
+- [x] 2.3 Dropping an RLS SELECT policy turns the matching isolation test red
+- [x] 2.4 Replacing the delete read-back with "expect it to throw" is confirmed insufficient
 
 ### Phase 3: Close the entry-insert car-ownership gap
 
