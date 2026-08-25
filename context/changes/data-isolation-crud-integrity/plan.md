@@ -739,27 +739,27 @@ code lands, in that order.
 
 #### Automated
 
-- [x] 5.1 Migration applies cleanly from scratch: `npx supabase db reset`
-- [x] 5.2 Fast suite passes including the new schema spec: `npm test`
-- [x] 5.3 Integration suite passes: `npm run test:integration`
-- [x] 5.4 E2E suite passes: `npm run test:e2e`
-- [x] 5.5 Linting and type checking pass: `npm run lint && npm run typecheck`
+- [x] 5.1 Migration applies cleanly from scratch: `npx supabase db reset` — 6adbd13
+- [x] 5.2 Fast suite passes including the new schema spec: `npm test` — 6adbd13
+- [x] 5.3 Integration suite passes: `npm run test:integration` — 6adbd13
+- [x] 5.4 E2E suite passes: `npm run test:e2e` — 6adbd13
+- [x] 5.5 Linting and type checking pass: `npm run lint && npm run typecheck` — 6adbd13
 
 #### Manual
 
-- [x] 5.6 Insurance form with a blank insurer saves and renders correctly
-- [x] 5.7 Inspection with result "Not recorded" saves cleanly
-- [x] 5.8 Entry with mileage `0` returns a readable 400, not a 500
-- [x] 5.9 Existing entries with insurer/result still display unchanged
+- [x] 5.6 Insurance form with a blank insurer saves and renders correctly — 6adbd13
+- [x] 5.7 Inspection with result "Not recorded" saves cleanly — 6adbd13
+- [x] 5.8 Entry with mileage `0` returns a readable 400, not a 500 — 6adbd13
+- [x] 5.9 Existing entries with insurer/result still display unchanged — 6adbd13
 
 ### Phase 6: Cookbook + test-plan updates
 
 #### Automated
 
-- [ ] 6.1 Formatting passes: `npm run format`
-- [ ] 6.2 Linting passes: `npm run lint`
+- [x] 6.1 Formatting passes: `npm run format`
+- [x] 6.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 6.3 §6.3 alone is sufficient to write a new isolation test
-- [ ] 6.4 §3 Phase 2 status matches the Progress section
+- [x] 6.3 §6.3 alone is sufficient to write a new isolation test
+- [x] 6.4 §3 Phase 2 status matches the Progress section

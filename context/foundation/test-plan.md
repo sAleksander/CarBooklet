@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-15 (Phase 1 complete)
+> Last updated: 2026-08-25 (Phase 2 complete)
 
 ## 1. Strategy
 
@@ -95,7 +95,7 @@ orchestrator updates Status as artifacts appear on disk.
 | #   | Phase name                      | Goal (one line)                                                                                                                                   | Risks covered | Test types         | Status      | Change folder                                  |
 | --- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------------------ | ----------- | ---------------------------------------------- |
 | 1   | Bootstrap + AI chat envelope    | Stand up the test runner and prove the chat endpoint grounds only on the owned car, guards auth / no-car / invalid input, and never leaks the key | #1, #2        | unit + integration | complete    | context/changes/testing-bootstrap-ai-chat/     |
-| 2   | Data isolation + CRUD integrity | Every car/entry route rejects non-owned ids; create/edit/delete enforce ownership + server-side validation                                        | #3, #5        | integration        | planned     | context/changes/data-isolation-crud-integrity/ |
+| 2   | Data isolation + CRUD integrity | Every car/entry route rejects non-owned ids; create/edit/delete enforce ownership + server-side validation                                        | #3, #5        | integration        | complete    | context/changes/data-isolation-crud-integrity/ |
 | 3   | Auth & route protection         | Protected routes redirect/401 without a session, including `/entries/[id]`                                                                        | #4            | unit + integration | not started | —                                              |
 | 4   | E2E critical path + CI gate     | One browser flow (sign-in → navigate → ask AI → see visible progress → grounded answer) and wire the suite into CI                                | #6            | e2e + gates        | not started | —                                              |
 
@@ -230,13 +230,105 @@ chat endpoint's guard table + key non-leak (R1/R2):
   funnel it through a `readJson(res): Promise<unknown>` helper so the body is
   `unknown`, not `any`, before `expect`.
 
-Phase 2 extends this section with the car/entry routes (cross-user rejection +
-server-side validation for R3/R5).
+Phase 2 did **not** extend this section to the car/entry routes. It put R3/R5 at
+the **service layer** against real Supabase + RLS instead — route tests would
+have had to mock Supabase, which proves branching, not isolation, and an
+isolation test against a stubbed database proves only that the stub agrees with
+the test. See §6.3 for that pattern. What the routes still own — the zod edge —
+is covered as pure functions in the Docker-free `unit` project
+(`src/test/pages/api/schemas.test.ts`, §6.1 style), so the two halves of "does
+the edge agree with the floor?" are testable independently.
 
 ### 6.3 Adding a Supabase isolation test
 
-- TBD — see §3 Phase 2 (second-user IDOR pattern against local Supabase +
-  RLS for R3).
+The R3/R5 pattern, established in rollout Phase 2
+(`context/changes/data-isolation-crud-integrity/`). Read this before writing
+any test that asks "can user B reach user A's row?".
+
+**Where these specs live, and why.** Top-level `integration/`, not `src/test/`.
+Two independent reasons: the suite needs the **service-role key**, and
+`e2e/fixtures/env.ts` sets the rule that it "must never be imported by anything
+under `src/`"; and `.husky/pre-commit` runs `npm test`, so a spec under
+`src/test/**` would make Docker mandatory for every commit. `vitest.config.ts`
+splits this by directory into two projects — `npm test` is the Docker-free
+`unit` project, `npm run test:integration` is this one.
+
+**Two real users, plus an admin client that never asserts.** `withTwoUsers()`
+(`integration/fixtures/users.ts`) creates two email-confirmed users and hands
+back an anon-key client per user carrying that user's own JWT, so PostgREST
+evaluates `auth.uid()` for real. The service-role client has exactly three
+jobs: create the users, delete them, and read back ground truth. **Never assert
+through it** — it bypasses RLS, so standing it in for the user under test turns
+every isolation check into a false pass.
+
+**Seed through the owner's own client**, never through admin
+(`integration/fixtures/seed.ts`). A seed that skips the INSERT policies can
+land a row RLS would have rejected, and every test built on it then measures a
+state the app cannot produce.
+
+**Assert persisted state, not exceptions.** Under an RLS `USING` clause, a
+cross-user UPDATE or DELETE matches zero rows — which is not an error. Whether
+the caller sees one depends entirely on the service wrapper's tail, and this
+codebase has _four different answers_:
+
+| service                 | tail                 | what the attacker observes |
+| ----------------------- | -------------------- | -------------------------- |
+| `updateCar`             | `.select().single()` | throws (`PGRST116`)        |
+| `deleteCar`             | bare `.delete()`     | nothing — silent `void`    |
+| `update*Entry`          | `.single()`, mapped  | resolves to `null`         |
+| `delete*Entry`          | `.select("id")`      | resolves to `false`        |
+| any INSERT `WITH CHECK` | —                    | throws (`42501`)           |
+
+So every destructive case must re-read the row **as its owner** and assert it
+is byte-identical or still present. This was verified load-bearing: with the
+cars DELETE policy made permissive, `deleteCar` still resolved without throwing
+while the row was gone — a test written as `.rejects.toThrow()` would have
+stayed green through a real breach. INSERT is the one exception: `WITH CHECK`
+violations genuinely raise, so impersonation tests assert a rejection.
+
+**Assert twice — through the service, and around it.** Service functions may
+carry their own `user_id` filter (every function in `services/entries.ts` does),
+which short-circuits _ahead_ of RLS. A service-only test then passes whether or
+not the policy exists. Pair each case with a raw `client.from(table)…` call
+carrying the attacker's JWT, which reaches the policy directly. Measured: with
+`repair_entries` RLS fully permissive, only the raw and attacker-supplied-userId
+cases went red — every service-path test stayed green.
+
+**Also test the userId argument as attacker-controlled.** `getCarById(b.client,
+aCar.id, a.id)` is the sharp case: the service's `.eq("user_id", userId)` filter
+cannot refuse it, because B is asking for exactly the row that filter admits.
+Only RLS says no.
+
+**Always assert the pair.** "B cannot see A's row" is satisfied just as well by
+a broken fixture that sees nothing at all. Every absence assertion needs a
+presence assertion beside it — see `integration/harness.test.ts`, which exists
+solely to prove the harness before any risk leans on it.
+
+**One `describe.each` table, not four files.** The four entry types share an
+identical query shape; hand-copied files drift, and the drift lands in whichever
+type someone forgot to update.
+
+**Guards and budget.** `integration/globalSetup.ts` refuses any non-localhost
+`SUPABASE_URL` (these tests create and delete real users) and fails fast with
+actionable text when the stack is down. `supabase/config.toml` caps sign-ins at
+**30 per 5 minutes per IP** and `withTwoUsers()` spends two — so call it in
+`beforeAll`, once per file, never in `beforeEach`. If the suite outgrows the
+budget, raise the limit in config rather than pooling users across files.
+
+**Prove the test bites.** A green isolation suite is exactly when to be
+suspicious. Break the policy reversibly and confirm the right tests go red:
+
+```sql
+DROP POLICY "Users can view own cars" ON public.cars;
+CREATE POLICY "Users can view own cars" ON public.cars FOR SELECT USING (true);
+-- run the spec, then restore (or `npx supabase db reset`)
+```
+
+Note one Postgres subtlety found doing this: breaking the **UPDATE** policy
+alone turns nothing red, because SELECT policies also gate the `WHERE`-clause
+reads and the `RETURNING` of an UPDATE. The update cases only go red when
+SELECT _and_ UPDATE are both permissive. An UPDATE-policy regression in
+isolation is therefore not independently detectable at this layer.
 
 ### 6.4 Adding a middleware / route-protection test
 
@@ -266,6 +358,46 @@ here capturing anything surprising the rollout phase taught.)
 - A streaming mock can be a **sync** `function*`; `for await` accepts sync
   iterables. An `async function*` with no `await` trips
   `@typescript-eslint/require-await` under the repo's strict lint.
+
+**Phase 2 (Data isolation + CRUD integrity):**
+
+- **Cross-user writes have no single signature.** Research recorded "0 rows,
+  silently, no error" — true in SQL, but the service wrappers transform it four
+  different ways (throw / silent void / `null` / `false`). Assertions must be
+  written per operation, and the persisted-state read-back is the only one that
+  holds across all of them. See the table in §6.3.
+- **A service-level `user_id` filter hides whether RLS works.** Measured: with
+  `repair_entries` RLS fully permissive, every service-path test stayed green.
+  Pair each case with a raw client call. This also dissolved a live conflict
+  with `swallowed-error-propagation`, which wants to _add_ such a filter to
+  `updateCar`/`deleteCar` as defense in depth — with the raw assertions in
+  place, both changes can proceed.
+- **The pre-commit trap.** `.husky/pre-commit` runs `npm test`; integration
+  specs placed under the existing `src/test/**` glob would make Docker
+  mandatory for every commit. Hence the `unit` / `integration` projects split
+  in `vitest.config.ts`.
+- **An IDOR write-vector at the DB.** All four entry INSERT policies checked
+  `auth.uid() = user_id` and nothing else, so a user could attach an entry to
+  someone else's `car_id`. Only the POST route's 403 pre-check stood in the way.
+  Closed by `20260825000000_entry_insert_car_ownership.sql`. Worth noting the
+  asymmetry: the injected row carries the attacker's `user_id`, so RLS hides it
+  from the car's owner entirely — invisible to the victim is not the same as
+  absent.
+- **Three zod ↔ DB parity gaps**, all producing 500s from supported user
+  actions. `mileage` was fixed at the edge (`.min(0)` → `.min(1)`; the
+  constraint was right and 0 is meaningless); `insurer` and inspection `result`
+  were fixed at the database (`DROP NOT NULL`; the forms send null and the list
+  renders conditionally, so two earlier migrations had outrun the product).
+  Direction matters more than the fix — decide it from the product's own
+  evidence, not from whichever side is easier to edit.
+- **A migration needs its own oracle.** `schemas.test.ts` proves zod accepts
+  null — but zod accepted null _before_ `DROP NOT NULL` too, so reverting the
+  migration left the whole suite green. Whenever a migration changes what the
+  database accepts, assert it at the database.
+- **The old 500s were leaking Postgres text** (`violates check constraint
+"repair_entries_mileage_positive"`) straight to the client. That is §2 R2
+  territory and belongs to `swallowed-error-propagation` Finding 3; Phase 2 only
+  removed one route to it.
 
 ## 7. What We Deliberately Don't Test
 
