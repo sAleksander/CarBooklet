@@ -42,3 +42,12 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # Upload the Worker's *runtime* env. The build-time env above only
+          # affects `astro build`; without this the deployed Worker has no
+          # Supabase config and every auth call fails at fetch time.
+          secrets: |
+            SUPABASE_URL
+            SUPABASE_KEY
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
