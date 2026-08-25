@@ -756,10 +756,10 @@ code lands, in that order.
 
 #### Automated
 
-- [x] 6.1 Formatting passes: `npm run format`
-- [x] 6.2 Linting passes: `npm run lint`
+- [x] 6.1 Formatting passes: `npm run format` — ccaa952
+- [x] 6.2 Linting passes: `npm run lint` — ccaa952
 
 #### Manual
 
-- [x] 6.3 §6.3 alone is sufficient to write a new isolation test
-- [x] 6.4 §3 Phase 2 status matches the Progress section
+- [x] 6.3 §6.3 alone is sufficient to write a new isolation test — ccaa952
+- [x] 6.4 §3 Phase 2 status matches the Progress section — ccaa952
