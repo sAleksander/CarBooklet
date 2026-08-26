@@ -16,6 +16,8 @@ pnpm-debug.log*
 # environment variables
 .env
 .env.production
+# Vite/Astro read these too, and a service_role key is a common thing to park in one.
+.env*.local
 
 # cloudflare
 .dev.vars

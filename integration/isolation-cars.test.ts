@@ -54,7 +54,11 @@ describe("R3 · cross-user isolation · cars", () => {
   });
 
   afterAll(async () => {
-    await users.dispose();
+    // `users` is typed non-nullable for the benefit of the hundreds of use
+    // sites above, but it is genuinely unassigned when `beforeAll` throws —
+    // and an unguarded TypeError here would bury that original failure.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    await users?.dispose();
   });
 
   beforeEach(async () => {

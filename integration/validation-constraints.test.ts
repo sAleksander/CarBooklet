@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
-import { createCar } from "@/lib/services/cars";
+import { createCar, getCarById } from "@/lib/services/cars";
 import {
   getEntryById,
   createRepairEntry,
@@ -11,7 +11,7 @@ import {
   updateInspectionEntry,
   updateInsuranceEntry,
 } from "@/lib/services/entries";
-import { withTwoUsers, type TwoUsers, type TestClient } from "./fixtures/users";
+import { withOneUser, type OneUser, type TestClient } from "./fixtures/users";
 import { seedCar, marker, validEntryPayload, ENTRY_TABLES } from "./fixtures/seed";
 import type { Car, EngineType, EntryType } from "@/types";
 
@@ -129,17 +129,23 @@ const CASES: ConstraintCase[] = [
 ];
 
 describe("R5 · validation constraints · the database as oracle", () => {
-  let users: TwoUsers;
-  let owner: TwoUsers["userA"];
+  let users: OneUser;
+  let owner: OneUser["user"];
   let car: Car;
 
   beforeAll(async () => {
-    users = await withTwoUsers();
-    owner = users.userA;
+    // One user, not two: every assertion in this file is about what the owner
+    // can do to their own rows. See `withOneUser`'s note on the sign-in budget.
+    users = await withOneUser();
+    owner = users.user;
   });
 
   afterAll(async () => {
-    await users.dispose();
+    // `users` is typed non-nullable for the benefit of the hundreds of use
+    // sites above, but it is genuinely unassigned when `beforeAll` throws —
+    // and an unguarded TypeError here would bury that original failure.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    await users?.dispose();
   });
 
   beforeEach(async () => {
@@ -148,10 +154,13 @@ describe("R5 · validation constraints · the database as oracle", () => {
 
   describe.each(CASES)("$label", (entry) => {
     it("rejects mileage 0", async () => {
-      // Note what this means for the edge: every route's zod schema currently
-      // says `.min(0)`, so this exact value passes validation and arrives here.
-      // Phase 5 closes that gap on the schema side; the constraint is what
-      // stands until then, and what this test pins.
+      // The edge rejects this too: every route's zod schema reads
+      // `.min(1, "Mileage must be greater than 0")`, so a real request carrying
+      // 0 never reaches the database — it gets a 400. This test deliberately
+      // goes around that, calling the service directly, because the point is to
+      // pin the CHECK constraint *independently* of the schema. Two layers that
+      // are each verified separately can be shown to agree; a schema that is
+      // only ever tested through itself proves nothing about the floor beneath.
       await expect(entry.create(owner.client, owner.id, car.id, 0)).rejects.toThrow();
     });
 
@@ -163,6 +172,9 @@ describe("R5 · validation constraints · the database as oracle", () => {
         mileage: 0,
       });
 
+      // Pre-assert, so a regression reads as "the insert unexpectedly succeeded"
+      // rather than "expected undefined to be '23514'".
+      expect(raw.error).not.toBeNull();
       expect(raw.error?.code).toBe("23514");
     });
 
@@ -252,6 +264,9 @@ describe("R5 · validation constraints · the database as oracle", () => {
         engine_power: "190hp",
       });
 
+      // Pre-assert, so a regression reads as "the insert unexpectedly succeeded"
+      // rather than "expected undefined to be '22P02'".
+      expect(raw.error).not.toBeNull();
       expect(raw.error?.code).toBe("22P02");
     });
 
@@ -270,7 +285,11 @@ describe("R5 · validation constraints · the database as oracle", () => {
           engine_capacity: "2.0L",
           engine_power: "190hp",
         });
-        expect(created.engine_type).toBe(engineType);
+        // Read back rather than trusting `created` — that value is just what
+        // PostgREST echoed, and this file's whole rule is that the row in the
+        // database is the oracle.
+        const readBack = await getCarById(owner.client, created.id, owner.id);
+        expect(readBack?.engine_type).toBe(engineType);
       }
     });
   });

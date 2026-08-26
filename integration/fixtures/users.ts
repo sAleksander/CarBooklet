@@ -44,6 +44,14 @@ export interface TestUser {
   client: TestClient;
 }
 
+export interface OneUser {
+  user: TestUser;
+  /** Service-role client. Same rules as `TwoUsers.admin` — never in an assertion. */
+  admin: TestClient;
+  /** Deletes the user. `ON DELETE CASCADE` takes their cars and entries with them. */
+  dispose(): Promise<void>;
+}
+
 export interface TwoUsers {
   userA: TestUser;
   userB: TestUser;
@@ -111,7 +119,19 @@ async function createTestUser(admin: TestClient, label: string): Promise<TestUse
 export async function withTwoUsers(): Promise<TwoUsers> {
   const admin = adminClient();
   const userA = await createTestUser(admin, "a");
-  const userB = await createTestUser(admin, "b");
+
+  // A is already in `auth.users` at this point. If B's creation throws — a 429
+  // off the sign-in cap, a container hiccup — nothing else will ever remove A:
+  // emails carry a timestamp and a uuid, so no later run collides with it and
+  // no teardown knows it exists. Roll A back here, and let the original error
+  // through rather than the cleanup's.
+  let userB: TestUser;
+  try {
+    userB = await createTestUser(admin, "b");
+  } catch (err) {
+    await admin.auth.admin.deleteUser(userA.id).catch(() => undefined);
+    throw err;
+  }
 
   return {
     userA,
@@ -125,6 +145,34 @@ export async function withTwoUsers(): Promise<TwoUsers> {
       if (failed.length > 0) {
         throw new Error(`could not tear down test users: ${failed.map((r) => r.error?.message).join("; ")}`);
       }
+    },
+  };
+}
+
+/**
+ * Create a single user, for files that never need a second one.
+ *
+ * The isolation specs need two users because the whole claim is about a
+ * boundary between them. The owner-path specs (`crud-integrity`,
+ * `validation-constraints`) assert only about what the owner can do to their
+ * own rows, and a second user there is provisioned, signed in, and never
+ * looked at.
+ *
+ * That matters for the same reason the `beforeAll` note above matters:
+ * `supabase/config.toml` caps sign-ins per IP, and every unused user spends
+ * from a shared budget. Reaching for this helper keeps the suite's cost
+ * legible as it grows — if a file needs one user, the code should say one.
+ */
+export async function withOneUser(): Promise<OneUser> {
+  const admin = adminClient();
+  const user = await createTestUser(admin, "a");
+
+  return {
+    user,
+    admin,
+    async dispose() {
+      const { error } = await admin.auth.admin.deleteUser(user.id);
+      if (error) throw new Error(`could not tear down test user: ${error.message}`);
     },
   };
 }

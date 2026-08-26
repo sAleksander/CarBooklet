@@ -15,7 +15,7 @@ import {
   deleteInspectionEntry,
   deleteInsuranceEntry,
 } from "@/lib/services/entries";
-import { withTwoUsers, type TwoUsers, type TestClient } from "./fixtures/users";
+import { withOneUser, type OneUser, type TestClient } from "./fixtures/users";
 import { seedCar, seedEntry, marker } from "./fixtures/seed";
 import type { Car, Entry, EntryType } from "@/types";
 
@@ -49,8 +49,6 @@ interface EntryCase {
   create(client: TestClient, userId: string, carId: string, mark: string): Promise<{ id: string }>;
   update(client: TestClient, entryId: string, userId: string, mark: string): Promise<unknown>;
   remove(client: TestClient, entryId: string, userId: string): Promise<boolean>;
-  /** The column the create/update payloads write the marker into. */
-  markerColumn: string;
   /** Field values the create payload commits to, checked on read-back. */
   createdFields(mark: string): Record<string, unknown>;
   updatedFields(mark: string): Record<string, unknown>;
@@ -75,9 +73,8 @@ const ENTRY_CASES: EntryCase[] = [
         cause: "wear",
       }),
     remove: deleteRepairEntry,
-    markerColumn: "description",
     createdFields: (mark) => ({ conducted_at: "2026-05-01", mileage: 160_000, description: mark, cause: "wear" }),
-    updatedFields: (mark) => ({ conducted_at: "2026-06-01", mileage: 161_000, description: mark }),
+    updatedFields: (mark) => ({ conducted_at: "2026-06-01", mileage: 161_000, description: mark, cause: "wear" }),
   },
   {
     label: "oil_change",
@@ -95,7 +92,6 @@ const ENTRY_CASES: EntryCase[] = [
         oil_details: mark,
       }),
     remove: deleteOilChangeEntry,
-    markerColumn: "oil_details",
     createdFields: (mark) => ({ conducted_at: "2026-05-02", mileage: 162_000, oil_details: mark }),
     updatedFields: (mark) => ({ conducted_at: "2026-06-02", mileage: 163_000, oil_details: mark }),
   },
@@ -117,7 +113,6 @@ const ENTRY_CASES: EntryCase[] = [
         next_inspection_date: "2028-06-03",
       }),
     remove: deleteInspectionEntry,
-    markerColumn: "result",
     createdFields: () => ({
       conducted_at: "2026-05-03",
       mileage: 164_000,
@@ -151,33 +146,40 @@ const ENTRY_CASES: EntryCase[] = [
         renewal_date: "2028-06-04",
       }),
     remove: deleteInsuranceEntry,
-    markerColumn: "insurer",
     createdFields: (mark) => ({
       conducted_at: "2026-05-04",
       mileage: 166_000,
       insurer: mark,
+      policy_start_date: "2026-05-04",
       renewal_date: "2027-05-04",
     }),
     updatedFields: (mark) => ({
       conducted_at: "2026-06-04",
       mileage: 167_000,
       insurer: mark,
+      policy_start_date: "2026-06-04",
       renewal_date: "2028-06-04",
     }),
   },
 ];
 
 describe("R5 · CRUD integrity · owner path", () => {
-  let users: TwoUsers;
-  let owner: TwoUsers["userA"];
+  let users: OneUser;
+  let owner: OneUser["user"];
 
   beforeAll(async () => {
-    users = await withTwoUsers();
-    owner = users.userA;
+    // One user, not two: every assertion in this file is about what the owner
+    // can do to their own rows. See `withOneUser`'s note on the sign-in budget.
+    users = await withOneUser();
+    owner = users.user;
   });
 
   afterAll(async () => {
-    await users.dispose();
+    // `users` is typed non-nullable for the benefit of the hundreds of use
+    // sites above, but it is genuinely unassigned when `beforeAll` throws —
+    // and an unguarded TypeError here would bury that original failure.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    await users?.dispose();
   });
 
   describe("cars", () => {
