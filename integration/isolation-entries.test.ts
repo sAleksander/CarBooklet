@@ -45,9 +45,11 @@ import type { Car, Entry, EntryType } from "@/types";
  *    `updateCar`) nor silent (cars' `deleteCar`) but a falsy return. Third
  *    signature, same guarantee — and the read-back is still what carries it.
  *
- * Cross-*car* inserts (B writing an entry under B's own id but against A's car)
- * are deliberately absent here: that gap is real at the database today, and
- * Phase 3 owns writing it red-first before the policy migration closes it.
+ * Cross-*car* writes — B writing under B's own id but against A's car, so
+ * `auth.uid() = user_id` is satisfied and only `car_id` is wrong — live in
+ * their own block near the bottom. Both doors onto `car_id` are covered there:
+ * the direct insert (closed by 20260825000000) and the insert-then-move
+ * (closed by 20260826000000). Closing one without the other closes nothing.
  */
 
 interface EntryCase {
@@ -161,7 +163,11 @@ describe("R3 · cross-user isolation · entries", () => {
   });
 
   afterAll(async () => {
-    await users.dispose();
+    // `users` is typed non-nullable for the benefit of the hundreds of use
+    // sites above, but it is genuinely unassigned when `beforeAll` throws —
+    // and an unguarded TypeError here would bury that original failure.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    await users?.dispose();
   });
 
   describe.each(ENTRY_CASES)("$label", (entry) => {
@@ -301,7 +307,7 @@ describe("R3 · cross-user isolation · entries", () => {
     // own car through any query the app makes. Invisible to the victim is not
     // the same as absent — which is why the assertion below reads ground truth
     // through the admin client. That is the one job it has here.
-    describe("cross-car insert", () => {
+    describe("cross-car writes", () => {
       it("rejects an entry B writes against A's car", async () => {
         await expect(entry.create(users.userB.client, users.userB.id, carA.id, marker("cross-car"))).rejects.toThrow();
 
@@ -313,6 +319,15 @@ describe("R3 · cross-user isolation · entries", () => {
 
         expect(landed.error).toBeNull();
         expect(landed.data).toHaveLength(0);
+
+        // Positive control on the admin client itself. `toHaveLength(0)` above
+        // is satisfied just as well by a client that reads nothing at all —
+        // which would make this whole block pass while proving nothing. A's own
+        // entry, on the same table, is what shows the client can in fact see.
+        const control = await users.admin.from(ENTRY_TABLES[entry.type]).select("id").eq("id", entryA.id);
+
+        expect(control.error).toBeNull();
+        expect(control.data).toHaveLength(1);
       });
 
       it("rejects a raw cross-car insert carrying B's JWT", async () => {
@@ -324,6 +339,49 @@ describe("R3 · cross-user isolation · entries", () => {
 
         expect(raw.error).not.toBeNull();
         expect(raw.error?.code).toBe("42501");
+      });
+
+      // The INSERT policy is only one of two doors onto `car_id`. B can also
+      // insert onto B's *own* car — which that policy allows, by design — and
+      // then move the row with an UPDATE. What lands is byte-identical to the
+      // row the INSERT policy just refused, so closing one door and not the
+      // other closes nothing. No PATCH schema accepts `car_id`, so the app
+      // cannot do this; a signed-in user holding their own JWT can, in one line.
+      it("rejects a raw update that moves B's own entry onto A's car", async () => {
+        const ownEntry = await seedEntry(users.userB.client, entry.type, {
+          userId: users.userB.id,
+          carId: carB.id,
+        });
+
+        const raw = await users.userB.client
+          .from(ENTRY_TABLES[entry.type])
+          .update({ car_id: carA.id })
+          .eq("id", ownEntry.id)
+          .select("id");
+
+        expect(raw.error).not.toBeNull();
+        expect(raw.error?.code).toBe("42501");
+
+        // Ground truth through the admin client, for the same reason as above:
+        // the moved row would carry B's `user_id`, so RLS hides it from A and
+        // she cannot detect the pollution on her own car.
+        const landed = await users.admin
+          .from(ENTRY_TABLES[entry.type])
+          .select("id")
+          .eq("car_id", carA.id)
+          .eq("user_id", users.userB.id);
+
+        expect(landed.error).toBeNull();
+        expect(landed.data).toHaveLength(0);
+
+        // Positive control on the admin client itself. `toHaveLength(0)` above
+        // is satisfied just as well by a client that reads nothing at all —
+        // which would make this whole block pass while proving nothing. A's own
+        // entry, on the same table, is what shows the client can in fact see.
+        const control = await users.admin.from(ENTRY_TABLES[entry.type]).select("id").eq("id", entryA.id);
+
+        expect(control.error).toBeNull();
+        expect(control.data).toHaveLength(1);
       });
     });
   });
