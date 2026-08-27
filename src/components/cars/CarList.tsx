@@ -18,18 +18,30 @@ interface CarListProps {
   initialCars: Car[];
   initialSelectedCarId: string | null;
   lang: Locale;
+  /**
+   * The server could not load the list — `initialCars` is empty because the
+   * request failed, not because the user owns no cars. Without this the two are
+   * indistinguishable in the UI, and "You have no cars yet" next to an error
+   * banner invites the user to re-create a car they already own.
+   */
+  loadFailed?: boolean;
 }
 
-export default function CarList({ initialCars, initialSelectedCarId, lang }: CarListProps) {
+export default function CarList({ initialCars, initialSelectedCarId, lang, loadFailed }: CarListProps) {
   const [i18n] = useState(() => createClientI18n(lang));
   return (
     <I18nextProvider i18n={i18n}>
-      <CarListContent initialCars={initialCars} initialSelectedCarId={initialSelectedCarId} lang={lang} />
+      <CarListContent
+        initialCars={initialCars}
+        initialSelectedCarId={initialSelectedCarId}
+        lang={lang}
+        loadFailed={loadFailed}
+      />
     </I18nextProvider>
   );
 }
 
-function CarListContent({ initialCars, initialSelectedCarId }: CarListProps) {
+function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false }: CarListProps) {
   const { t } = useTranslation();
   const [cars, setCars] = useState<Car[]>(initialCars);
   const [selectedCarId, setSelectedCarId] = useState<string | null>(initialSelectedCarId);
@@ -110,7 +122,7 @@ function CarListContent({ initialCars, initialSelectedCarId }: CarListProps) {
     <div className="space-y-6 p-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">{t("cars.myCars")}</h1>
-        {!showAddForm && (
+        {!showAddForm && !loadFailed && (
           <Button
             onClick={() => {
               setShowAddForm(true);
@@ -135,7 +147,7 @@ function CarListContent({ initialCars, initialSelectedCarId }: CarListProps) {
         </div>
       )}
 
-      {cars.length === 0 && !showAddForm ? (
+      {cars.length === 0 && !showAddForm && !loadFailed ? (
         <p className="text-muted-foreground">{t("cars.noCars")}</p>
       ) : (
         <ul className="space-y-4">

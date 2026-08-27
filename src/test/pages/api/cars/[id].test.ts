@@ -143,9 +143,25 @@ describe("/api/cars/[id]", () => {
       expect(await readJson(res)).toEqual({ error: "Service unavailable" });
     });
 
-    it("401, not 404, when the session died mid-request", async () => {
+    it("500, not 404, when a policy refuses the read", async () => {
+      // 42501 reaches here only when a policy or GRANT is misconfigured — the
+      // session was already resolved by supabase.auth.getUser() above. That is
+      // an operator error the caller cannot act on, so 500 rather than 401.
       vi.mocked(getCarById).mockRejectedValue(
         toServiceError({ code: "42501", message: "permission denied for table cars" }, "getCarById"),
+      );
+
+      const res = await handler(makeContext());
+
+      expect(res.status).toBe(500);
+      expect(await readJson(res)).toEqual({ error: "Server error" });
+    });
+
+    it("401 when the JWT itself failed verification", async () => {
+      // The code that does mean "your session is gone", kept distinct from the
+      // one above so the two cannot drift back together.
+      vi.mocked(getCarById).mockRejectedValue(
+        toServiceError({ code: "PGRST301", message: "JWT expired" }, "getCarById"),
       );
 
       expect((await handler(makeContext())).status).toBe(401);

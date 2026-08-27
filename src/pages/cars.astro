@@ -40,5 +40,5 @@ const showError = loadFailed || arrivedAfterFailure;
 
 <AppLayout title={t("cars.myCars")}>
   {showError && <Banner variant="error">{t("common.loadFailed")}</Banner>}
-  <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} lang={lang} />
+  <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} lang={lang} loadFailed={loadFailed} />
 </AppLayout>

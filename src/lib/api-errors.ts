@@ -58,20 +58,29 @@ const CODE_MAPPINGS = new Map<string, ErrorMapping>([
   // yours — the same answer the ownership pre-check would have given a moment
   // earlier. The client's correct reaction is identical either way.
   ["23503", NOT_FOUND],
-  // RLS denial → 401, not 403, even though it can now mean "foreign car".
-  // `20260825000000` and `20260826000000` added car-ownership predicates to the
-  // entry INSERT and UPDATE policies, so `42501` no longer means only "the
-  // session died". The ownership sense is nevertheless unreachable through these
-  // routes: all four entry routes pre-check ownership via `getCarById`, and the
-  // PATCH schemas do not accept `car_id`, so an entry cannot be moved between
-  // cars through the API. What remains reachable is session death, which 401
-  // answers correctly — supabase-js downgrades an expired session to anon
-  // silently, so this is the shape that failure actually takes.
+  // RLS denial → 500, and neither 401 nor 403. This row reverses the plan's
+  // decision; the implementation review is what caught it.
   //
-  // Splitting the two senses would mean keying on PostgREST's prose
-  // `details`/`hint`, which is the exact dependency this change exists to
-  // remove. If a future route drops its ownership pre-check, revisit this row.
-  ["42501", UNAUTHORIZED],
+  // The plan argued 42501's reachable sense was "the session died mid-request",
+  // and mapped it to 401 on that basis. But a dead session cannot reach this
+  // code: every route resolves the user first — `middleware.ts` for the entry
+  // routes, `supabase.auth.getUser()` for the cars routes — and answers 401
+  // before touching PostgREST. Genuine JWT expiry surfaces as `PGRST301`, which
+  // has its own row below.
+  //
+  // What can still produce a live 42501 is a policy or GRANT that does not do
+  // what it should — an operator error, not something the caller did wrong and
+  // not something the caller can fix. Answering "Unauthorized" sends an
+  // authenticated user to sign out and back in, which cannot help, and no client
+  // in this repo has a 401 handler to do anything smarter.
+  //
+  // The ownership sense (added to the entry INSERT/UPDATE policies by
+  // `20260825000000` and `20260826000000`) stays unreachable through these
+  // routes: all four entry routes pre-check ownership via `getCarById`, and the
+  // PATCH schemas do not accept `car_id`. Splitting the senses would mean keying
+  // on PostgREST's prose `details`/`hint` — the exact dependency this change
+  // exists to remove.
+  ["42501", SERVER_ERROR],
   ["PGRST301", UNAUTHORIZED], // JWT verification failed
   // Under `.maybeSingle()` this no longer means "no rows" — it means *more than
   // one*, which every call site here filters on a primary key to prevent. So it
@@ -107,6 +116,16 @@ export interface ApiErrorContext {
   route: string;
   method: string;
   userId?: string;
+  /**
+   * Which boundary failed. Defaults to `"api"`.
+   *
+   * Load-bearing for log queries: on an SSR page the `status` field is the
+   * status this fault *would* map to, not one any response carries — the user
+   * gets a 302, or a 200 with an error banner. Without this discriminator an
+   * operator filtering `status:503` silently gets a mix of real 503 responses
+   * and SSR redirects.
+   */
+  surface?: "api" | "ssr";
 }
 
 /**
@@ -129,6 +148,7 @@ export function logApiError(err: unknown, context: ApiErrorContext, mapping: Err
 
   console.error({
     event: "api_error",
+    surface: context.surface ?? "api",
     route: context.route,
     method: context.method,
     userId: context.userId,
@@ -175,7 +195,7 @@ export function apiErrorResponse(err: unknown, context: ApiErrorContext): Respon
  * differently.
  */
 export function logSsrError(err: unknown, context: ApiErrorContext): void {
-  logApiError(err, context, isServiceError(err) ? mapErrorCode(err.code) : SERVER_ERROR);
+  logApiError(err, { ...context, surface: "ssr" }, isServiceError(err) ? mapErrorCode(err.code) : SERVER_ERROR);
 }
 
 /**

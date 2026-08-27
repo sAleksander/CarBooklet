@@ -28,6 +28,18 @@ const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 function isRealCalendarDay(value: string): boolean {
   const [year, month, day] = value.split("-").map(Number);
 
+  // Zod runs `.refine` even when the `.regex` before it fails, so this receives
+  // malformed input routinely — `"01/01/2026"` arrives as `[NaN]`, leaving month
+  // and day `undefined`. Every comparison below would then be false-y and return
+  // the right answer by accident. Saying so explicitly is what keeps that true
+  // if the comparisons are ever reordered.
+  if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) return false;
+
+  // Postgres `date` has no year zero, so accepting one here would break this
+  // module's own contract — that the edge and the database agree about what is
+  // valid — and hand the user a `22008` instead of a field-specific message.
+  if (year < 1) return false;
+
   if (month < 1 || month > 12 || day < 1) return false;
 
   const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;

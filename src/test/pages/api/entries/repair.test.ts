@@ -135,9 +135,19 @@ describe("/api/entries/repair", () => {
       expect((await POST(makeContext())).status).toBe(503);
     });
 
-    it("answers 401 when the session died mid-request", async () => {
+    it("answers 500 when a policy refuses the write", async () => {
+      // Not 401: middleware.ts already resolved locals.user, so a live 42501 is
+      // a policy or GRANT misconfiguration rather than a dead session.
       vi.mocked(createRepairEntry).mockRejectedValue(
         toServiceError({ code: "42501", message: "permission denied" }, "createRepairEntry"),
+      );
+
+      expect((await POST(makeContext())).status).toBe(500);
+    });
+
+    it("answers 401 when the JWT itself failed verification", async () => {
+      vi.mocked(createRepairEntry).mockRejectedValue(
+        toServiceError({ code: "PGRST301", message: "JWT expired" }, "createRepairEntry"),
       );
 
       expect((await POST(makeContext())).status).toBe(401);

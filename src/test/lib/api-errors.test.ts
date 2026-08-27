@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { mapErrorCode, logApiError, apiErrorResponse, type ErrorMapping } from "@/lib/api-errors";
+import { mapErrorCode, logApiError, logSsrError, apiErrorResponse, type ErrorMapping } from "@/lib/api-errors";
 import { toServiceError } from "@/lib/services/errors";
 
 /**
@@ -49,7 +49,7 @@ describe("mapErrorCode", () => {
     ["23502", 400, "Invalid request", "not-null violation"],
     ["23514", 400, "Invalid request", "check violation"],
     ["23503", 404, "Not found", "FK violation"],
-    ["42501", 401, "Unauthorized", "RLS denial"],
+    ["42501", 500, "Server error", "RLS denial — an operator error, not a client one"],
     ["PGRST301", 401, "Unauthorized", "JWT failure"],
     ["PGRST116", 500, "Server error", "more than one row under maybeSingle"],
     ["PGRST204", 500, "Server error", "schema cache"],
@@ -114,6 +114,7 @@ describe("logApiError", () => {
 
     expect(payload()).toEqual({
       event: "api_error",
+      surface: "api",
       route: "/api/entries/repair",
       method: "POST",
       userId: "user-1",
@@ -177,6 +178,65 @@ describe("logApiError", () => {
   });
 });
 
+describe("logSsrError", () => {
+  // The SSR counterpart, and until this block the one export in the module with
+  // no coverage at all — eight call sites across five .astro pages and the
+  // middleware, none of them exercised.
+
+  it("maps the code itself, so an SSR fault is as diagnosable as an API one", () => {
+    logSsrError(toServiceError({ code: "57014", message: "canceling statement" }, "getCars"), {
+      route: "/cars",
+      method: "GET",
+      userId: "user-1",
+    });
+
+    expect(payload()).toMatchObject({
+      event: "api_error",
+      surface: "ssr",
+      route: "/cars",
+      op: "getCars",
+      code: "57014",
+      status: 503,
+    });
+  });
+
+  it("marks the surface, because the status it records is not one any response carries", () => {
+    // On an SSR page the user gets a 302 or a 200 with a banner. Without this
+    // field an operator filtering status:503 gets a mix of real 503 responses
+    // and SSR redirects with no way to tell them apart.
+    logSsrError(toServiceError({ code: "", message: "fetch failed" }, "getCars"), {
+      route: "/dashboard",
+      method: "GET",
+    });
+
+    const line = payload();
+    expect(line.surface).toBe("ssr");
+    expect(line.status).toBe(503);
+  });
+
+  it("keeps event constant so SSR failures appear in the same query as API ones", () => {
+    logSsrError(new Error("boom"), { route: "/entries", method: "GET" });
+
+    expect(payload().event).toBe("api_error");
+  });
+
+  it("falls back to 500 for a non-ServiceError, matching apiErrorResponse", () => {
+    logSsrError(new TypeError("cars.map is not a function"), { route: "/cars", method: "GET" });
+
+    expect(payload()).toMatchObject({ status: 500, code: "", op: null });
+  });
+
+  it("does not throw on a value that cannot be serialized", () => {
+    // It runs in .astro frontmatter, where an uncaught throw is a raw 500 page.
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+
+    expect(() => {
+      logSsrError(circular, { route: "/cars", method: "GET" });
+    }).not.toThrow();
+  });
+});
+
 describe("apiErrorResponse", () => {
   it("answers with the mapped status and the generic message", async () => {
     const res = apiErrorResponse(toServiceError({ code: "22P02", message: "invalid input syntax" }, "getCarById"), CTX);
@@ -203,7 +263,7 @@ describe("apiErrorResponse", () => {
     expect(body).not.toContain("entries_insert_own");
     expect(body).not.toContain("repair_entries");
     expect(body).not.toContain("row-level security");
-    expect(body).toBe(JSON.stringify({ error: "Unauthorized" }));
+    expect(body).toBe(JSON.stringify({ error: "Server error" }));
   });
 
   it("never puts details in the body, however harmless it looks", async () => {

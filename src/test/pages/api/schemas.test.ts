@@ -189,6 +189,26 @@ describe("API edge schemas", () => {
     it("accepts 2000-02-29 — divisible by 400, so a leap year after all", () => {
       expect(schema.safeParse({ ...valid, conducted_at: "2000-02-29" }).success).toBe(true);
     });
+
+    it.each(["0000-01-01", "0000-02-29"])("rejects %s — Postgres has no year zero", (date) => {
+      // Without a year floor these pass the calendar check (year 0 is divisible
+      // by 400) and reach the database, which answers 22008 — a 500-shaped
+      // surprise for what the edge should have caught.
+      expect(firstIssue(schema, { ...valid, conducted_at: date })).toBe("Date is not a real calendar date");
+    });
+
+    it("reports the shape error first when the input is not a date at all", () => {
+      // Zod runs .refine even when .regex fails, so a malformed value produces
+      // two issues. Routes render issues[0], so the ordering is what the user
+      // actually sees — and it is the reason the refinement must cope with NaN
+      // rather than assume a well-formed string.
+      const parsed = schema.safeParse({ ...valid, conducted_at: "01/01/2026" });
+
+      expect(parsed.success).toBe(false);
+      if (!parsed.success) {
+        expect(parsed.error.issues[0].message).toBe("Date must be YYYY-MM-DD");
+      }
+    });
   });
 
   // The other ten date fields. `conducted_at` is covered above for all eight
