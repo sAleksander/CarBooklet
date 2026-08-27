@@ -1,7 +1,7 @@
 ---
 change_id: swallowed-error-propagation
 title: Propagate swallowed errors at the API and SSR boundary
-status: implementing
+status: impl_reviewed
 created: 2026-08-24
 updated: 2026-08-27
 archived_at: null
@@ -189,3 +189,30 @@ Decision: skip. Shipping six unreachable guards, four of them behind
 next reader the work of re-deriving that it cannot happen. If a future
 supabase-js version widens the success type, `npx astro check` will surface these
 sites.
+
+### Phase 2 — `42501` remapped from 401 to 500 (post-review)
+
+The plan's Layer-1 table maps `42501` to 401, on research's argument that the
+reachable sense of an RLS denial in this app is "the session died mid-request".
+The implementation review refuted that argument, and the code now returns 500.
+
+A dead session cannot reach `42501`. Every route resolves the user before it
+touches PostgREST — `middleware.ts` for the entry routes, `supabase.auth.getUser()`
+for the cars routes — and answers 401 there. Genuine JWT expiry surfaces as
+`PGRST301`, which has always had its own row.
+
+What remains reachable is a policy or `GRANT` that does not do what it should: an
+operator error the caller did not cause and cannot fix. "Unauthorized" tells that
+user to sign out and back in, which cannot help, and no client in this repo has a
+401 handler to do anything smarter.
+
+The ownership sense of `42501` (added to the entry INSERT/UPDATE policies by
+`20260825000000` and `20260826000000`) stays unreachable through these routes, as
+the plan argued — all four entry routes pre-check ownership and the PATCH schemas
+do not accept `car_id`. That half of the reasoning survives.
+
+**`plan.md`'s Phase 2 table is therefore stale on this one row.** It is left as
+written, as the record of what was decided before implementation; this note is the
+record of what shipped. `PGRST301 → 401` is unchanged, and
+`src/test/pages/api/{cars/[id],entries/repair}.test.ts` now assert the two codes
+separately so they cannot drift back together.

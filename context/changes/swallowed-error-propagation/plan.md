@@ -263,9 +263,12 @@ update functions, and null guards on the six unchecked `res.data` dereferences.
 - `updateRepairEntry` / `updateOilChangeEntry` / `updateInspectionEntry` / `updateInsuranceEntry`
   (`:183-257`): drop the `if (res.error?.code === "PGRST116") return null` line, switch `.single()` →
   `.maybeSingle()`, and return `null` on `!res.data`. External return types are unchanged.
-- Guard `res.data` before dereferencing at `:264, :274, :284, :294` (`.length`) and in the aggregate
+- ~~Guard `res.data` before dereferencing at `:264, :274, :284, :294` (`.length`) and in the aggregate
   functions at `:341-347` and `:413-430` (indexing). Treat a `null` data with no error as an empty
-  result, not a crash.
+  result, not a crash.~~ **SUPERSEDED during implementation — not shipped.** supabase-js types the
+  response as a discriminated union, so the `if (res.error) throw` above each site already narrows
+  `data` to non-null, and the guards are rejected by `@typescript-eslint/no-unnecessary-condition`
+  (error-level under `strictTypeChecked`). See `change.md` → "Phase 1 — §3 bullet 3 dropped".
 
 `getEntryById` (`:145-152`) is already correct except for its throw site — leave its structure alone.
 
@@ -371,7 +374,7 @@ A pure mapper from an error code to a `{ status, message }` pair, implementing t
 | `23502` not-null violation              | 400    | `Invalid request`     |
 | `23514` check violation                 | 400    | `Invalid request`     |
 | `23503` FK violation                    | 404    | `Not found`           |
-| `42501` RLS denial                      | 401    | `Unauthorized`        |
+| `42501` RLS denial ⚠️ superseded → 500  | 401    | `Unauthorized`        |
 | `PGRST301` JWT failure                  | 401    | `Unauthorized`        |
 | `PGRST116` (>1 row under `maybeSingle`) | 500    | `Server error`        |
 | `PGRST204` schema cache                 | 500    | `Server error`        |
@@ -394,6 +397,13 @@ comments beside the mapping so a future reader does not "correct" them:
   What remains reachable is the session-death case, which 401 answers correctly. Splitting the two
   would require keying on PostgREST's prose `details`/`hint` — the exact dependency this change exists
   to remove. If a future route drops its ownership pre-check, this row must be revisited.
+
+> **⚠️ This `42501` row was reversed during implementation review — the code returns 500, not 401.**
+> The premise above is wrong: a dead session cannot reach `42501`, because every route resolves the
+> user before touching PostgREST and genuine JWT expiry surfaces as `PGRST301`. What remains is a
+> policy or `GRANT` misconfiguration — an operator error the caller cannot act on. See `change.md` →
+> "Phase 2 — `42501` remapped from 401 to 500 (post-review)". The ownership-sense argument below
+> survives unchanged.
 
 A structured logger that emits **a single object** — never a string plus a second argument, which
 Cloudflare does not merge into indexed fields:
@@ -1007,12 +1017,12 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [x] 6.1 Type checking passes: `npx astro check`
-- [x] 6.2 Linting passes: `npm run lint`
-- [x] 6.3 Full suite passes: `npm test`, including the eight `toEqual` assertions in `chat.test.ts`
-- [x] 6.4 No `} catch {` remains in the SSR pages
-- [x] 6.5 Both locales carry the new banner key
-- [x] 6.6 Build succeeds: `npm run build`
+- [x] 6.1 Type checking passes: `npx astro check` — d34f1a5
+- [x] 6.2 Linting passes: `npm run lint` — d34f1a5
+- [x] 6.3 Full suite passes: `npm test`, including the eight `toEqual` assertions in `chat.test.ts` — d34f1a5
+- [x] 6.4 No `} catch {` remains in the SSR pages — d34f1a5
+- [x] 6.5 Both locales carry the new banner key — d34f1a5
+- [x] 6.6 Build succeeds: `npm run build` — d34f1a5
 - [ ] 6.7 E2E suite passes: `npx playwright test`
 
 #### Manual
