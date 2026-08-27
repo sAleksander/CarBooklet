@@ -2,6 +2,9 @@ import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 import { getCars, createCar } from "@/lib/services/cars";
+import { apiErrorResponse } from "@/lib/api-errors";
+
+const ROUTE = "/api/cars";
 
 export const carSchema = z.object({
   brand: z.string().min(1, "Brand is required"),
@@ -41,7 +44,9 @@ export const GET: APIRoute = async (context) => {
     const cars = await getCars(supabase);
     return Response.json({ cars });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    // The safest site in the change: `CarList.tsx:70,80` discards this message
+    // entirely, so nothing user-visible moves. The log line is the whole gain.
+    return apiErrorResponse(err, { route: ROUTE, method: "GET", userId: user.id });
   }
 };
 
@@ -74,6 +79,8 @@ export const POST: APIRoute = async (context) => {
     const car = await createCar(supabase, { ...result.data, user_id: user.id });
     return Response.json({ car }, { status: 201 });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    // This one *is* rendered, at `CarForm.tsx:226`. Constraint and policy names
+    // were on screen here until now.
+    return apiErrorResponse(err, { route: ROUTE, method: "POST", userId: user.id });
   }
 };

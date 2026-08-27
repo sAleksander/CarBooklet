@@ -939,26 +939,26 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx astro check`
-- [x] 2.2 Linting passes: `npm run lint`
-- [x] 2.3 Mapper tests pass: `npx vitest run src/test/lib/api-errors.test.ts`
-- [x] 2.4 Full suite passes: `npm test`
-- [x] 2.5 Every table row is covered by a test case
+- [x] 2.1 Type checking passes: `npx astro check` — 032602b
+- [x] 2.2 Linting passes: `npm run lint` — 032602b
+- [x] 2.3 Mapper tests pass: `npx vitest run src/test/lib/api-errors.test.ts` — 032602b
+- [x] 2.4 Full suite passes: `npm test` — 032602b
+- [x] 2.5 Every table row is covered by a test case — 032602b
 
 #### Manual
 
-- [x] 2.6 Mapper reviewed against the plan's table — no missing code, no disagreeing status
+- [x] 2.6 Mapper reviewed against the plan's table — no missing code, no disagreeing status — 032602b
 
 ### Phase 3: Cars API Routes
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx astro check`
-- [ ] 3.2 Linting passes: `npm run lint`
-- [ ] 3.3 New route tests pass: `npx vitest run src/test/pages/api/cars`
-- [ ] 3.4 Full suite passes: `npm test`
-- [ ] 3.5 No `catch(() => null)` remains in `src/pages/api/cars/`
-- [ ] 3.6 No `(err as Error).message` remains in `src/pages/api/cars/`
+- [x] 3.1 Type checking passes: `npx astro check`
+- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.3 New route tests pass: `npx vitest run src/test/pages/api/cars`
+- [x] 3.4 Full suite passes: `npm test`
+- [x] 3.5 No `catch(() => null)` remains in `src/pages/api/cars/`
+- [x] 3.6 No `(err as Error).message` remains in `src/pages/api/cars/`
 - [ ] 3.7 E2E isolation spec passes: `npx playwright test e2e/cross-user-data-isolation.spec.ts`
 
 #### Manual
