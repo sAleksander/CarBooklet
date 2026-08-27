@@ -8,6 +8,9 @@ import {
   deleteInspectionEntry,
 } from "@/lib/services/entries";
 import { getCarById } from "@/lib/services/cars";
+import { apiErrorResponse } from "@/lib/api-errors";
+
+const ROUTE = "/api/entries/inspection";
 
 const carIdSchema = z.uuid();
 const entryIdSchema = z.uuid();
@@ -53,7 +56,7 @@ export const GET: APIRoute = async (context) => {
     const entries = await getInspectionEntries(supabase, carId, context.locals.user.id);
     return Response.json({ entries });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return apiErrorResponse(err, { route: ROUTE, method: "GET", userId: context.locals.user.id });
   }
 };
 
@@ -83,7 +86,10 @@ export const POST: APIRoute = async (context) => {
     const { car_id, conducted_at, mileage, result: inspResult, next_inspection_date } = result.data;
     const car = await getCarById(supabase, car_id, context.locals.user.id);
     if (!car) {
-      return Response.json({ error: "Forbidden" }, { status: 403 });
+      // 404, not 403. Answering "that car exists, it just is not yours" is the
+      // enumeration leak the cars routes already refuse to produce; the repo
+      // did it both ways until now. The client's correct reaction is identical.
+      return Response.json({ error: "Not found" }, { status: 404 });
     }
     const entry = await createInspectionEntry(supabase, context.locals.user.id, car_id, {
       conducted_at,
@@ -93,7 +99,7 @@ export const POST: APIRoute = async (context) => {
     });
     return Response.json({ entry }, { status: 201 });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return apiErrorResponse(err, { route: ROUTE, method: "POST", userId: context.locals.user.id });
   }
 };
 
@@ -149,7 +155,7 @@ export const PATCH: APIRoute = async (context) => {
     }
     return Response.json({ entry });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return apiErrorResponse(err, { route: ROUTE, method: "PATCH", userId: context.locals.user.id });
   }
 };
 
@@ -178,6 +184,6 @@ export const DELETE: APIRoute = async (context) => {
     if (!deleted) return Response.json({ error: "Entry not found" }, { status: 404 });
     return new Response(null, { status: 204 });
   } catch (err) {
-    return Response.json({ error: (err as Error).message }, { status: 500 });
+    return apiErrorResponse(err, { route: ROUTE, method: "DELETE", userId: context.locals.user.id });
   }
 };

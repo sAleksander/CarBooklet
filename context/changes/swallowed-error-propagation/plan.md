@@ -953,12 +953,12 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx astro check`
-- [x] 3.2 Linting passes: `npm run lint`
-- [x] 3.3 New route tests pass: `npx vitest run src/test/pages/api/cars`
-- [x] 3.4 Full suite passes: `npm test`
-- [x] 3.5 No `catch(() => null)` remains in `src/pages/api/cars/`
-- [x] 3.6 No `(err as Error).message` remains in `src/pages/api/cars/`
+- [x] 3.1 Type checking passes: `npx astro check` — 5b95df2
+- [x] 3.2 Linting passes: `npm run lint` — 5b95df2
+- [x] 3.3 New route tests pass: `npx vitest run src/test/pages/api/cars` — 5b95df2
+- [x] 3.4 Full suite passes: `npm test` — 5b95df2
+- [x] 3.5 No `catch(() => null)` remains in `src/pages/api/cars/` — 5b95df2
+- [x] 3.6 No `(err as Error).message` remains in `src/pages/api/cars/` — 5b95df2
 - [ ] 3.7 E2E isolation spec passes: `npx playwright test e2e/cross-user-data-isolation.spec.ts`
 
 #### Manual
@@ -972,12 +972,12 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx astro check`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 New entry-route tests pass: `npx vitest run src/test/pages/api/entries`
-- [ ] 4.4 Full suite passes: `npm test`
-- [ ] 4.5 No `(err as Error).message` remains anywhere in `src/pages/api/`
-- [ ] 4.6 No `Forbidden` remains in `src/pages/api/entries/`
+- [x] 4.1 Type checking passes: `npx astro check`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 New entry-route tests pass: `npx vitest run src/test/pages/api/entries`
+- [x] 4.4 Full suite passes: `npm test`
+- [x] 4.5 No `(err as Error).message` remains anywhere in `src/pages/api/`
+- [x] 4.6 No `Forbidden` remains in `src/pages/api/entries/`
 - [ ] 4.7 E2E suite passes: `npx playwright test`
 
 #### Manual
