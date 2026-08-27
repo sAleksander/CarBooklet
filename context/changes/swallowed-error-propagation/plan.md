@@ -920,34 +920,34 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx astro check` (covers `integration/`, which `npm test` does not)
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Unit tests pass: `npm test`
-- [x] 1.4 New error-type tests pass: `npx vitest run src/test/lib/services/errors.test.ts`
-- [x] 1.5 Integration suite passes: `npm run test:integration` (needs a running local Supabase)
-- [x] 1.6 No `throw new Error(res.error.message)` remains in `src/lib/services/`
-- [x] 1.7 No `PGRST116` string match remains in `src/lib/services/`
+- [x] 1.1 Type checking passes: `npx astro check` (covers `integration/`, which `npm test` does not) — 9f15ff6
+- [x] 1.2 Linting passes: `npm run lint` — 9f15ff6
+- [x] 1.3 Unit tests pass: `npm test` — 9f15ff6
+- [x] 1.4 New error-type tests pass: `npx vitest run src/test/lib/services/errors.test.ts` — 9f15ff6
+- [x] 1.5 Integration suite passes: `npm run test:integration` (needs a running local Supabase) — 9f15ff6
+- [x] 1.6 No `throw new Error(res.error.message)` remains in `src/lib/services/` — 9f15ff6
+- [x] 1.7 No `PGRST116` string match remains in `src/lib/services/` — 9f15ff6
 
 #### Manual
 
-- [x] 1.8 Existing app flows work end to end (cars CRUD, all four entry types)
-- [x] 1.9 Deleting a car still clears the `selected_car_id` cookie and updates the sidebar
-- [x] 1.10 No regression on the dashboard or entries pages
-- [x] 1.11 `integration/isolation-cars.test.ts` header comment describes the new service shape
+- [x] 1.8 Existing app flows work end to end (cars CRUD, all four entry types) — 9f15ff6
+- [x] 1.9 Deleting a car still clears the `selected_car_id` cookie and updates the sidebar — 9f15ff6
+- [x] 1.10 No regression on the dashboard or entries pages — 9f15ff6
+- [x] 1.11 `integration/isolation-cars.test.ts` header comment describes the new service shape — 9f15ff6
 
 ### Phase 2: The Mapping Layer
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx astro check`
-- [ ] 2.2 Linting passes: `npm run lint`
-- [ ] 2.3 Mapper tests pass: `npx vitest run src/test/lib/api-errors.test.ts`
-- [ ] 2.4 Full suite passes: `npm test`
-- [ ] 2.5 Every table row is covered by a test case
+- [x] 2.1 Type checking passes: `npx astro check`
+- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.3 Mapper tests pass: `npx vitest run src/test/lib/api-errors.test.ts`
+- [x] 2.4 Full suite passes: `npm test`
+- [x] 2.5 Every table row is covered by a test case
 
 #### Manual
 
-- [ ] 2.6 Mapper reviewed against the plan's table — no missing code, no disagreeing status
+- [x] 2.6 Mapper reviewed against the plan's table — no missing code, no disagreeing status
 
 ### Phase 3: Cars API Routes
 

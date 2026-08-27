@@ -20,7 +20,12 @@ const baseConfig = tseslint.config({
     },
   },
   rules: {
-    "no-console": "warn",
+    // `error` is allowed because `src/lib/api-errors.ts` is built on it: every
+    // API and SSR failure emits one structured `console.error` object, which is
+    // what lands in Workers Logs (`wrangler.jsonc` observability). Scoping the
+    // rule beats twenty `eslint-disable-next-line` comments that would quietly
+    // discourage the pattern they exist to enable. `console.log` stays warned.
+    "no-console": ["warn", { allow: ["error"] }],
     "no-unused-vars": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
