@@ -9,6 +9,7 @@ import {
 } from "@/lib/services/entries";
 import { getCarById } from "@/lib/services/cars";
 import { apiErrorResponse } from "@/lib/api-errors";
+import { isoDate, mileage } from "@/lib/validators";
 
 const ROUTE = "/api/entries/oil-change";
 
@@ -17,8 +18,8 @@ const entryIdSchema = z.uuid();
 
 export const oilChangeEntrySchema = z.object({
   car_id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   oil_details: z
     .string()
     .nullish()
@@ -97,8 +98,8 @@ export const POST: APIRoute = async (context) => {
 
 export const oilChangeEntryPatchSchema = z.object({
   id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   oil_details: z
     .string()
     .nullish()

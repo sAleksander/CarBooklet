@@ -9,6 +9,7 @@ import {
 } from "@/lib/services/entries";
 import { getCarById } from "@/lib/services/cars";
 import { apiErrorResponse } from "@/lib/api-errors";
+import { isoDate, mileage } from "@/lib/validators";
 
 const ROUTE = "/api/entries/inspection";
 
@@ -17,16 +18,14 @@ const entryIdSchema = z.uuid();
 
 export const inspectionEntrySchema = z.object({
   car_id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   result: z
     .enum(["Passed", "Failed"])
     .nullable()
     .optional()
     .transform((v) => v ?? null),
-  next_inspection_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD")
+  next_inspection_date: isoDate("Date must be YYYY-MM-DD")
     .nullable()
     .optional()
     .transform((v) => v ?? null),
@@ -105,16 +104,14 @@ export const POST: APIRoute = async (context) => {
 
 export const inspectionEntryPatchSchema = z.object({
   id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   result: z
     .enum(["Passed", "Failed"])
     .nullable()
     .optional()
     .transform((v) => v ?? null),
-  next_inspection_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD")
+  next_inspection_date: isoDate("Date must be YYYY-MM-DD")
     .nullable()
     .optional()
     .transform((v) => v ?? null),

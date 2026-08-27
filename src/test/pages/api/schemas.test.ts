@@ -6,6 +6,7 @@ import { repairEntrySchema, repairEntryPatchSchema } from "@/pages/api/entries/r
 import { oilChangeEntrySchema, oilChangeEntryPatchSchema } from "@/pages/api/entries/oil-change";
 import { inspectionEntrySchema, inspectionEntryPatchSchema } from "@/pages/api/entries/inspection";
 import { insuranceEntrySchema, insuranceEntryPatchSchema } from "@/pages/api/entries/insurance";
+import { MAX_MILEAGE } from "@/lib/validators";
 
 /**
  * The API edge as pure functions.
@@ -123,6 +124,19 @@ describe("API edge schemas", () => {
       expect(schema.safeParse({ ...valid, mileage: 1 }).success).toBe(true);
     });
 
+    it("rejects a value past the column's integer range", () => {
+      // The mirror of the `0` gap at the other end: `.min(1)` had no ceiling, so
+      // this reached the database and came back `22003 numeric field overflow`.
+      expect(firstIssue(schema, { ...valid, mileage: 99999999999 })).toBe(`Mileage must be ${MAX_MILEAGE} or less`);
+    });
+
+    it("accepts MAX_MILEAGE itself — the bound is inclusive", () => {
+      // Pinning the boundary rather than a value near it: an off-by-one here
+      // would reject a legal mileage, which is worse than the bug being fixed.
+      expect(schema.safeParse({ ...valid, mileage: MAX_MILEAGE }).success).toBe(true);
+      expect(schema.safeParse({ ...valid, mileage: MAX_MILEAGE + 1 }).success).toBe(false);
+    });
+
     it("accepts null and omitted — mileage is optional", () => {
       expect(schema.safeParse({ ...valid, mileage: null }).success).toBe(true);
 
@@ -139,6 +153,87 @@ describe("API edge schemas", () => {
     it("rejects a non-uuid identifier", () => {
       const idKey = "car_id" in valid ? "car_id" : "id";
       expect(schema.safeParse({ ...valid, [idKey]: "not-a-uuid" }).success).toBe(false);
+    });
+
+    // The shape rule above passes `2026-02-30` — four digits, two, two. Postgres
+    // answers that with `22008`, i.e. a 500 for a plain client mistake. These
+    // cases are the refinement that moves it to the edge.
+    it.each([
+      ["2026-02-30", "a day that month does not have"],
+      ["2026-13-01", "a month that does not exist"],
+      ["2026-00-10", "month zero"],
+      ["2026-01-32", "day 32"],
+      ["2026-04-31", "April 31st"],
+    ])("rejects %s — %s", (date) => {
+      expect(firstIssue(schema, { ...valid, conducted_at: date })).toBe("Date is not a real calendar date");
+    });
+
+    it("accepts 2028-02-29 — a real leap day", () => {
+      // The case a naive refinement gets wrong in the other direction. 2028 is
+      // divisible by 4 and not by 100, so February has 29 days.
+      expect(schema.safeParse({ ...valid, conducted_at: "2028-02-29" }).success).toBe(true);
+    });
+
+    it("rejects 2026-02-29 — the same date in a non-leap year", () => {
+      // The pair. Without this, a refinement that accepted every February 29th
+      // would satisfy the case above.
+      expect(firstIssue(schema, { ...valid, conducted_at: "2026-02-29" })).toBe("Date is not a real calendar date");
+    });
+
+    it("rejects 2100-02-29 — divisible by 4 but not a leap year", () => {
+      // The century rule. 2100 is divisible by 4 and by 100 but not by 400, so
+      // it is not a leap year — the clause a three-line leap check usually drops.
+      expect(firstIssue(schema, { ...valid, conducted_at: "2100-02-29" })).toBe("Date is not a real calendar date");
+    });
+
+    it("accepts 2000-02-29 — divisible by 400, so a leap year after all", () => {
+      expect(schema.safeParse({ ...valid, conducted_at: "2000-02-29" }).success).toBe(true);
+    });
+  });
+
+  // The other ten date fields. `conducted_at` is covered above for all eight
+  // schemas; these four are the ones no test reached before they started sharing
+  // the `isoDate` helper, which is exactly why they are worth naming.
+  describe.each([
+    ["insurance (create) · renewal_date", insuranceEntrySchema, "renewal_date", "Renewal date must be YYYY-MM-DD"],
+    ["insurance (patch) · renewal_date", insuranceEntryPatchSchema, "renewal_date", "Renewal date must be YYYY-MM-DD"],
+    ["insurance (create) · policy_start_date", insuranceEntrySchema, "policy_start_date", "Date must be YYYY-MM-DD"],
+    [
+      "insurance (patch) · policy_start_date",
+      insuranceEntryPatchSchema,
+      "policy_start_date",
+      "Date must be YYYY-MM-DD",
+    ],
+    [
+      "inspection (create) · next_inspection_date",
+      inspectionEntrySchema,
+      "next_inspection_date",
+      "Date must be YYYY-MM-DD",
+    ],
+    [
+      "inspection (patch) · next_inspection_date",
+      inspectionEntryPatchSchema,
+      "next_inspection_date",
+      "Date must be YYYY-MM-DD",
+    ],
+  ])("%s", (_label, schema, field, shapeMessage) => {
+    const base = {
+      id: UUID,
+      car_id: UUID,
+      conducted_at: "2026-01-01",
+      renewal_date: "2027-01-01",
+    };
+
+    it("rejects a malformed shape with its own message", () => {
+      expect(firstIssue(schema, { ...base, [field]: "01/01/2026" })).toBe(shapeMessage);
+    });
+
+    it("rejects a well-shaped date that is not real", () => {
+      expect(firstIssue(schema, { ...base, [field]: "2026-02-30" })).toBe("Date is not a real calendar date");
+    });
+
+    it("accepts a real leap day", () => {
+      expect(schema.safeParse({ ...base, [field]: "2028-02-29" }).success).toBe(true);
     });
   });
 

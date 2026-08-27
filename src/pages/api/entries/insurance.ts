@@ -9,6 +9,7 @@ import {
 } from "@/lib/services/entries";
 import { getCarById } from "@/lib/services/cars";
 import { apiErrorResponse } from "@/lib/api-errors";
+import { isoDate, mileage } from "@/lib/validators";
 
 const ROUTE = "/api/entries/insurance";
 
@@ -17,19 +18,17 @@ const entryIdSchema = z.uuid();
 
 export const insuranceEntrySchema = z.object({
   car_id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   insurer: z
     .string()
     .nullish()
     .transform((v) => v ?? null),
-  policy_start_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD")
+  policy_start_date: isoDate("Date must be YYYY-MM-DD")
     .nullable()
     .optional()
     .transform((v) => v ?? null),
-  renewal_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Renewal date must be YYYY-MM-DD"),
+  renewal_date: isoDate("Renewal date must be YYYY-MM-DD"),
 });
 
 export const GET: APIRoute = async (context) => {
@@ -106,19 +105,17 @@ export const POST: APIRoute = async (context) => {
 
 export const insuranceEntryPatchSchema = z.object({
   id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   insurer: z
     .string()
     .nullish()
     .transform((v) => v ?? null),
-  policy_start_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD")
+  policy_start_date: isoDate("Date must be YYYY-MM-DD")
     .nullable()
     .optional()
     .transform((v) => v ?? null),
-  renewal_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Renewal date must be YYYY-MM-DD"),
+  renewal_date: isoDate("Renewal date must be YYYY-MM-DD"),
 });
 
 export const PATCH: APIRoute = async (context) => {

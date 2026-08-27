@@ -972,12 +972,12 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx astro check`
-- [x] 4.2 Linting passes: `npm run lint`
-- [x] 4.3 New entry-route tests pass: `npx vitest run src/test/pages/api/entries`
-- [x] 4.4 Full suite passes: `npm test`
-- [x] 4.5 No `(err as Error).message` remains anywhere in `src/pages/api/`
-- [x] 4.6 No `Forbidden` remains in `src/pages/api/entries/`
+- [x] 4.1 Type checking passes: `npx astro check` — 8285620
+- [x] 4.2 Linting passes: `npm run lint` — 8285620
+- [x] 4.3 New entry-route tests pass: `npx vitest run src/test/pages/api/entries` — 8285620
+- [x] 4.4 Full suite passes: `npm test` — 8285620
+- [x] 4.5 No `(err as Error).message` remains anywhere in `src/pages/api/` — 8285620
+- [x] 4.6 No `Forbidden` remains in `src/pages/api/entries/` — 8285620
 - [ ] 4.7 E2E suite passes: `npx playwright test`
 
 #### Manual
@@ -990,11 +990,11 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [ ] 5.1 Type checking passes: `npx astro check`
-- [ ] 5.2 Linting passes: `npm run lint`
-- [ ] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts`
-- [ ] 5.4 Full suite passes: `npm test`
-- [ ] 5.5 Shared `isoDate` helper is used at all 14 regex-guarded date fields
+- [x] 5.1 Type checking passes: `npx astro check`
+- [x] 5.2 Linting passes: `npm run lint`
+- [x] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts`
+- [x] 5.4 Full suite passes: `npm test`
+- [x] 5.5 Shared `isoDate` helper is used at all 14 regex-guarded date fields
 - [ ] 5.6 E2E suite passes: `npx playwright test`
 
 #### Manual

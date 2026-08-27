@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { getRepairEntries, createRepairEntry, updateRepairEntry, deleteRepairEntry } from "@/lib/services/entries";
 import { getCarById } from "@/lib/services/cars";
 import { apiErrorResponse } from "@/lib/api-errors";
+import { isoDate, mileage } from "@/lib/validators";
 
 const ROUTE = "/api/entries/repair";
 
@@ -12,8 +13,8 @@ const entryIdSchema = z.uuid();
 
 export const repairEntrySchema = z.object({
   car_id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   description: z.string().min(1, "Description is required"),
   cause: z
     .string()
@@ -94,8 +95,8 @@ export const POST: APIRoute = async (context) => {
 
 export const repairEntryPatchSchema = z.object({
   id: z.uuid(),
-  conducted_at: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be YYYY-MM-DD"),
-  mileage: z.number().int().min(1, "Mileage must be greater than 0").nullable().optional(),
+  conducted_at: isoDate("Date must be YYYY-MM-DD"),
+  mileage: mileage(),
   description: z.string().min(1, "Description is required"),
   cause: z
     .string()
