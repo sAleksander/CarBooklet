@@ -5,6 +5,7 @@ import LastEntryCard from "@/components/LastEntryCard.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { getCarDeadlines, getLastEntry } from "@/lib/services/entries";
+import { logSsrError } from "@/lib/api-errors";
 import { getT } from "@/i18n/server";
 
 const { user, selectedCarId, lang } = Astro.locals;
@@ -29,7 +30,8 @@ try {
     getCarDeadlines(supabase, selectedCarId, user.id),
     getLastEntry(supabase, selectedCarId, user.id),
   ]);
-} catch {
+} catch (err) {
+  logSsrError(err, { route: "/dashboard", method: "GET", userId: user.id });
   return Astro.redirect("/cars?error=load_failed");
 }
 

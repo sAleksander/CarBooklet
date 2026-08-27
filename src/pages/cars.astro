@@ -1,9 +1,12 @@
 ---
 import AppLayout from "@/layouts/AppLayout.astro";
+import Banner from "@/components/Banner.astro";
 import CarList from "@/components/cars/CarList";
 import { createClient } from "@/lib/supabase";
 import { getCars } from "@/lib/services/cars";
+import { logSsrError } from "@/lib/api-errors";
 import { getT } from "@/i18n/server";
+import type { Car } from "@/types";
 
 const { user, selectedCarId, lang } = Astro.locals;
 const t = getT(lang);
@@ -13,9 +16,29 @@ if (!supabase || !user) {
   return Astro.redirect("/auth/signin");
 }
 
-const cars = await getCars(supabase);
+// The structural bug this phase exists to fix. `/cars` is where every other SSR
+// failure sends the user, and it was the one page with no error handling of its
+// own — so the fault that caused the redirect hit `getCars` on arrival and the
+// user got Astro's raw 500 page instead of an explanation.
+//
+// Redirecting is not the answer here: the target would be this page.
+let cars: Car[] = [];
+let loadFailed = false;
+try {
+  cars = await getCars(supabase);
+} catch (err) {
+  logSsrError(err, { route: "/cars", method: "GET", userId: user.id });
+  loadFailed = true;
+}
+
+// Set by the five catches on the other SSR pages, which redirect here. Until now
+// nothing read this parameter, so those redirects were a silent bounce to the
+// garage with no explanation offered anywhere.
+const arrivedAfterFailure = Astro.url.searchParams.get("error") === "load_failed";
+const showError = loadFailed || arrivedAfterFailure;
 ---
 
 <AppLayout title={t("cars.myCars")}>
+  {showError && <Banner variant="error">{t("common.loadFailed")}</Banner>}
   <CarList client:load initialCars={cars} initialSelectedCarId={selectedCarId} lang={lang} />
 </AppLayout>

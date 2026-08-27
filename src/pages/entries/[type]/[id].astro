@@ -5,6 +5,7 @@ import { EntryDetailEditor } from "@/components/entries/EntryDetailEditor";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
 import { getEntryById } from "@/lib/services/entries";
+import { logSsrError } from "@/lib/api-errors";
 import { getT } from "@/i18n/server";
 import type { Entry, Car } from "@/types";
 
@@ -25,7 +26,8 @@ const entryType = type as ValidType;
 let rawEntry: Entry | null;
 try {
   rawEntry = await getEntryById(supabase, entryType, id, user.id);
-} catch {
+} catch (err) {
+  logSsrError(err, { route: "/entries/[type]/[id]", method: "GET", userId: user.id });
   return Astro.redirect("/cars?error=load_failed");
 }
 
@@ -40,7 +42,8 @@ if (rawEntry?.car_id !== selectedCarId) {
     const fetchedCar = await getCarById(supabase, selectedCarId, user.id);
     if (fetchedCar?.user_id !== user.id) return Astro.redirect("/cars");
     car = fetchedCar;
-  } catch {
+  } catch (err) {
+    logSsrError(err, { route: "/entries/[type]/[id]", method: "GET", userId: user.id });
     return Astro.redirect("/cars?error=load_failed");
   }
 }

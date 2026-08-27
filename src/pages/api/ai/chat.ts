@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createChatStream } from "@/lib/services/ai";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
+import { apiErrorResponse } from "@/lib/api-errors";
 
 const promptSchema = z.object({
   prompt: z.string().min(1, "Prompt is required").max(2000, "Prompt is too long"),
@@ -35,7 +36,14 @@ export const POST: APIRoute = async (context) => {
     return Response.json({ error: "Service unavailable" }, { status: 503 });
   }
 
-  const car = await getCarById(supabase, selectedCarId, context.locals.user.id);
+  // Same unvalidated `selected_car_id` cookie as `ai-chat.astro`. Unhandled, a
+  // malformed value threw out of the route entirely.
+  let car;
+  try {
+    car = await getCarById(supabase, selectedCarId, context.locals.user.id);
+  } catch (err) {
+    return apiErrorResponse(err, { route: "/api/ai/chat", method: "POST", userId: context.locals.user.id });
+  }
   if (!car) {
     return Response.json({ error: "Car not found" }, { status: 404 });
   }
@@ -44,7 +52,6 @@ export const POST: APIRoute = async (context) => {
   try {
     stream = await createChatStream(result.data.prompt, car);
   } catch (err) {
-    // eslint-disable-next-line no-console
     console.error("[ai/chat] Service error:", err);
     return Response.json({ error: "AI service error" }, { status: 500 });
   }
@@ -62,7 +69,6 @@ export const POST: APIRoute = async (context) => {
         }
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } catch (e) {
-        // eslint-disable-next-line no-console
         console.error("[ai/chat] Stream error:", e);
         controller.enqueue(encoder.encode(`data: ${JSON.stringify({ error: "Stream failed" })}\n\n`));
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));

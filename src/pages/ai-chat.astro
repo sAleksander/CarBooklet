@@ -2,6 +2,7 @@
 import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
+import { logSsrError } from "@/lib/api-errors";
 import { ChatDemo } from "@/components/ai/ChatDemo";
 import { getT } from "@/i18n/server";
 
@@ -18,7 +19,16 @@ if (!supabase || !user) {
   return Astro.redirect("/cars");
 }
 
-const car = await getCarById(supabase, selectedCarId, user.id);
+// `selected_car_id` is a cookie, and httpOnly stops a script reading it — not a
+// user setting it by hand. An unparseable value reached PostgREST as `22P02`,
+// threw here with no handler at all, and rendered Astro's raw 500 page.
+let car;
+try {
+  car = await getCarById(supabase, selectedCarId, user.id);
+} catch (err) {
+  logSsrError(err, { route: "/ai-chat", method: "GET", userId: user.id });
+  return Astro.redirect("/cars?error=load_failed");
+}
 
 if (car?.user_id !== user.id) {
   return Astro.redirect("/cars");

@@ -990,11 +990,11 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [x] 5.1 Type checking passes: `npx astro check`
-- [x] 5.2 Linting passes: `npm run lint`
-- [x] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts`
-- [x] 5.4 Full suite passes: `npm test`
-- [x] 5.5 Shared `isoDate` helper is used at all 14 regex-guarded date fields
+- [x] 5.1 Type checking passes: `npx astro check` — b5b8ea5
+- [x] 5.2 Linting passes: `npm run lint` — b5b8ea5
+- [x] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts` — b5b8ea5
+- [x] 5.4 Full suite passes: `npm test` — b5b8ea5
+- [x] 5.5 Shared `isoDate` helper is used at all 14 regex-guarded date fields — b5b8ea5
 - [ ] 5.6 E2E suite passes: `npx playwright test`
 
 #### Manual
@@ -1007,12 +1007,12 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [ ] 6.1 Type checking passes: `npx astro check`
-- [ ] 6.2 Linting passes: `npm run lint`
-- [ ] 6.3 Full suite passes: `npm test`, including the eight `toEqual` assertions in `chat.test.ts`
-- [ ] 6.4 No `} catch {` remains in the SSR pages
-- [ ] 6.5 Both locales carry the new banner key
-- [ ] 6.6 Build succeeds: `npm run build`
+- [x] 6.1 Type checking passes: `npx astro check`
+- [x] 6.2 Linting passes: `npm run lint`
+- [x] 6.3 Full suite passes: `npm test`, including the eight `toEqual` assertions in `chat.test.ts`
+- [x] 6.4 No `} catch {` remains in the SSR pages
+- [x] 6.5 Both locales carry the new banner key
+- [x] 6.6 Build succeeds: `npm run build`
 - [ ] 6.7 E2E suite passes: `npx playwright test`
 
 #### Manual

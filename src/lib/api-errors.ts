@@ -162,6 +162,23 @@ export function apiErrorResponse(err: unknown, context: ApiErrorContext): Respon
 }
 
 /**
+ * Log an SSR page-load failure.
+ *
+ * The API counterpart of this returns a `Response`; an `.astro` page has none to
+ * return — it redirects, or renders a banner. So the mapped status is computed
+ * and recorded (a 503 in the log still tells the operator the database was
+ * unreachable) but nothing is built from it.
+ *
+ * Same single-object shape and same `event: "api_error"` as every other failure,
+ * deliberately: one Workers Logs query has to return the whole app, and an SSR
+ * load failure is not a different kind of event just because it renders
+ * differently.
+ */
+export function logSsrError(err: unknown, context: ApiErrorContext): void {
+  logApiError(err, context, isServiceError(err) ? mapErrorCode(err.code) : SERVER_ERROR);
+}
+
+/**
  * A message for the log line from a value that is only `unknown`.
  *
  * Anything can be thrown, including values that resist being turned into a

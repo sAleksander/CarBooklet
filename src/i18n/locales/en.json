@@ -21,7 +21,8 @@
     "deleting": "Deleting…",
     "mileageKm": "Mileage: {{value}} km",
     "networkError": "Network error. Please try again.",
-    "anErrorOccurred": "An error occurred"
+    "anErrorOccurred": "An error occurred",
+    "loadFailed": "We couldn't load your data. Please try again."
   },
   "dashboard": {
     "changeCar": "Change car",

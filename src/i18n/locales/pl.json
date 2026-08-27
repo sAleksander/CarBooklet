@@ -21,7 +21,8 @@
     "deleting": "Usuwanie…",
     "mileageKm": "Przebieg: {{value}} km",
     "networkError": "Błąd sieci. Spróbuj ponownie.",
-    "anErrorOccurred": "Wystąpił błąd"
+    "anErrorOccurred": "Wystąpił błąd",
+    "loadFailed": "Nie udało się wczytać danych. Spróbuj ponownie."
   },
   "dashboard": {
     "changeCar": "Zmień samochód",
