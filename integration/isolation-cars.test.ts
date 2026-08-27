@@ -11,36 +11,44 @@ import type { Car } from "@/types";
  * ## Why every destructive case asserts persisted state, not an exception
  *
  * Under an RLS `USING` clause, an UPDATE or DELETE against a row you cannot see
- * matches zero rows. That is not an error at the SQL level; whether it reaches
- * the caller as one depends entirely on the tail of the service wrapper:
+ * matches zero rows. That is not an error at the SQL level, and how it reaches
+ * the caller depends entirely on the tail of the service wrapper — which has
+ * changed once already:
  *
- * | service     | tail                    | what B observes today       |
- * | ----------- | ----------------------- | --------------------------- |
- * | `updateCar` | `.select().single()`    | **throws** (`PGRST116`)     |
- * | `deleteCar` | bare `.delete()`        | **nothing** — silent `void` |
- * | `createCar` | INSERT `WITH CHECK`     | **throws** (`42501`)        |
+ * | service     | tail                        | what B observes           |
+ * | ----------- | --------------------------- | ------------------------- |
+ * | `updateCar` | `.select().maybeSingle()`   | `null`  (was: a throw)    |
+ * | `deleteCar` | `.delete().select("id")`    | `false` (was: silent void)|
+ * | `createCar` | INSERT `WITH CHECK`         | **throws** (`42501`)      |
  *
  * Three signatures, one guarantee. A test written as "expect it to throw" would
- * pass today for `updateCar`, pass for `createCar`, and pass *forever* for
- * `deleteCar` — including on the day isolation breaks, because a successful
- * cross-user delete is equally silent. So the load-bearing assertion in every
- * destructive case is a read-back as A: the row is byte-identical, or still there.
+ * have passed for `createCar`, passed for `updateCar` under its old tail, and
+ * passed *forever* for `deleteCar` — including on the day isolation broke,
+ * because a successful cross-user delete was equally silent. So the load-bearing
+ * assertion in every destructive case is a read-back as A: the row is
+ * byte-identical, or still there.
+ *
+ * The destructive cases below therefore assert nothing at all about what the
+ * service returns. That is not an oversight — it is what stops a service reshape
+ * from breaking an isolation test that is not about the service's shape. The
+ * return contract is pinned separately, in "reports whether it actually deleted
+ * anything", where a break means the contract changed rather than the policy.
  *
  * ## Why each case is asserted twice
  *
- * `updateCar`/`deleteCar` carry no `user_id` filter of their own (`cars.ts:25,31`),
- * so today the service path reaches RLS and the policy is what rejects B. That is
- * not guaranteed to stay true: `context/changes/swallowed-error-propagation/`
- * plans to add the filter as defense in depth, which would make the service
- * short-circuit *ahead* of RLS. These tests would still pass — and would silently
- * stop testing the policy layer, which is the exact false-pass this suite exists
- * to prevent.
+ * `updateCar`/`deleteCar` now carry `.eq("user_id", userId)` of their own, added
+ * by `swallowed-error-propagation` as defense in depth. That means the service
+ * path short-circuits *ahead* of RLS: these tests would pass even if every policy
+ * were dropped, which is the exact false-pass this suite exists to prevent.
  *
- * So each cross-user mutation is asserted twice: once through the service
- * function (the contract the app depends on, stable under either service shape),
- * and once through a raw PostgREST call carrying B's JWT that bypasses the
- * service layer entirely (the policy itself, pinned independently of anything
- * `services/cars.ts` ever does). The raw half is what keeps this file honest.
+ * This was anticipated. Each cross-user mutation is asserted twice: once through
+ * the service function (the contract the app depends on, stable under either
+ * service shape), and once through a raw PostgREST call carrying B's JWT that
+ * bypasses the service layer entirely (the policy itself, pinned independently of
+ * anything `services/cars.ts` ever does). The raw half is what keeps this file
+ * honest — and now that the filter is in place, it is the *only* half still
+ * reaching the policy. Do not delete a raw case because its service sibling
+ * covers it; the sibling no longer does.
  */
 describe("R3 · cross-user isolation · cars", () => {
   let users: TwoUsers;
@@ -103,11 +111,15 @@ describe("R3 · cross-user isolation · cars", () => {
   });
 
   describe("update", () => {
-    it("throws for B and leaves A's car byte-identical", async () => {
+    it("does not modify A's car when B updates it", async () => {
       const before = await readAsOwner();
 
-      // `.single()` over zero visible rows — PGRST116 surfaces as a throw.
-      await expect(updateCar(users.userB.client, carA.id, { brand: marker("HACKED") })).rejects.toThrow();
+      // Deliberately unasserted: what `updateCar` *returns* here. It has been a
+      // throw and it is now `null`, and it could reasonably become either again.
+      // The read-back below is the guarantee; the return value is an artefact of
+      // the wrapper's tail. Pinning it here is what made this file break when the
+      // service was reshaped.
+      await updateCar(users.userB.client, carA.id, users.userB.id, { brand: marker("HACKED") });
 
       expect(await readAsOwner()).toEqual(before);
     });
@@ -130,15 +142,14 @@ describe("R3 · cross-user isolation · cars", () => {
   });
 
   describe("delete", () => {
-    it("is silent for B and leaves A's car in place", async () => {
+    it("leaves A's car in place when B deletes it", async () => {
       const before = await readAsOwner();
 
-      // Note the asymmetry with update: no `.select()` tail, so this resolves
-      // without complaint. If the read-back below were dropped in favour of
-      // `.rejects.toThrow()`, the test would invert — and a real isolation
-      // break would read as a pass.
-      await expect(deleteCar(users.userB.client, carA.id)).resolves.toBeUndefined();
+      await deleteCar(users.userB.client, carA.id, users.userB.id);
 
+      // The load-bearing assertion, for the same reason as update: a delete that
+      // silently did nothing and a delete that silently succeeded are the same
+      // return value. Only the row can tell them apart.
       expect(await readAsOwner()).toEqual(before);
     });
 
@@ -153,11 +164,23 @@ describe("R3 · cross-user isolation · cars", () => {
     });
 
     it("leaves B's own car deletable — the delete path itself works", async () => {
-      await expect(deleteCar(users.userB.client, carB.id)).resolves.toBeUndefined();
+      await deleteCar(users.userB.client, carB.id, users.userB.id);
 
       // Without this, "A's car survived B's delete" is satisfied just as well by
       // a delete that never works for anyone.
       expect(await getCarById(users.userB.client, carB.id, users.userB.id)).toBeNull();
+    });
+
+    it("reports whether it actually deleted anything", async () => {
+      // The one case that is *about* the return value, kept separate from the
+      // isolation assertions above so that reshaping the service breaks this
+      // test — where the contract lives — and not those.
+      //
+      // Before `.select("id")` was added, both of these were `undefined`: a
+      // refused cross-user delete and a successful one were indistinguishable to
+      // every caller. That is the zero-row DELETE bug, and this is its oracle.
+      expect(await deleteCar(users.userB.client, carA.id, users.userB.id)).toBe(false);
+      expect(await deleteCar(users.userB.client, carB.id, users.userB.id)).toBe(true);
     });
   });
 

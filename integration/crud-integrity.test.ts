@@ -213,7 +213,7 @@ describe("R5 · CRUD integrity · owner path", () => {
       const before = await getCarById(owner.client, car.id, owner.id);
       const newModel = marker("renamed");
 
-      await updateCar(owner.client, car.id, { model: newModel });
+      await updateCar(owner.client, car.id, owner.id, { model: newModel });
 
       const after = await getCarById(owner.client, car.id, owner.id);
       expect(after?.model).toBe(newModel);
@@ -227,7 +227,7 @@ describe("R5 · CRUD integrity · owner path", () => {
       const doomed = await seedCar(owner.client, owner.id);
       const sibling = await seedCar(owner.client, owner.id);
 
-      await deleteCar(owner.client, doomed.id);
+      await deleteCar(owner.client, doomed.id, owner.id);
 
       expect(await getCarById(owner.client, doomed.id, owner.id)).toBeNull();
       // A delete with a broken filter takes more than it was asked for, and

@@ -12,6 +12,7 @@ import type {
   CarDeadlines,
   DeadlineStatus,
 } from "@/types";
+import { toServiceError } from "./errors";
 
 export async function getRepairEntries(
   supabase: SupabaseClient,
@@ -24,7 +25,7 @@ export async function getRepairEntries(
     .eq("car_id", carId)
     .eq("user_id", userId)
     .order("conducted_at", { ascending: false });
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "getRepairEntries");
   return (res.data as Omit<RepairEntry, "entry_type">[]).map((row) => ({ ...row, entry_type: "repair" as const }));
 }
 
@@ -39,7 +40,7 @@ export async function createRepairEntry(
     .insert({ user_id: userId, car_id: carId, ...data })
     .select()
     .single();
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "createRepairEntry");
   const row = res.data as Omit<RepairEntry, "entry_type">;
   return { ...row, entry_type: "repair" as const };
 }
@@ -55,7 +56,7 @@ export async function getOilChangeEntries(
     .eq("car_id", carId)
     .eq("user_id", userId)
     .order("conducted_at", { ascending: false });
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "getOilChangeEntries");
   return (res.data as Omit<OilChangeEntry, "entry_type">[]).map((row) => ({
     ...row,
     entry_type: "oil_change" as const,
@@ -73,7 +74,7 @@ export async function createOilChangeEntry(
     .insert({ user_id: userId, car_id: carId, ...data })
     .select()
     .single();
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "createOilChangeEntry");
   const row = res.data as Omit<OilChangeEntry, "entry_type">;
   return { ...row, entry_type: "oil_change" as const };
 }
@@ -89,7 +90,7 @@ export async function getInspectionEntries(
     .eq("car_id", carId)
     .eq("user_id", userId)
     .order("conducted_at", { ascending: false });
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "getInspectionEntries");
   return (res.data as Omit<InspectionEntry, "entry_type">[]).map((row) => ({
     ...row,
     entry_type: "inspection" as const,
@@ -107,7 +108,7 @@ export async function createInspectionEntry(
     .insert({ user_id: userId, car_id: carId, ...data })
     .select()
     .single();
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "createInspectionEntry");
   const row = res.data as Omit<InspectionEntry, "entry_type">;
   return { ...row, entry_type: "inspection" as const };
 }
@@ -123,7 +124,7 @@ export async function getInsuranceEntries(
     .eq("car_id", carId)
     .eq("user_id", userId)
     .order("conducted_at", { ascending: false });
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "getInsuranceEntries");
   return (res.data as Omit<InsuranceEntry, "entry_type">[]).map((row) => ({
     ...row,
     entry_type: "insurance" as const,
@@ -148,7 +149,7 @@ export async function getEntryById(
     .eq("id", entryId)
     .eq("user_id", userId)
     .maybeSingle();
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "getEntryById");
   if (!res.data) return null;
   switch (entryType) {
     case "repair":
@@ -173,7 +174,7 @@ export async function createInsuranceEntry(
     .insert({ user_id: userId, car_id: carId, ...data })
     .select()
     .single();
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "createInsuranceEntry");
   const row = res.data as Omit<InsuranceEntry, "entry_type">;
   return { ...row, entry_type: "insurance" as const };
 }
@@ -192,9 +193,9 @@ export async function updateRepairEntry(
     .eq("id", entryId)
     .eq("user_id", userId)
     .select()
-    .single();
-  if (res.error?.code === "PGRST116") return null;
-  if (res.error) throw new Error(res.error.message);
+    .maybeSingle();
+  if (res.error) throw toServiceError(res.error, "updateRepairEntry");
+  if (!res.data) return null;
   const row = res.data as Omit<RepairEntry, "entry_type">;
   return { ...row, entry_type: "repair" as const };
 }
@@ -211,9 +212,9 @@ export async function updateOilChangeEntry(
     .eq("id", entryId)
     .eq("user_id", userId)
     .select()
-    .single();
-  if (res.error?.code === "PGRST116") return null;
-  if (res.error) throw new Error(res.error.message);
+    .maybeSingle();
+  if (res.error) throw toServiceError(res.error, "updateOilChangeEntry");
+  if (!res.data) return null;
   const row = res.data as Omit<OilChangeEntry, "entry_type">;
   return { ...row, entry_type: "oil_change" as const };
 }
@@ -230,9 +231,9 @@ export async function updateInspectionEntry(
     .eq("id", entryId)
     .eq("user_id", userId)
     .select()
-    .single();
-  if (res.error?.code === "PGRST116") return null;
-  if (res.error) throw new Error(res.error.message);
+    .maybeSingle();
+  if (res.error) throw toServiceError(res.error, "updateInspectionEntry");
+  if (!res.data) return null;
   const row = res.data as Omit<InspectionEntry, "entry_type">;
   return { ...row, entry_type: "inspection" as const };
 }
@@ -249,9 +250,9 @@ export async function updateInsuranceEntry(
     .eq("id", entryId)
     .eq("user_id", userId)
     .select()
-    .single();
-  if (res.error?.code === "PGRST116") return null;
-  if (res.error) throw new Error(res.error.message);
+    .maybeSingle();
+  if (res.error) throw toServiceError(res.error, "updateInsuranceEntry");
+  if (!res.data) return null;
   const row = res.data as Omit<InsuranceEntry, "entry_type">;
   return { ...row, entry_type: "insurance" as const };
 }
@@ -260,7 +261,7 @@ export async function updateInsuranceEntry(
 
 export async function deleteRepairEntry(supabase: SupabaseClient, entryId: string, userId: string): Promise<boolean> {
   const res = await supabase.from("repair_entries").delete().eq("id", entryId).eq("user_id", userId).select("id");
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "deleteRepairEntry");
   return res.data.length > 0;
 }
 
@@ -270,7 +271,7 @@ export async function deleteOilChangeEntry(
   userId: string,
 ): Promise<boolean> {
   const res = await supabase.from("oil_change_entries").delete().eq("id", entryId).eq("user_id", userId).select("id");
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "deleteOilChangeEntry");
   return res.data.length > 0;
 }
 
@@ -280,7 +281,7 @@ export async function deleteInspectionEntry(
   userId: string,
 ): Promise<boolean> {
   const res = await supabase.from("inspection_entries").delete().eq("id", entryId).eq("user_id", userId).select("id");
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "deleteInspectionEntry");
   return res.data.length > 0;
 }
 
@@ -290,7 +291,7 @@ export async function deleteInsuranceEntry(
   userId: string,
 ): Promise<boolean> {
   const res = await supabase.from("insurance_entries").delete().eq("id", entryId).eq("user_id", userId).select("id");
-  if (res.error) throw new Error(res.error.message);
+  if (res.error) throw toServiceError(res.error, "deleteInsuranceEntry");
   return res.data.length > 0;
 }
 
@@ -338,9 +339,9 @@ export async function getCarDeadlines(supabase: SupabaseClient, carId: string, u
       .limit(1),
   ]);
 
-  if (oilRes.error) throw new Error(oilRes.error.message);
-  if (inspRes.error) throw new Error(inspRes.error.message);
-  if (insRes.error) throw new Error(insRes.error.message);
+  if (oilRes.error) throw toServiceError(oilRes.error, "getCarDeadlines");
+  if (inspRes.error) throw toServiceError(inspRes.error, "getCarDeadlines");
+  if (insRes.error) throw toServiceError(insRes.error, "getCarDeadlines");
 
   const oil = (oilRes.data[0] ?? null) as Omit<OilChangeEntry, "entry_type"> | null;
   const insp = (inspRes.data[0] ?? null) as Omit<InspectionEntry, "entry_type"> | null;
@@ -410,10 +411,10 @@ export async function getLastEntry(supabase: SupabaseClient, carId: string, user
       .order("conducted_at", { ascending: false })
       .limit(1),
   ]);
-  if (repairRes.error) throw new Error(repairRes.error.message);
-  if (oilRes.error) throw new Error(oilRes.error.message);
-  if (inspRes.error) throw new Error(inspRes.error.message);
-  if (insRes.error) throw new Error(insRes.error.message);
+  if (repairRes.error) throw toServiceError(repairRes.error, "getLastEntry");
+  if (oilRes.error) throw toServiceError(oilRes.error, "getLastEntry");
+  if (inspRes.error) throw toServiceError(inspRes.error, "getLastEntry");
+  if (insRes.error) throw toServiceError(insRes.error, "getLastEntry");
 
   const candidates: Entry[] = [
     ...(repairRes.data[0]

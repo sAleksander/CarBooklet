@@ -39,8 +39,12 @@ survives the fault that sent them there.
 | Response body        | Generic English literal per status                                 | Exact D1/`chat.ts` precedent; keeps all eight `toEqual` assertions alive; zero client edits                                    | Plan (Research Option A) |
 | Ownership failure    | 404 everywhere (was 403 at 4 entry sites)                          | Adopts the reviewed D3 anti-enumeration decision uniformly; the repo currently does it both ways                               | Plan (Research OQ1)      |
 | `23503` FK violation | 404                                                                | Same answer the ownership pre-check would have given a moment earlier; the client's correct reaction is identical              | Plan (Research OQ3)      |
-| Validators           | Tighten date and mileage now                                       | Turns two live 500s into correct 400s at the right layer, and preserves the R5 signal                                          | Plan (Research S2)       |
-| Unapplied migrations | Out of scope, codes mapped anyway                                  | Keeps a schema change out of an error-handling change while leaving the boundary forward-compatible                            | Plan (Research OQ4)      |
+| Validators           | Date refinement + mileage `.max()` only                            | `.min(1)` already shipped in `6adbd13`; the date check now covers 14 regex-guarded fields via a shared `isoDate` helper        | Revision                 |
+| Unapplied migrations | Moot — resolved upstream                                           | The mileage `CHECK` is applied and the `NOT NULL` pair was reversed, so `23514` is live rather than speculative                | Revision                 |
+| Owner filter         | Add it to `updateCar`/`deleteCar`                                  | The isolation suite double-asserts every mutation, so the raw-JWT half keeps RLS proven even when the service short-circuits   | Revision                 |
+| Isolation tests      | Rewrite the 3 service assertions shape-agnostic                    | The file already calls the read-back load-bearing; pinning return values is what made this a conflict in the first place       | Revision                 |
+| Integration gate     | Phase 1 only                                                       | That is the only phase changing a service signature; gating all six would make Docker a prerequisite for every commit          | Revision                 |
+| `42501` reachability | Stays 401, with the argument recorded                              | New ownership predicates give it a second meaning, but every entry route pre-checks ownership so only session-death reaches it | Revision                 |
 | SSR surfacing        | Guard `/cars`, render existing `Banner`                            | Fixes the real residual bug (the redirect target cannot survive the error) and reuses a component already in the tree          | Plan (Research S3)       |
 | Test coverage        | Mapper unit tests + route-wiring tests                             | Locks the oracle Finding 1 destroyed at the cheapest layer, and proves routes actually call the mapper                         | Plan                     |
 | Absence vs fault     | `.maybeSingle()` + `!res.data`                                     | The codebase already contains this shape at `entries.ts:150-152` — a convergence, not a redesign                               | Research                 |
@@ -53,11 +57,13 @@ survives the fault that sent them there.
 **In scope:** `ServiceError` and the 24 throw sites; `.maybeSingle()` conversions; the `updateCar`
 missing-owner-filter and `deleteCar` no-op-success bugs; six unchecked `res.data` derefs; a
 code→status mapper and structured logger; three `.catch(() => null)` swallows; `z.uuid()` on car path
-params; 20 raw-echo catches; 403→404 at four sites; date and mileage validators; five silent SSR
-catches; three entirely unguarded service calls; an error banner on `/cars` with new i18n keys; an
-eslint `no-console` scoping change.
+params; 20 raw-echo catches; 403→404 at four sites; a shared `isoDate` refinement across 14 date
+fields plus a mileage `.max()`; five silent SSR catches; three entirely unguarded service calls; an
+error banner on `/cars` with new i18n keys; an eslint `no-console` scoping change; and adapting five
+`integration/` call sites to the new service signatures.
 
-**Out of scope:** the three unapplied migrations; `auth/signin.ts` and `signup.ts`'s raw auth messages;
+**Out of scope:** any migration (the three formerly-pending ones resolved upstream); `auth/signin.ts`
+and `signup.ts`'s raw auth messages;
 adding a `code` field to the envelope; translating API errors; refactoring `chat.ts`'s existing
 catches; alerting, Logpush, or Tail Workers; success-response envelopes; making CI run `npm test`.
 
@@ -72,26 +78,33 @@ channel (`ServiceError`), and only the route decides what either means in HTTP.
 
 ## Phases at a Glance
 
-| Phase                     | What it delivers                                                          | Key risk                                                                                                                        |
-| ------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| 1. Service error contract | `ServiceError`, `.maybeSingle()` conversions, three latent bug fixes      | `updateCar`/`deleteCar` signature changes break the typecheck at two route call sites — adaptations must land in the same phase |
-| 2. Mapping layer          | Code→status table, structured logger, `Response` helper, eslint scoping   | Getting a status wrong here propagates to every route; the table is the specification and needs a test per row                  |
-| 3. Cars API routes        | The three swallows split, `z.uuid()` path guards, 4 echoes fixed          | `e2e/cross-user-data-isolation.spec.ts:99` needs a genuine 404 — the uuid guard is what keeps it passing                        |
-| 4. Entries API routes     | 16 echoes fixed, 403→404 at four sites                                    | A user-visible status change with no test asserting the old value either way                                                    |
-| 5. Validator tightening   | Real-date and mileage-bound refinements across 8 schemas                  | A stricter validator could reject input previously accepted — bounded to genuinely invalid input                                |
-| 6. SSR boundary           | `/cars` guarded, 5 catches logged, banner + i18n, 3 unguarded calls fixed | Editing `chat.ts` fires the R1 tripwire hook, immediately running the eight `toEqual` envelope assertions                       |
+| Phase                     | What it delivers                                                                                | Key risk                                                                                                                      |
+| ------------------------- | ----------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 1. Service error contract | `ServiceError`, `.maybeSingle()` conversions, three latent bug fixes, `integration/` adaptation | Signature changes break the typecheck at **seven** sites — two routes and five in `integration/`; all must land in this phase |
+| 2. Mapping layer          | Code→status table, structured logger, `Response` helper, eslint scoping                         | Getting a status wrong here propagates to every route; the table is the specification and needs a test per row                |
+| 3. Cars API routes        | The three swallows split, `z.uuid()` path guards, 4 echoes fixed                                | `e2e/cross-user-data-isolation.spec.ts:99` needs a genuine 404 — the uuid guard is what keeps it passing                      |
+| 4. Entries API routes     | 16 echoes fixed, 403→404 at four sites                                                          | A user-visible status change with no test asserting the old value either way                                                  |
+| 5. Validator tightening   | Shared `isoDate` helper across 14 date fields, mileage `.max()`                                 | The helper touches `renewal_date`/`policy_start_date`/`next_inspection_date`, which no test covers end to end today           |
+| 6. SSR boundary           | `/cars` guarded, 5 catches logged, banner + i18n, 3 unguarded calls fixed                       | Editing `chat.ts` fires the R1 tripwire hook, immediately running the eight `toEqual` envelope assertions                     |
 
-**Prerequisites:** local Supabase stack running (`npx supabase start`) — several manual verification
-steps require deliberately stopping it to observe the failure path. No new dependencies.
+**Prerequisites:** local Supabase stack running (`npx supabase start`) — Phase 1's integration gate
+requires it, and several manual verification steps require deliberately stopping it to observe the
+failure path. No new dependencies.
 
 **Estimated effort:** ~4–6 sessions across 6 phases. Phases 1 and 2 are the design work; 3–5 are
 largely mechanical once the helper exists; 6 is the only phase touching UI.
 
 ## Open Risks & Assumptions
 
-- **Phase 1 directly contradicts `data-isolation-crud-integrity`.** That plan keeps `updateCar` and
-  `deleteCar` missing their `user_id` filter so RLS stays under test; this plan adds the filter. The
-  two cannot both be implemented as written — reconcile before either starts.
+- **The `data-isolation-crud-integrity` conflict is resolved, not deferred.** That change shipped
+  first and its `integration/isolation-cars.test.ts:31-44` anticipated this one by path, double-asserting
+  every cross-user mutation so the raw-JWT half pins RLS regardless of what the service does. Phase 1
+  adds the filter and adapts the tests. The residual risk is narrow: if a future edit deletes a raw-half
+  assertion, the service filter would mask a genuine policy regression — that file's header comment is
+  the only thing recording why the pairs exist, which is why Phase 1 updates rather than deletes it.
+- **Phases 2–6 have no integration gate.** By design, but it means a later phase could break
+  `integration/` and close green. `npx astro check` still covers the directory, so only a semantic
+  break slips through.
 - **`PostgrestError` has no reliably-typed `status` field** across supabase-js versions, so the entire
   mapping keys on `code`. If a code arrives that is not in the table, it falls to 500 — the mapper
   test asserting "no mapping yields 404 except `23503`" is what keeps that failure mode safe.

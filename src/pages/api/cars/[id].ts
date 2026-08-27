@@ -63,7 +63,13 @@ export const PATCH: APIRoute = async (context) => {
   }
 
   try {
-    const car = await updateCar(supabase, id, result.data);
+    const car = await updateCar(supabase, id, user.id, result.data);
+    // `updateCar` now reports "no such car of yours" as absence rather than a
+    // thrown coercion error. Unreachable while the pre-check above stands; kept
+    // so removing that pre-check cannot resurrect the 500 it used to produce.
+    if (!car) {
+      return Response.json({ error: "Not found" }, { status: 404 });
+    }
     return Response.json({ car });
   } catch (err) {
     return Response.json({ error: (err as Error).message }, { status: 500 });
@@ -94,7 +100,12 @@ export const DELETE: APIRoute = async (context) => {
   }
 
   try {
-    await deleteCar(supabase, id);
+    const deleted = await deleteCar(supabase, id, user.id);
+    // A zero-row delete used to report success. The cookie must not be cleared
+    // for a car that is still there.
+    if (!deleted) {
+      return Response.json({ error: "Not found" }, { status: 404 });
+    }
 
     if (context.cookies.get("selected_car_id")?.value === id) {
       context.cookies.delete("selected_car_id", { path: "/" });

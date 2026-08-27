@@ -1,9 +1,9 @@
 ---
 change_id: swallowed-error-propagation
 title: Propagate swallowed errors at the API and SSR boundary
-status: planned
+status: implementing
 created: 2026-08-24
-updated: 2026-08-24
+updated: 2026-08-27
 archived_at: null
 ---
 
@@ -157,3 +157,35 @@ propagates an SSE `error` event, and Phase 1 already covered it.
 site, the correct status code, the response body the client is allowed to see,
 what gets logged, and whether the split belongs in the route or in the service
 layer.
+
+---
+
+## Implementation decisions
+
+### Phase 1 — §3 bullet 3 dropped (the "six unchecked `res.data` dereferences")
+
+The plan called for null guards before six `res.data` dereferences in
+`entries.ts`, on the premise that a `null` data with no error would put a JS
+`TypeError` message into a response body. Verified during implementation: that
+path does not exist.
+
+supabase-js types a response as a discriminated union — success is
+`{ data: T[], error: null }`, failure is `{ data: null, error: PostgrestError }`
+— so the `if (res.error) throw` immediately above each site already narrows
+`data` to non-null. Adding `(res.data ?? [])` at `entries.ts:264` is rejected by
+`@typescript-eslint/no-unnecessary-condition`, which is error-level under
+`strictTypeChecked`:
+
+    Unnecessary conditional, expected left-hand side of `??` operator to be
+    possibly null or undefined
+
+The two aggregate sites were never unguarded: `getCarDeadlines` reads
+`(oilRes.data[0] ?? null)` and `getLastEntry` reads
+`...(repairRes.data[0] ? [...] : [])`. They pass lint today only because
+`.select("*")` yields `any[]`, which the rule cannot see through.
+
+Decision: skip. Shipping six unreachable guards, four of them behind
+`eslint-disable` comments, asserts a failure mode the types forbid and costs the
+next reader the work of re-deriving that it cannot happen. If a future
+supabase-js version widens the success type, `npx astro check` will surface these
+sites.

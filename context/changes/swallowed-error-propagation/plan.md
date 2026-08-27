@@ -23,9 +23,21 @@ rejection, so a dead database reads to the user as "your car does not exist".
 
 **The consequence for testing.** An isolation test asserting `404` for a foreign car id passes both
 when ownership is correctly enforced _and_ when the database is unreachable. The swallow drains the
-signal out of the exact oracle that `context/changes/data-isolation-crud-integrity/` (test-plan
-Phase 2, risk R3) is about to be written against. This change lands underneath that phase, which has
-research but no plan, so nothing is invalidated by going first.
+signal out of the exact oracle that test-plan Phase 2 (risk R3) is written against.
+
+**That phase has since shipped**, and it changes this plan's starting position in three ways.
+`data-isolation-crud-integrity` was implemented and archived on 2026-06-15
+(`context/archive/2026-06-15-data-isolation-crud-integrity/`). It added an `integration/` suite that
+exercises `src/lib/services/` directly against a live local Supabase, three migrations, and a
+table-driven `src/test/pages/api/schemas.test.ts`. Consequently:
+
+- **Phase 1 now has downstream test consumers.** Five call sites in `integration/` invoke `updateCar`
+  and `deleteCar` at their current arity. See Phase 1 §5.
+- **Phase 5 is half-done.** `6adbd13` already tightened `mileage` from `.min(0)` to `.min(1)` across
+  all eight entry schemas, with the message `"Mileage must be greater than 0"`.
+- **Two of the three "unapplied" migrations are settled.** `20260528000001` (the mileage `CHECK`) is
+  applied; `20260825000001` **reversed** the `insurer` / `result` `NOT NULL` pair rather than
+  applying it.
 
 **The leak is bigger than the original audit recorded.** 20 sites (not 14) return
 `{ error: (err as Error).message }`, and **14 DOM elements render `json.error` verbatim** —
@@ -71,7 +83,9 @@ Specifically, when this plan is complete:
 
 **Verification:** `npm run lint`, `npx astro check`, and `npm test` pass; the new mapper unit tests
 cover every row of the code→status table; the eight existing `toEqual` envelope assertions in
-`chat.test.ts` still pass unchanged; `e2e/cross-user-data-isolation.spec.ts` passes unchanged.
+`chat.test.ts` still pass unchanged; `e2e/cross-user-data-isolation.spec.ts` passes unchanged; and
+`npm run test:integration` passes with the isolation suite's R3 guarantees intact — each cross-user
+mutation still asserted both through the service and through a raw JWT-carrying PostgREST call.
 
 ### Key Discoveries:
 
@@ -82,9 +96,12 @@ cover every row of the code→status table; the eight existing `toEqual` envelop
   rows returns the identical code. The current mapping is safe only because every `.single()` here
   filters on a primary key, an undocumented invariant one `.eq("brand", …)` away from turning a
   duplicate-row bug into a 404.
-- **`23505` is unreachable.** The schema has zero UNIQUE and zero CHECK constraints (probed against
-  `pg_constraint` over all five tables). The original audit listed it as a genuine 4xx case; it cannot
-  occur.
+- **`23505` is unreachable, but the reasoning behind it has half expired.** Research probed
+  `pg_constraint` over all five tables and found zero UNIQUE _and_ zero CHECK. The UNIQUE half still
+  holds — every PK is `id UUID DEFAULT gen_random_uuid()` and no service supplies `id` on insert, so
+  `23505` genuinely cannot occur. **The CHECK half no longer holds**: `20260528000001` added
+  `CHECK (mileage > 0)` to all four entry tables. `23514` is therefore a live code today, not the
+  forward-compatibility placeholder the earlier draft of this plan treated it as.
 - **`42501` maps to 401, not 403.** The anon downgrade in `supabase-js` is silent, so `42501` in this
   app almost always means the session died mid-request.
 - The house pattern has **precedent behind it, not preference**: `chat.ts`'s generic-500 +
@@ -104,10 +121,11 @@ cover every row of the code→status table; the eight existing `toEqual` envelop
 
 ## What We're NOT Doing
 
-- **Not applying the three unapplied migrations** (`CHECK (mileage > 0)` ×4, `insurer NOT NULL`,
-  `result NOT NULL`). Their codes `23502`/`23514` are mapped as 400s so the boundary is
-  forward-compatible, but the schema change and the `insurer`/`result` zod-vs-`types.ts` contradiction
-  stay a separate concern.
+- **Not touching the migration set.** The three migrations this plan once deferred are no longer
+  pending: `20260528000001` (`CHECK (mileage > 0)` ×4) is applied, and `20260825000001` reversed the
+  `insurer` / `result` `NOT NULL` pair on the grounds that both fields are optional throughout the
+  product. `23502` and `23514` stay mapped as 400s — `23514` because it is now reachable, `23502`
+  because it remains a genuine client fault if a future column turns `NOT NULL`.
 - **Not touching `src/pages/api/auth/signin.ts:16` and `signup.ts:16`**, which push raw Supabase auth
   messages into the query string. Same defect class, different subsystem, out of scope by decision.
 - **Not adding a `code` field to the response envelope.** It would break the eight `toEqual`
@@ -148,9 +166,17 @@ a `status` property is present on some supabase-js versions and not others, and 
 typed fields and nothing else — every row of the Layer-1 table is keyed by `code`, including
 transport faults, which arrive with `code: ""`.
 
-**Ordering within Phase 1 matters for the build.** Changing `updateCar` to return `Car | null` and
-`deleteCar` to return `boolean` breaks the typecheck at `src/pages/api/cars/[id].ts:66` and `:97`. The
-minimal call-site adaptations must land in the same phase, or the phase closes red.
+**Ordering within Phase 1 matters for the build, and the blast radius is wider than the routes.**
+Changing `updateCar` to return `Car | null` and `deleteCar` to return `boolean` breaks the typecheck
+at `src/pages/api/cars/[id].ts:66` and `:97` — and at five sites in `integration/`
+(`isolation-cars.test.ts:110,140,156`, `crud-integrity.test.ts:216,230`). All seven adaptations must
+land in the same phase, or the phase closes red.
+
+**`npm test` cannot see the integration suite.** `package.json:14` is `vitest run --project unit`;
+`vitest.config.ts` splits the suites by directory so `.husky/pre-commit` stays runnable with Docker
+stopped. `integration/` runs only under `npm run test:integration`. `npx astro check` typechecks it
+either way — `tsconfig.json` includes `**/*` — so the arity break surfaces at Phase 1's criterion 1.1,
+but a _semantically_ wrong assertion would not. This is why Phase 1 alone carries an integration gate.
 
 **Editing `chat.ts` at all fires a repo hook.** `.claude/settings.json` defines an "R1 tripwire"
 `PostToolUse` hook that re-runs both AI specs whenever `ai.ts`, `chat.ts`, or either spec is edited —
@@ -211,14 +237,17 @@ the two functions whose behavior is wrong independent of error handling.
   (`entries.ts:261-265`), which already does this.
 - `getCars` (`:4-8`) and `createCar` (`:19-23`): throw-site swap only.
 
-> **⚠️ Conflicts with `context/changes/data-isolation-crud-integrity/plan.md`.** That change
-> deliberately _keeps_ `updateCar` and `deleteCar` missing their `user_id` filter, on the grounds that
-> adding one would short-circuit ahead of RLS and leave the policy layer unproven — the asymmetry is
-> what its R3 tests are designed to exercise. This plan adds those filters. **The two are mutually
-> exclusive and must be reconciled before either phase is implemented.** The likely resolution is that
-> the isolation tests assert on RLS through a client that bypasses the service layer, freeing the
-> service to carry defense in depth — but that is a decision, not an assumption, and neither plan
-> should be implemented until it is made.
+> **Reconciliation with `data-isolation-crud-integrity` — settled.** Both plans flagged the owner
+> filter as a conflict and deferred to the other. It is resolved, and it was resolved in the code
+> before it was resolved on paper: `integration/isolation-cars.test.ts:31-44` names this change by
+> path, predicts the filter being added, and states that it would make the service short-circuit
+> _ahead_ of RLS — so **every cross-user mutation is asserted twice**, once through the service
+> function and once through a raw PostgREST call carrying B's JWT. In the file's own words, "the raw
+> half is what keeps this file honest."
+>
+> The raw half (`:98`, `:119`, `:148`) pins the policy layer independently of anything
+> `services/cars.ts` ever does. Adding the filter therefore costs no R3 coverage, and this plan adds
+> it. Phase 1 §5 carries the corresponding test adaptation.
 
 #### 3. Entries service
 
@@ -251,7 +280,33 @@ minimum needed to close the phase; the full route rewrite is Phase 3.
 with a 404 on null; handle `deleteCar` returning `false` with a 404. Leave the `catch` blocks and the
 `.catch(() => null)` swallows exactly as they are — Phase 3 owns those.
 
-#### 5. Unit tests
+#### 5. Integration-suite adaptation
+
+**Files**: `integration/isolation-cars.test.ts`, `integration/crud-integrity.test.ts`
+
+**Intent**: Keep the archived isolation suite compiling and honest after the signature change. This
+is not incidental cleanup — the suite is the R3 oracle, and a silently-broken assertion here is the
+exact failure mode this whole change exists to prevent.
+
+**Contract**: Three groups of edits, none of which weaken an isolation guarantee.
+
+- **Arity.** `crud-integrity.test.ts:216` (`updateCar`) and `:230` (`deleteCar`) gain `owner.id`.
+  Both already read back through `getCarById`, so their assertions are unaffected.
+- **Shape-agnostic rewrite** at `isolation-cars.test.ts:110`, `:140`, `:156`. Drop the return-value
+  assertions — `rejects.toThrow()` and the two `resolves.toBeUndefined()` — and keep the read-back-as-A
+  assertions that already follow each one. The file's header already argues the read-back is the
+  load-bearing oracle and the return shape is incidental; this makes that true, so the next service
+  reshape does not break these tests again. Then add one positive-control case asserting `deleteCar`
+  returns `false` for a refused cross-user delete and `true` for B's own car — the new signal the
+  boolean return buys, held in a case that is explicitly _about_ the return value rather than smuggled
+  into an isolation assertion.
+- **The header comment.** The table at `:17-21` documents `updateCar` as "throws (PGRST116)" and
+  `deleteCar` as "nothing — silent void", and the paragraph at `:31-44` describes the filter as a
+  future possibility. Both now describe history. Rewrite them to state the current shape and record
+  that the reconciliation landed — a stale explanatory comment on the repo's most subtle test file is
+  a real cost.
+
+#### 6. Unit tests
 
 **File**: `src/test/lib/services/errors.test.ts` (new)
 
@@ -266,10 +321,11 @@ transport-fault error (`code: ""`) round-trips with an empty code rather than be
 
 #### Automated Verification:
 
-- Type checking passes: `npx astro check`
+- Type checking passes: `npx astro check` — note this covers `integration/`, which `npm test` does not
 - Linting passes: `npm run lint`
 - Unit tests pass: `npm test`
 - New error-type tests pass: `npx vitest run src/test/lib/services/errors.test.ts`
+- Integration suite passes: `npm run test:integration` (requires a running local Supabase stack)
 - No `throw new Error(res.error.message)` remains: `grep -rn "throw new Error(res\|throw new Error(oilRes\|throw new Error(inspRes\|throw new Error(insRes\|throw new Error(repairRes" src/lib/services/` returns nothing
 - No `.single()` paired with a `PGRST116` string match remains: `grep -rn "PGRST116" src/lib/services/` returns nothing
 
@@ -322,6 +378,22 @@ A pure mapper from an error code to a `{ status, message }` pair, implementing t
 | `57014` statement timeout               | 503    | `Service unavailable` |
 | `""` transport/DNS/abort                | 503    | `Service unavailable` |
 | anything else                           | 500    | `Server error`        |
+
+Two rows carry reasoning that is not obvious from the table alone, and both should be recorded as
+comments beside the mapping so a future reader does not "correct" them:
+
+- **`23514` is live, not speculative.** `20260528000001` applied `CHECK (mileage > 0)` to all four
+  entry tables. Phase 5's `.min(1)` refinement (already shipped in `6adbd13`) is what keeps it
+  unreachable through the API; it stays mapped as a 400 because a direct PostgREST call, or any
+  future column with a `CHECK`, can still produce it.
+- **`42501` stays 401 even though it can now mean "foreign car".** `20260825000000` and
+  `20260826000000` added car-ownership predicates to the entry INSERT and UPDATE policies, so `42501`
+  no longer means only "the session died". The ownership sense is nevertheless **unreachable through
+  these routes**: all four entry routes pre-check ownership via `getCarById` before writing, and the
+  PATCH schemas do not accept `car_id`, so an entry can never be moved between cars through the API.
+  What remains reachable is the session-death case, which 401 answers correctly. Splitting the two
+  would require keying on PostgREST's prose `details`/`hint` — the exact dependency this change exists
+  to remove. If a future route drops its ownership pre-check, this row must be revisited.
 
 A structured logger that emits **a single object** — never a string plus a second argument, which
 Cloudflare does not merge into indexed fields:
@@ -567,39 +639,60 @@ next phase.
 Two validators look strict but let bad input reach Postgres, where it becomes a 500. Two refinements
 turn them into 400s at the right layer — the cheapest correctness win in the change.
 
+**This phase shrank.** `6adbd13` (part of `data-isolation-crud-integrity`) already tightened `mileage`
+from `.min(0)` to `.min(1, "Mileage must be greater than 0")` across all eight entry schemas, closing
+the `23514` gap this plan originally owned. Two refinements remain, and one of them is wider than the
+earlier draft recorded.
+
 ### Changes Required:
 
-#### 1. Date and mileage validation
+#### 1. Real-calendar-date refinement
 
 **Files**: `src/pages/api/entries/repair.ts`, `oil-change.ts`, `inspection.ts`, `insurance.ts`
 
-**Intent**: Reject impossible dates and out-of-range mileage locally instead of round-tripping to the
-database to be told. Beyond the status code, this preserves the signal that test-plan risk **R5**
-reads — validation enforced independently of the client.
+**Intent**: Reject impossible dates locally instead of round-tripping to Postgres to be told. Beyond
+the status code, this preserves the signal that test-plan risk **R5** reads — validation enforced
+independently of the client.
 
-**Contract**: Two changes applied across all eight schemas (a create and a patch schema per file):
+**Contract**: The `/^\d{4}-\d{2}-\d{2}$/` regex accepts `2026-02-30`, which Postgres rejects with
+`22008`. Add a refinement that the string names a real calendar day, not merely a well-shaped one.
 
-- `conducted_at`'s `/^\d{4}-\d{2}-\d{2}$/` regex accepts `2026-02-30`, which Postgres rejects with
-  `22008`. Add a refinement that the string is a real calendar date, not merely well-shaped. Keep the
-  existing `"Date must be YYYY-MM-DD"` message for shape failures so no current test or UI string
-  changes; the refinement needs its own message.
-- `mileage`'s `z.number().int().min(0)` has no upper bound, so `99999999999` reaches Postgres and
-  returns `22003`. Add a `.max()` bounded by the column's integer range.
+**It guards fourteen fields, not eight.** The same regex appears on `conducted_at` (8 — create and
+patch per file), `renewal_date` (2, `insurance.ts:29,115`), `policy_start_date` (2,
+`insurance.ts:23,109`) and `next_inspection_date` (2, `inspection.ts:24,109`). Fourteen inline
+`.refine()` calls would be a maintenance liability and would drift; extract one shared `isoDate`
+schema and use it at all fourteen sites. Keep the existing `"Date must be YYYY-MM-DD"` message for
+shape failures so no current test or UI string changes — `schemas.test.ts:135` asserts on it — and
+give the refinement its own message. Note `renewal_date`'s message differs (`"Renewal date must be
+YYYY-MM-DD"`), so the helper must take the shape message as a parameter rather than hard-coding it.
 
-Note the schemas also permit `mileage: 0`, which an unapplied migration would reject with `23514`.
-That contradiction is out of scope by decision; `23514` is already mapped as a 400 in Phase 2, so the
-boundary is ready for it.
+#### 2. Mileage upper bound
 
-#### 2. Validator tests
+**Files**: the same four routes
 
-**File**: `src/test/pages/api/entries/repair.test.ts` (extend)
+**Intent**: `mileage`'s `.min(1)` has no upper bound, so `99999999999` reaches Postgres and returns
+`22003`.
+
+**Contract**: Add a `.max()` bounded by the column's `integer` range (2147483647) with its own
+message, across all eight entry schemas.
+
+#### 3. Validator tests
+
+**File**: `src/test/pages/api/schemas.test.ts` (extend)
 
 **Intent**: Lock both refinements, since they are the kind of thing a future schema edit silently
 reverts.
 
-**Contract**: `conducted_at: "2026-02-30"` → 400 and the service mock was never called; `mileage:
-99999999999` → 400, likewise. Both currently produce 500s, so these tests fail before the change and
-pass after — the clearest red-to-green signal in the plan.
+**Contract**: This file — added by `data-isolation-crud-integrity`, not present when this plan was
+first written — is the right home, and a better one than the route tests the earlier draft named. It
+already runs table-driven over `ALL_ENTRY_SCHEMAS` (all eight create + patch schemas) in the
+Docker-free `unit` project, and already has a `"$label · dates and ids"` block at `:134` asserting the
+shape rule. Add alongside it: `2026-02-30` and `2026-13-01` rejected; `2028-02-29` (a real leap day)
+**accepted** — the case a naive refinement gets wrong; and `mileage: 99999999999` rejected. Extend the
+same date cases to the four non-`conducted_at` fields, since they now share the helper.
+
+Testing the schemas as pure functions means no service mock and no route harness — these are
+red-to-green the moment the refinement lands.
 
 ### Success Criteria:
 
@@ -607,7 +700,7 @@ pass after — the clearest red-to-green signal in the plan.
 
 - Type checking passes: `npx astro check`
 - Linting passes: `npm run lint`
-- Validator tests pass: `npx vitest run src/test/pages/api/entries`
+- Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts`
 - Full suite passes: `npm test`
 - E2E suite passes: `npx playwright test`
 
@@ -616,6 +709,8 @@ pass after — the clearest red-to-green signal in the plan.
 - Submitting an entry form with a valid date still works for every entry type — including a leap day
   (`2028-02-29`), which must be accepted
 - Submitting `2026-02-30` via the API yields 400 with a field-specific message rather than 500
+- An insurance entry with a valid `renewal_date` and `policy_start_date` still saves — the shared
+  `isoDate` helper touches those fields too, and no existing test covers them end to end
 
 **Implementation Note**: After completing this phase and all automated verification passes, pause here
 for manual confirmation from the human that the manual testing was successful before proceeding to the
@@ -731,16 +826,24 @@ for manual confirmation from the human that the manual testing was successful.
 - **Route wiring** (`src/test/pages/api/cars/[id].test.ts`, `src/test/pages/api/entries/repair.test.ts`):
   that the routes actually call the mapper — `null` → 404, `22P02` → 400, `""` → 503, foreign `car_id`
   → 404, malformed path param → 400 without touching the service.
-- **Validators** (extending the repair route tests): impossible date and out-of-range mileage → 400.
+- **Validators** (extending `src/test/pages/api/schemas.test.ts`): impossible date rejected, real leap
+  day accepted, out-of-range mileage rejected — asserted against all eight entry schemas through the
+  file's existing `ALL_ENTRY_SCHEMAS` table.
 
 Harness: extend `makeContext` from `chat.test.ts:44-56`. Entry routes read `locals.user` and transfer
 directly; `cars/*` routes self-authenticate via `supabase.auth.getUser()` and need one extra mock layer.
 
 ### Integration Tests:
 
-None added. The existing E2E suite is the integration layer, and Phase 2 of the test-plan rollout
-(`context/changes/data-isolation-crud-integrity/`) owns cross-user integration coverage — it is
-researched but unplanned, so it will be written against the corrected behavior this change ships.
+**None added, but the existing suite is adapted and gated.** `integration/` shipped with
+`data-isolation-crud-integrity` (archived 2026-06-15) and owns cross-user R3 coverage against a live
+local Supabase. Phase 1 changes two service signatures it consumes, so that phase adapts five call
+sites (§5) and adds `npm run test:integration` to its automated criteria.
+
+The gate is **Phase 1 only**, deliberately. `vitest.config.ts` splits `unit` from `integration` by
+directory so `.husky/pre-commit` stays runnable with Docker stopped; making every phase depend on a
+live container would push people toward `--no-verify`. Phases 2–6 touch no service signature, and the
+plan already requires a running stack for their manual verification steps.
 
 ### Manual Testing Steps:
 
@@ -772,9 +875,10 @@ at this traffic level.
 
 ## Migration Notes
 
-No database migration. The three unapplied migrations (`CHECK (mileage > 0)`, `insurer NOT NULL`,
-`result NOT NULL`) stay out of scope; their codes `23502` and `23514` are mapped as 400s so the
-boundary is ready when they land.
+No database migration, and none pending. The three migrations this plan once deferred resolved
+themselves while it sat: `20260528000001` (`CHECK (mileage > 0)` ×4) is applied, and `20260825000001`
+reversed the `insurer` / `result` `NOT NULL` pair. `23502` and `23514` stay mapped as 400s — `23514`
+because it is now genuinely reachable, `23502` as forward-compatibility.
 
 No rollback plan is needed beyond `git revert` — the change is additive at the helper level and
 mechanical at the call sites, with no data or schema effect.
@@ -803,7 +907,10 @@ mechanical at the call sites, with no data or schema effect.
 - The correct in-repo shape to converge on: `src/lib/services/entries.ts:145-152`
 - Test harness recipe: `context/foundation/test-plan.md:192-231`; live example at `src/test/pages/api/ai/chat.test.ts:44-56`
 - Risks this serves: `context/foundation/test-plan.md:50-51` (R2 secret leakage, R3 IDOR), `:53,86` (R5 server-side validation)
-- Downstream phase landing on top of this: `context/changes/data-isolation-crud-integrity/research.md`
+- The change this was reconciled with (archived 2026-06-15): `context/archive/2026-06-15-data-isolation-crud-integrity/`
+- The reconciliation argument, written in the test file itself: `integration/isolation-cars.test.ts:31-44`
+- The validator work already shipped, shrinking Phase 5: commit `6adbd13`
+- Where Phase 5's tests now live: `src/test/pages/api/schemas.test.ts:99-144`
 
 ## Progress
 
@@ -813,18 +920,20 @@ mechanical at the call sites, with no data or schema effect.
 
 #### Automated
 
-- [ ] 1.1 Type checking passes: `npx astro check`
-- [ ] 1.2 Linting passes: `npm run lint`
-- [ ] 1.3 Unit tests pass: `npm test`
-- [ ] 1.4 New error-type tests pass: `npx vitest run src/test/lib/services/errors.test.ts`
-- [ ] 1.5 No `throw new Error(res.error.message)` remains in `src/lib/services/`
-- [ ] 1.6 No `PGRST116` string match remains in `src/lib/services/`
+- [x] 1.1 Type checking passes: `npx astro check` (covers `integration/`, which `npm test` does not)
+- [x] 1.2 Linting passes: `npm run lint`
+- [x] 1.3 Unit tests pass: `npm test`
+- [x] 1.4 New error-type tests pass: `npx vitest run src/test/lib/services/errors.test.ts`
+- [x] 1.5 Integration suite passes: `npm run test:integration` (needs a running local Supabase)
+- [x] 1.6 No `throw new Error(res.error.message)` remains in `src/lib/services/`
+- [x] 1.7 No `PGRST116` string match remains in `src/lib/services/`
 
 #### Manual
 
-- [ ] 1.7 Existing app flows work end to end (cars CRUD, all four entry types)
-- [ ] 1.8 Deleting a car still clears the `selected_car_id` cookie and updates the sidebar
-- [ ] 1.9 No regression on the dashboard or entries pages
+- [x] 1.8 Existing app flows work end to end (cars CRUD, all four entry types)
+- [x] 1.9 Deleting a car still clears the `selected_car_id` cookie and updates the sidebar
+- [x] 1.10 No regression on the dashboard or entries pages
+- [x] 1.11 `integration/isolation-cars.test.ts` header comment describes the new service shape
 
 ### Phase 2: The Mapping Layer
 
@@ -883,14 +992,16 @@ mechanical at the call sites, with no data or schema effect.
 
 - [ ] 5.1 Type checking passes: `npx astro check`
 - [ ] 5.2 Linting passes: `npm run lint`
-- [ ] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/entries`
+- [ ] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts`
 - [ ] 5.4 Full suite passes: `npm test`
-- [ ] 5.5 E2E suite passes: `npx playwright test`
+- [ ] 5.5 Shared `isoDate` helper is used at all 14 regex-guarded date fields
+- [ ] 5.6 E2E suite passes: `npx playwright test`
 
 #### Manual
 
-- [ ] 5.6 Valid dates still accepted for every entry type, including a leap day (`2028-02-29`)
-- [ ] 5.7 `2026-02-30` yields 400 with a field-specific message, not 500
+- [ ] 5.7 Valid dates still accepted for every entry type, including a leap day (`2028-02-29`)
+- [ ] 5.8 `2026-02-30` yields 400 with a field-specific message, not 500
+- [ ] 5.9 An insurance entry with `renewal_date` and `policy_start_date` still saves
 
 ### Phase 6: SSR Boundary
 
