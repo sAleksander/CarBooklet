@@ -1,10 +1,10 @@
 ---
 change_id: swallowed-error-propagation
 title: Propagate swallowed errors at the API and SSR boundary
-status: impl_reviewed
+status: archived
 created: 2026-08-24
-updated: 2026-08-27
-archived_at: null
+updated: 2026-08-31
+archived_at: 2026-08-31T16:17:14Z
 ---
 
 ## Notes
