@@ -969,7 +969,7 @@ mechanical at the call sites, with no data or schema effect.
 - [x] 3.4 Full suite passes: `npm test` — 5b95df2
 - [x] 3.5 No `catch(() => null)` remains in `src/pages/api/cars/` — 5b95df2
 - [x] 3.6 No `(err as Error).message` remains in `src/pages/api/cars/` — 5b95df2
-- [ ] 3.7 E2E isolation spec passes: `npx playwright test e2e/cross-user-data-isolation.spec.ts`
+- [x] 3.7 E2E isolation spec passes: `npx playwright test e2e/cross-user-data-isolation.spec.ts` — 27be677
 
 #### Manual
 
@@ -988,7 +988,7 @@ mechanical at the call sites, with no data or schema effect.
 - [x] 4.4 Full suite passes: `npm test` — 8285620
 - [x] 4.5 No `(err as Error).message` remains anywhere in `src/pages/api/` — 8285620
 - [x] 4.6 No `Forbidden` remains in `src/pages/api/entries/` — 8285620
-- [ ] 4.7 E2E suite passes: `npx playwright test`
+- [x] 4.7 E2E suite passes: `npx playwright test` — 27be677
 
 #### Manual
 
@@ -1005,7 +1005,7 @@ mechanical at the call sites, with no data or schema effect.
 - [x] 5.3 Validator tests pass: `npx vitest run src/test/pages/api/schemas.test.ts` — b5b8ea5
 - [x] 5.4 Full suite passes: `npm test` — b5b8ea5
 - [x] 5.5 Shared `isoDate` helper is used at all 14 regex-guarded date fields — b5b8ea5
-- [ ] 5.6 E2E suite passes: `npx playwright test`
+- [x] 5.6 E2E suite passes: `npx playwright test` — 27be677
 
 #### Manual
 
@@ -1023,7 +1023,7 @@ mechanical at the call sites, with no data or schema effect.
 - [x] 6.4 No `} catch {` remains in the SSR pages — d34f1a5
 - [x] 6.5 Both locales carry the new banner key — d34f1a5
 - [x] 6.6 Build succeeds: `npm run build` — d34f1a5
-- [ ] 6.7 E2E suite passes: `npx playwright test`
+- [x] 6.7 E2E suite passes: `npx playwright test` — 27be677
 
 #### Manual
 

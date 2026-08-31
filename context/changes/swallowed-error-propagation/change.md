@@ -216,3 +216,29 @@ written, as the record of what was decided before implementation; this note is t
 record of what shipped. `PGRST301 → 401` is unchanged, and
 `src/test/pages/api/{cars/[id],entries/repair}.test.ts` now assert the two codes
 separately so they cannot drift back together.
+
+### Verification (2026-08-31) — what ran, and what did not
+
+Both suites the implementation review flagged as never-run (F4) were executed
+against `27be677`, i.e. against the post-triage code, so the F1/F2/F3/F6/F7 fixes
+are covered rather than merely applied:
+
+| Suite       | Command                    | Result                             |
+| ----------- | -------------------------- | ---------------------------------- |
+| Unit        | `npm test`                 | 321 passed / 8 files               |
+| Integration | `npm run test:integration` | 119 passed / 5 files               |
+| E2E         | `npm run test:e2e`         | 4 passed (setup + all three specs) |
+| Lint        | `npm run lint`             | exit 0                             |
+| Types       | `npx astro check`          | 0 errors, 0 warnings, 120 files    |
+
+The integration run is the one that mattered: `integration/isolation-cars.test.ts`
+is the only oracle for the `.eq("user_id", userId)` filters Phase 1 added to
+`updateCar`/`deleteCar` — `src/test/pages/api/cars/[id].test.ts` mocks the whole
+service module and cannot see them.
+
+**Not done: the 15 manual rows** (3.8–3.11, 4.8–4.10, 5.7–5.9, 6.8–6.12), left
+unchecked rather than ticked. They cover the half of this change no automated
+suite asserts — the shape of the structured log line under a real fault, and the
+Supabase-stopped banner and 503 paths. Anyone touching `logApiError`/`logSsrError`
+or the SSR guards should walk them; the archive records the gap, it does not
+close it.

@@ -5,7 +5,7 @@
 - **Plan**: `context/changes/swallowed-error-propagation/plan.md`
 - **Scope**: Phases 1–6 (all)
 - **Date**: 2026-08-27
-- **Verdict**: NEEDS ATTENTION → **7 fixed, 3 queued, 1 blocked** (triaged 2026-08-27)
+- **Verdict**: NEEDS ATTENTION → **7 fixed, 3 queued, 1 partially resolved** (triaged 2026-08-27; F4 automated half closed 2026-08-31)
 - **Findings**: 0 critical, 7 warnings, 3 observations
 
 ## Method and its limits
@@ -132,7 +132,8 @@ Doing" was violated.
   precisely what the plan named E2E as protecting.
 - **Fix**: `npx supabase start`, then `npm run test:integration && npx playwright test`, and work the
   manual rows.
-- **Decision**: **PENDING — blocked on Docker.** User elected to start Supabase and run the suites; the stack was still down at triage time. Rows 1.5, 3.7–3.11, 4.7–4.10, 5.6–5.9, 6.7–6.12 remain unchecked, and the F1/F2/F3/F6/F7 fixes now also need this run.
+- **Decision**: **AUTOMATED HALF RESOLVED (2026-08-31); manual rows still open.** The stack was started and both suites ran green against `27be677`, i.e. against the post-triage code, so the F1/F2/F3/F6/F7 fixes are now covered: `npm run test:integration` 119 passed / 5 files, `npm run test:e2e` 4 passed (setup + all three specs). Rows 3.7, 4.7, 5.6 and 6.7 are ticked. This closes the gap that mattered most — `integration/isolation-cars.test.ts` is the only oracle for the new `.eq("user_id", userId)` filters on `updateCar`/`deleteCar`, and it passes.
+  The 15 manual rows (3.8–3.11, 4.8–4.10, 5.7–5.9, 6.8–6.12) were **not** walked and remain unchecked. They cover the operator-facing half this change exists for — the shape of the structured log line, and the Supabase-stopped banner/503 paths — none of which any automated suite asserts. Archived with that gap recorded rather than silently ticked.
 
 ### F5 — The plan still specifies six null guards that were deliberately skipped
 
