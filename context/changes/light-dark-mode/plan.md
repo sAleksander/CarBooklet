@@ -115,6 +115,13 @@ unstyled or low-contrast element.
   ownership reason. `src/components/ui/` is excluded from the lint gate wholesale.
 - **Not reopening the sidebar's always-dark decision.** The sidebar stays black in both
   modes with a yellow active indicator — on-brand _and_ less migration.
+  **SUPERSEDED during implementation (commit `a375e92`, at the user's request):** the
+  sidebar now follows the theme. Brand yellow is 1.46:1 on white and cannot be the
+  light-mode active indicator, so light uses `--accent-ink` on a white chip; a new
+  `--sidebar-muted-foreground` collapses 14 alpha-reduced usages. This also invalidated
+  Phase 6's plan to reuse `bg-sidebar` for an always-black landing hero — the hero
+  follows the theme instead. Both decisions are recorded with their contrast
+  measurements in `change.md` ("Consequence for Phase 6" and the Phase 6 note).
 - **Not adding a third text token.** The existing three-level hierarchy
   (`text-white` > `text-blue-100/70` > `text-blue-100/50`) flattens to
   `--card-foreground` + `--muted-foreground`. The flattening is accepted.

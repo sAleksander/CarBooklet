@@ -1,7 +1,7 @@
 ---
 change_id: light-dark-mode
 title: Renault-inspired light and dark theme, replacing the starter palette
-status: implemented
+status: impl_reviewed
 created: 2026-08-31
 updated: 2026-09-02
 archived_at: null
