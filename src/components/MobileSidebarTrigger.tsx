@@ -36,24 +36,24 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
         </Button>
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-60 border-r border-white/10 bg-[var(--sidebar)] p-0">
+      <SheetContent side="left" className="w-60 border-r border-sidebar-border bg-sidebar p-0">
         <SheetHeader className="sr-only">
           <SheetTitle>{t("sidebar.navigation")}</SheetTitle>
         </SheetHeader>
 
         {/* Car switcher */}
-        <div className="border-b border-[var(--sidebar-border)] p-4">
+        <div className="border-b border-sidebar-border p-4">
           <SheetClose asChild>
             <a
               href="/cars"
-              className="flex w-full items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm transition-colors hover:bg-white/10"
+              className="flex w-full items-center rounded-lg border border-sidebar-border bg-sidebar-accent/60 px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent"
             >
               {selectedCar ? (
-                <span className="truncate text-[var(--sidebar-foreground)]">
+                <span className="truncate text-sidebar-foreground">
                   {selectedCar.brand} {selectedCar.model}
                 </span>
               ) : (
-                <span className="text-[var(--sidebar-foreground)]/50">{t("sidebar.selectACar")}</span>
+                <span className="text-sidebar-foreground/50">{t("sidebar.selectACar")}</span>
               )}
             </a>
           </SheetClose>
@@ -70,8 +70,8 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
                   className={cn(
                     "block rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     isActive
-                      ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
-                      : "text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)]",
+                      ? "bg-sidebar-accent text-sidebar-primary"
+                      : "text-sidebar-foreground hover:bg-sidebar-accent",
                   )}
                 >
                   {t(item.labelKey)}
@@ -82,8 +82,8 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-[var(--sidebar-border)] p-4">
-          <p className="mb-3 truncate text-xs text-[var(--sidebar-foreground)]/60">{userEmail}</p>
+        <div className="border-t border-sidebar-border p-4">
+          <p className="mb-3 truncate text-xs text-sidebar-foreground/60">{userEmail}</p>
 
           {/* Language toggle */}
           <div className="mb-3 flex gap-1">
@@ -93,8 +93,8 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   lang === "en"
-                    ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
-                    : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
                 )}
               >
                 {t("sidebar.langEn")}
@@ -106,8 +106,8 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   lang === "pl"
-                    ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
-                    : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
                 )}
               >
                 {t("sidebar.langPl")}
@@ -118,7 +118,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
           <form method="POST" action="/api/auth/signout">
             <button
               type="submit"
-              className="text-sm text-[var(--sidebar-foreground)]/70 transition-colors hover:text-[var(--sidebar-foreground)]"
+              className="text-sm text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground"
             >
               {t("sidebar.signOut")}
             </button>

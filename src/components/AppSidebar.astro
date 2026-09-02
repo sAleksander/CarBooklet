@@ -14,20 +14,20 @@ const t = getT(Astro.locals.lang);
 const lang = Astro.locals.lang;
 ---
 
-<aside class="flex h-full w-60 flex-shrink-0 flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar)]">
+<aside class="flex h-full w-60 flex-shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
   <!-- Car switcher -->
-  <div class="border-b border-[var(--sidebar-border)] p-4">
+  <div class="border-b border-sidebar-border p-4">
     <a
       href="/cars"
-      class="flex w-full items-center rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm transition-colors hover:bg-white/10"
+      class="flex w-full items-center rounded-lg border border-sidebar-border bg-sidebar-accent/60 px-3 py-2 text-sm transition-colors hover:bg-sidebar-accent"
     >
       {
         selectedCar ? (
-          <span class="truncate text-[var(--sidebar-foreground)]">
+          <span class="truncate text-sidebar-foreground">
             {selectedCar.brand} {selectedCar.model}
           </span>
         ) : (
-          <span class="text-[var(--sidebar-foreground)]/50">{t("sidebar.selectACar")}</span>
+          <span class="text-sidebar-foreground/50">{t("sidebar.selectACar")}</span>
         )
       }
     </a>
@@ -43,9 +43,7 @@ const lang = Astro.locals.lang;
             href={item.href}
             class:list={[
               "block rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              isActive
-                ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
-                : "text-[var(--sidebar-foreground)] hover:bg-[var(--sidebar-accent)]",
+              isActive ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground hover:bg-sidebar-accent",
             ].join(" ")}
           >
             {t(item.labelKey)}
@@ -56,8 +54,8 @@ const lang = Astro.locals.lang;
   </nav>
 
   <!-- Footer -->
-  <div class="border-t border-[var(--sidebar-border)] p-4">
-    <p class="mb-3 truncate text-xs text-[var(--sidebar-foreground)]/60">{userEmail}</p>
+  <div class="border-t border-sidebar-border p-4">
+    <p class="mb-3 truncate text-xs text-sidebar-foreground/60">{userEmail}</p>
 
     <!-- Language toggle -->
     <div class="mb-3 flex gap-1">
@@ -67,8 +65,8 @@ const lang = Astro.locals.lang;
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             lang === "en"
-              ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
-              : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+              ? "bg-sidebar-accent text-sidebar-primary"
+              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
           ].join(" ")}
         >
           {t("sidebar.langEn")}
@@ -80,8 +78,8 @@ const lang = Astro.locals.lang;
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             lang === "pl"
-              ? "bg-[var(--sidebar-accent)] text-[var(--sidebar-primary)]"
-              : "text-[var(--sidebar-foreground)]/50 hover:text-[var(--sidebar-foreground)]",
+              ? "bg-sidebar-accent text-sidebar-primary"
+              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
           ].join(" ")}
         >
           {t("sidebar.langPl")}
@@ -90,10 +88,7 @@ const lang = Astro.locals.lang;
     </div>
 
     <form method="POST" action="/api/auth/signout">
-      <button
-        type="submit"
-        class="text-sm text-[var(--sidebar-foreground)]/70 transition-colors hover:text-[var(--sidebar-foreground)]"
-      >
+      <button type="submit" class="text-sm text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground">
         {t("sidebar.signOut")}
       </button>
     </form>

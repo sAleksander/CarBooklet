@@ -5,6 +5,8 @@
   "printWidth": 120,
   "trailingComma": "all",
   "plugins": ["prettier-plugin-astro", "prettier-plugin-tailwindcss"],
+  "tailwindStylesheet": "./src/styles/global.css",
+  "tailwindFunctions": ["cva", "cn"],
   "overrides": [
     {
       "files": "*.astro",

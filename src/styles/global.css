@@ -3,67 +3,124 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ─── Design tokens ───────────────────────────────────────────────────────────
+   Renault-derived palette: yellow / black / white.
+
+   Adding a token is a TWO-STEP edit and the second step fails SILENTLY:
+     1. the raw value in BOTH `:root` and `.dark` below, and
+     2. a matching `--color-*` alias in the `@theme inline` block.
+   Skip step 2 and the utility compiles to nothing — no error, no warning, just
+   an unstyled element.
+
+   Cross-ref: `src/lib/theme.ts` maps domain vocabulary onto these tokens. Every
+   token it names must exist as `--color-*` in `@theme inline`. */
+
 :root {
+  color-scheme: light;
+
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: oklch(0.99 0.002 90);
+  --foreground: oklch(0.16 0.005 90);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.16 0.005 90);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.16 0.005 90);
+  --primary: oklch(0.867 0.164 88.7);
+  --primary-foreground: oklch(0.16 0.005 90);
+  --secondary: oklch(0.96 0.004 90);
+  --secondary-foreground: oklch(0.16 0.005 90);
+  --muted: oklch(0.96 0.004 90);
+  --muted-foreground: oklch(0.5 0.008 90);
+  --accent: oklch(0.96 0.004 90);
+  --accent-foreground: oklch(0.16 0.005 90);
+  /* Brand yellow is a SURFACE, never text: at L=0.867 it is 1.46:1 on white.
+     `--accent-ink` is the darkened yellow for when the brand must be ink. */
+  --accent-ink: oklch(0.556 0.11 88.7);
+  --destructive: oklch(0.55 0.21 27);
+  --destructive-foreground: oklch(0.985 0.002 90);
+  --border: oklch(0.9 0.005 90);
+  /* Split from `--border` on purpose: decorative hairlines have no contrast
+     requirement, form controls need 3:1 (WCAG 1.4.11). One value cannot do
+     both jobs on a white ground. */
+  --input: oklch(0.644 0.02 90);
+  --ring: oklch(0.556 0.11 88.7);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  /* Sidebar tokens are intentionally dark-only — app has no dark-mode toggle.
-     No .dark overrides needed; these values stay constant across themes. */
+
+  /* Status ramp. Two variants per tone because the thresholds differ:
+     the bare token is a FILL (dot, border) at >=3:1, `-ink` is TEXT at >=4.5:1.
+     Using a fill value as text is the failure mode these pairs prevent.
+     `--status-warn` is orange, not yellow: the brand yellow sits ~6 deg from
+     amber, so the warning state had to move away from it. */
+  --status-ok: oklch(0.6 0.15 150);
+  --status-warn: oklch(0.658 0.16 55);
+  --status-bad: oklch(0.6 0.21 25);
+  --status-info: oklch(0.548 0.15 250);
+  --status-ok-ink: oklch(0.48 0.128 150);
+  --status-warn-ink: oklch(0.52 0.128 55);
+  --status-bad-ink: oklch(0.52 0.21 25);
+  --status-info-ink: oklch(0.496 0.14 250);
+  /* Aliases a token that already has a `.dark` value, so it needs no override. */
+  --status-idle: var(--muted-foreground);
+
+  /* Sidebar is deliberately black in BOTH themes, with a yellow active
+     indicator — it is the brand's strongest expression (yellow on black is
+     12.71:1) and it keeps the shell stable across a theme switch. These values
+     are therefore intentionally not overridden in `.dark`. */
   --sidebar: oklch(0.13 0.025 265);
   --sidebar-foreground: oklch(0.94 0 0);
-  --sidebar-primary: oklch(0.78 0.1 280);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.867 0.164 88.7);
+  --sidebar-primary-foreground: oklch(0.16 0.005 90);
   --sidebar-accent: oklch(1 0 0 / 0.08);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 0.1);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar-ring: oklch(0.867 0.164 88.7);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  color-scheme: dark;
+
+  --background: oklch(0.17 0.004 90);
+  --foreground: oklch(0.97 0.002 90);
+  --card: oklch(0.215 0.005 90);
+  --card-foreground: oklch(0.97 0.002 90);
+  --popover: oklch(0.215 0.005 90);
+  --popover-foreground: oklch(0.97 0.002 90);
+  --primary: oklch(0.867 0.164 88.7);
+  --primary-foreground: oklch(0.17 0.004 90);
+  --secondary: oklch(0.27 0.005 90);
+  --secondary-foreground: oklch(0.97 0.002 90);
+  --muted: oklch(0.27 0.005 90);
+  --muted-foreground: oklch(0.72 0.006 90);
+  --accent: oklch(0.27 0.005 90);
+  --accent-foreground: oklch(0.97 0.002 90);
+  /* On a dark ground the brand yellow is already 12.71:1, so ink == brand. */
+  --accent-ink: oklch(0.867 0.164 88.7);
+  /* A pure FILL. At L=0.68 a near-white label on it measures only 3.01:1;
+     at 0.56 the label reaches 4.91:1 and the fill still holds 3.73:1 on the
+     background. Destructive TEXT uses `--status-bad-ink`, not this. */
+  --destructive: oklch(0.56 0.19 25);
+  --destructive-foreground: oklch(0.985 0.002 90);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(0.51 0.02 90);
+  --ring: oklch(0.867 0.164 88.7);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+
+  --status-ok: oklch(0.72 0.16 155);
+  --status-warn: oklch(0.76 0.16 58);
+  --status-bad: oklch(0.7 0.19 25);
+  --status-info: oklch(0.72 0.14 250);
+  --status-ok-ink: oklch(0.8 0.16 150);
+  --status-warn-ink: oklch(0.822 0.116 55);
+  --status-bad-ink: oklch(0.754 0.092 25);
+  --status-info-ink: oklch(0.8 0.104 250);
 }
 
 @theme inline {
@@ -85,7 +142,9 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-accent-ink: var(--accent-ink);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -94,6 +153,15 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-status-ok: var(--status-ok);
+  --color-status-warn: var(--status-warn);
+  --color-status-bad: var(--status-bad);
+  --color-status-info: var(--status-info);
+  --color-status-idle: var(--status-idle);
+  --color-status-ok-ink: var(--status-ok-ink);
+  --color-status-warn-ink: var(--status-warn-ink);
+  --color-status-bad-ink: var(--status-bad-ink);
+  --color-status-info-ink: var(--status-info-ink);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
