@@ -7,8 +7,10 @@
   "sidebar": {
     "selectACar": "Select a car",
     "signOut": "Sign out",
+    "language": "Language",
     "langEn": "EN",
     "langPl": "PL",
+    "theme": "Theme",
     "themeLight": "Light",
     "themeDark": "Dark",
     "themeSystem": "System",

@@ -59,10 +59,11 @@ const theme = Astro.locals.theme;
     <p class="mb-3 truncate text-xs text-sidebar-muted-foreground">{userEmail}</p>
 
     <!-- Language toggle -->
-    <div class="mb-3 flex gap-1">
+    <div class="mb-3 flex gap-1" role="group" aria-label={t("sidebar.language")}>
       <form method="POST" action="/api/lang/en">
         <button
           type="submit"
+          aria-pressed={lang === "en"}
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             lang === "en"
@@ -76,6 +77,7 @@ const theme = Astro.locals.theme;
       <form method="POST" action="/api/lang/pl">
         <button
           type="submit"
+          aria-pressed={lang === "pl"}
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             lang === "pl"
@@ -89,11 +91,15 @@ const theme = Astro.locals.theme;
     </div>
 
     <!-- Theme toggle. No onClick and no preventDefault: a plain form POST
-         full-reloads, which is how the locale switch already works. -->
-    <div class="mb-3 flex gap-1">
+         full-reloads, which is how the locale switch already works.
+
+         aria-pressed carries the active state: the visual signal is a
+         background wash plus a hue shift, which is colour alone. -->
+    <div class="mb-3 flex gap-1" role="group" aria-label={t("sidebar.theme")}>
       <form method="POST" action="/api/theme/light">
         <button
           type="submit"
+          aria-pressed={theme === "light"}
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             theme === "light"
@@ -107,6 +113,7 @@ const theme = Astro.locals.theme;
       <form method="POST" action="/api/theme/dark">
         <button
           type="submit"
+          aria-pressed={theme === "dark"}
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             theme === "dark"
@@ -120,6 +127,7 @@ const theme = Astro.locals.theme;
       <form method="POST" action="/api/theme/system">
         <button
           type="submit"
+          aria-pressed={theme === "system"}
           class:list={[
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             theme === "system"

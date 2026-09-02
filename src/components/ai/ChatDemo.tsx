@@ -7,6 +7,7 @@ import { useStreamingText } from "@/components/hooks/useStreamingText";
 import { StreamingText } from "./StreamingText";
 import { Textarea } from "@/components/ui/textarea";
 import { surface } from "@/lib/theme";
+import { cn } from "@/lib/utils";
 
 interface ChatDemoProps {
   lang: Locale;
@@ -84,7 +85,7 @@ function ChatDemoContent() {
       {fetchError && <p className="text-sm text-destructive">{fetchError}</p>}
 
       {hasResponse && (
-        <div className={surface({ level: "row" }) + " p-4"}>
+        <div className={cn(surface({ level: "row" }), "p-4")}>
           <p className="mb-2 text-xs tracking-wide text-muted-foreground uppercase">{t("aiChat.assistant")}</p>
           <StreamingText text={text} isDone={isDone} error={error} />
         </div>

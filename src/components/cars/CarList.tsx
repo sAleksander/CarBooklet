@@ -155,7 +155,10 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
             const isSelected = car.id === selectedCarId;
             const isEditing = car.id === editingCarId;
             return (
-              <li key={car.id} className={`rounded-lg border p-4 ${isSelected ? "border-primary bg-primary/5" : ""}`}>
+              <li
+                key={car.id}
+                className={`rounded-lg border p-4 ${isSelected ? "border-accent-ink bg-primary/5" : ""}`}
+              >
                 <div className="flex items-start justify-between gap-2">
                   <div>
                     <p className="font-semibold">
@@ -169,7 +172,9 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
                       <p className="text-sm text-muted-foreground">{car.registration_number}</p>
                     )}
                     {isSelected && (
-                      <span className="mt-1 inline-block text-xs font-medium text-primary">{t("cars.selected")}</span>
+                      <span className="mt-1 inline-block text-xs font-medium text-accent-ink">
+                        {t("cars.selected")}
+                      </span>
                     )}
                   </div>
                   <div className="flex shrink-0 gap-2">

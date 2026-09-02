@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { LOCALES } from "@/i18n/config";
+import { safeReferer } from "@/lib/safe-redirect";
 
 export const POST: APIRoute = (context) => {
   const { locale } = context.params;
@@ -15,6 +16,6 @@ export const POST: APIRoute = (context) => {
     maxAge: 31536000,
   });
 
-  const referer = context.request.headers.get("Referer") ?? "/dashboard";
-  return context.redirect(referer, 302);
+  // Same-origin guarded: a raw Referer in Location is an open redirect.
+  return context.redirect(safeReferer(context.request, context.url), 302);
 };

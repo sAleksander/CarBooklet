@@ -84,8 +84,14 @@
   --status-warn-ink: oklch(0.52 0.128 55);
   --status-bad-ink: oklch(0.52 0.21 25);
   --status-info-ink: oklch(0.496 0.14 250);
-  /* Aliases a token that already has a `.dark` value, so it needs no override. */
-  --status-idle: var(--muted-foreground);
+  /* Mirrors `--muted-foreground`. Written out in both blocks rather than left
+     as a bare `var()` alias in `:root`: the alias resolves correctly only
+     while `.dark` sits on the SAME element as `:root` (i.e. on <html>), and
+     `@custom-variant dark (&:is(.dark *))` would happily support the class on
+     a subtree. Moving it to <body> would leave every `dark:` utility working
+     while this token silently froze at its light value. Two-step rule, no
+     exceptions. */
+  --status-idle: oklch(0.5 0.008 90);
 
   /* The sidebar follows the theme. In light mode it is a warm-grey rail with a
      WHITE active chip: brand yellow is 1.46:1 on white and can never be the
@@ -147,6 +153,8 @@
   --status-warn-ink: oklch(0.822 0.116 55);
   --status-bad-ink: oklch(0.754 0.092 25);
   --status-info-ink: oklch(0.8 0.104 250);
+  /* Mirrors this block's `--muted-foreground`; see the note in `:root`. */
+  --status-idle: oklch(0.72 0.006 90);
 
   /* Neutral near-black, not the starter's navy #040711. */
   --sidebar: oklch(0.13 0.004 90);

@@ -89,10 +89,11 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
           <p className="mb-3 truncate text-xs text-sidebar-muted-foreground">{userEmail}</p>
 
           {/* Language toggle */}
-          <div className="mb-3 flex gap-1">
+          <div className="mb-3 flex gap-1" role="group" aria-label={t("sidebar.language")}>
             <form method="POST" action="/api/lang/en">
               <button
                 type="submit"
+                aria-pressed={lang === "en"}
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   lang === "en"
@@ -106,6 +107,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
             <form method="POST" action="/api/lang/pl">
               <button
                 type="submit"
+                aria-pressed={lang === "pl"}
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   lang === "pl"
@@ -119,10 +121,11 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
           </div>
 
           {/* Theme toggle. Byte-for-byte counterpart of AppSidebar.astro's. */}
-          <div className="mb-3 flex gap-1">
+          <div className="mb-3 flex gap-1" role="group" aria-label={t("sidebar.theme")}>
             <form method="POST" action="/api/theme/light">
               <button
                 type="submit"
+                aria-pressed={theme === "light"}
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   theme === "light"
@@ -136,6 +139,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
             <form method="POST" action="/api/theme/dark">
               <button
                 type="submit"
+                aria-pressed={theme === "dark"}
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   theme === "dark"
@@ -149,6 +153,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
             <form method="POST" action="/api/theme/system">
               <button
                 type="submit"
+                aria-pressed={theme === "system"}
                 className={cn(
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   theme === "system"

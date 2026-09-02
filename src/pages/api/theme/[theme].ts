@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { isTheme } from "@/lib/theme-preference";
+import { safeReferer } from "@/lib/safe-redirect";
 
 // Mirrors src/pages/api/lang/[locale].ts: a no-JS POST target for a
 // <form> control, which full-reloads and so sidesteps any client re-init
@@ -23,6 +24,6 @@ export const POST: APIRoute = (context) => {
     return new Response("Not found", { status: 404 });
   }
 
-  const referer = context.request.headers.get("Referer") ?? "/dashboard";
-  return context.redirect(referer, 302);
+  // Same-origin guarded: a raw Referer in Location is an open redirect.
+  return context.redirect(safeReferer(context.request, context.url), 302);
 };

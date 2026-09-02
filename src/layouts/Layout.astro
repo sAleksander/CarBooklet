@@ -39,12 +39,28 @@ const themeClass = Astro.locals.theme === "system" ? undefined : Astro.locals.th
 
         It acts ONLY when <html> carries no class, which is precisely the
         "system" case, because Layout.astro is the sole writer of that attribute.
-        It never reads the cookie, so httpOnly survives intact. */
+        It never reads the cookie, so httpOnly survives intact.
+
+        ACCEPTED LIMITATION: this is the one part of the theme rail that is not
+        no-JS-safe. Everything else — the toggle, the cookie, the class on
+        <html> — is a form POST and a server render. With JavaScript disabled a
+        dark-OS visitor who has stated no preference gets light, and since
+        DEFAULT_THEME is "system" that is the path every new visitor takes.
+        Closing it would mean an `@media (prefers-color-scheme: dark)` block in
+        global.css scoped to `html:not(.light):not(.dark)`, duplicating the
+        entire `.dark` token set and giving the two-step token rule a third
+        place to stay in sync. Judged not worth that cost for the audience it
+        serves; revisit if the token set ever stops changing. */
     }
     <script is:inline>
       (function () {
         var el = document.documentElement;
-        if (el.className) return;
+        // Test for the theme classes specifically, not for "any class at all":
+        // anything else that ever lands on <html> (a <ClientRouter /> view
+        // transition class, a no-js or font-loading flag) would otherwise make
+        // this silently stop resolving the system preference, pinning every
+        // "system" user to light.
+        if (el.classList.contains("light") || el.classList.contains("dark")) return;
         var mq = window.matchMedia("(prefers-color-scheme: dark)");
         var apply = function (m) {
           el.classList.toggle("dark", m.matches);
