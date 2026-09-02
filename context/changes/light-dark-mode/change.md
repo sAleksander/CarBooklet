@@ -220,3 +220,32 @@ Verified pairs (rail / active chip):
 `text-sidebar-foreground` for a "flat black section, identical in both modes". Those
 tokens are now theme-following, so that plan no longer holds. Phase 6 must either let
 the hero follow the theme too, or give it its own always-black values. Decide there.
+
+### Phase 6
+
+- **The landing hero follows the theme** rather than being flat black in both modes.
+  The plan's approach reused `bg-sidebar` / `text-sidebar-foreground` for an
+  always-black section; that stopped being possible once the sidebar became
+  theme-following, and the user chose consistency over an always-black brand
+  statement. The hero is `bg-background` / `text-foreground` with the yellow CTA
+  carrying the brand. The secondary CTA uses `border-input`, not `border-border`:
+  it is an interactive control, so its outline needs 3:1 (WCAG 1.4.11), which the
+  decorative hairline does not meet.
+- **Banner keeps its scoped CSS and references the custom properties directly**, so
+  all three variants follow the theme with no `.dark` block in the component.
+  Measured on the rendered page (10% wash over the page background):
+
+  | variant | light ink / border | dark ink / border |
+  | ------- | -----------------: | ----------------: |
+  | info    |        5.47 / 4.38 |       6.15 / 4.62 |
+  | warning |        5.20 / 3.22 |       6.11 / 4.87 |
+  | error   |        5.52 / 3.93 |       5.39 / 4.22 |
+
+  Thresholds 4.5 for ink, 3.0 for the border. All pass.
+
+- **`/` redirects signed-in users to `/dashboard`**, so the landing page can only be
+  seen signed out; it was verified through a clean Playwright context rather than the
+  logged-in browser session.
+- **Astro excludes `_`-prefixed files from routing.** Phase 1's `__token_probe.astro`
+  was therefore never a route — it worked only because Tailwind's content scan is
+  independent of routing. A probe page that must actually be served needs a normal name.

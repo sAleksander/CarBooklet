@@ -12,6 +12,15 @@ const { variant = "info" } = Astro.props;
   <slot />
 </div>
 
+<!--
+  The app's only plain-CSS component, so it is the one file no utility sweep and no
+  grep over class attributes will ever reach. It therefore references the custom
+  properties directly. This is the same three-part recipe the utilities express as
+  `border-status-*` / `text-status-*-ink` / `bg-status-*\/10`, written longhand:
+  the bare token is the BORDER (>=3:1), the `-ink` token is the TEXT (>=4.5:1), and
+  the surface is a 10% mix of the bare token. Because they are `var()` references,
+  all three variants follow the theme with no `.dark` block here.
+-->
 <style>
   .banner {
     padding: 0.75rem 1rem;
@@ -25,18 +34,18 @@ const { variant = "info" } = Astro.props;
     font-weight: 600;
   }
   .banner--info {
-    background: #dbeafe;
-    color: #1e3a8a;
-    border-color: #3b82f6;
+    background: color-mix(in oklab, var(--status-info) 10%, transparent);
+    color: var(--status-info-ink);
+    border-color: var(--status-info);
   }
   .banner--warning {
-    background: #fef3c7;
-    color: #78350f;
-    border-color: #f59e0b;
+    background: color-mix(in oklab, var(--status-warn) 10%, transparent);
+    color: var(--status-warn-ink);
+    border-color: var(--status-warn);
   }
   .banner--error {
-    background: #fee2e2;
-    color: #7f1d1d;
-    border-color: #dc2626;
+    background: color-mix(in oklab, var(--status-bad) 10%, transparent);
+    color: var(--status-bad-ink);
+    border-color: var(--status-bad);
   }
 </style>

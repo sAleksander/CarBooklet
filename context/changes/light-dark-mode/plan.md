@@ -989,35 +989,35 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 5.1 Linting passes: `npm run lint`
-- [x] 5.2 Type checking passes: `npm run typecheck`
-- [x] 5.3 Unit tests pass: `npm test`
-- [x] 5.4 Production build succeeds: `npm run build`
-- [x] 5.5 Full E2E suite passes, including the AI specs: `npm run test:e2e`
+- [x] 5.1 Linting passes: `npm run lint` — 9aa44bb
+- [x] 5.2 Type checking passes: `npm run typecheck` — 9aa44bb
+- [x] 5.3 Unit tests pass: `npm test` — 9aa44bb
+- [x] 5.4 Production build succeeds: `npm run build` — 9aa44bb
+- [x] 5.5 Full E2E suite passes, including the AI specs: `npm run test:e2e` — 9aa44bb
 
 #### Manual
 
-- [x] 5.6 All four entry types list, detail, create, and edit correctly in both modes
-- [x] 5.7 The active tab underline is visible in light mode
-- [x] 5.8 Inspection Passed/Failed labels are legible at text contrast in both modes
-- [x] 5.9 AI chat input, streaming response, and cursor render correctly in both modes
+- [x] 5.6 All four entry types list, detail, create, and edit correctly in both modes — 9aa44bb
+- [x] 5.7 The active tab underline is visible in light mode — 9aa44bb
+- [x] 5.8 Inspection Passed/Failed labels are legible at text contrast in both modes — 9aa44bb
+- [x] 5.9 AI chat input, streaming response, and cursor render correctly in both modes — 9aa44bb
 
 ### Phase 6: Landing & Banner
 
 #### Automated
 
-- [ ] 6.1 Linting passes: `npm run lint`
-- [ ] 6.2 Type checking passes: `npm run typecheck`
-- [ ] 6.3 Unit tests pass: `npm test`
-- [ ] 6.4 Production build succeeds: `npm run build`
-- [ ] 6.5 No raw hex remains outside `global.css`
-- [ ] 6.6 No `rgba(` remains in `src`
+- [x] 6.1 Linting passes: `npm run lint`
+- [x] 6.2 Type checking passes: `npm run typecheck`
+- [x] 6.3 Unit tests pass: `npm test`
+- [x] 6.4 Production build succeeds: `npm run build`
+- [x] 6.5 No raw hex remains outside `global.css`
+- [x] 6.6 No `rgba(` remains in `src`
 
 #### Manual
 
-- [ ] 6.7 The landing page renders identically in both modes and reads as deliberate
-- [ ] 6.8 All three Banner variants are legible in both modes at 4.5:1
-- [ ] 6.9 Banner renders correctly on every page when `missingConfigs` is non-empty
+- [x] 6.7 The landing page renders identically in both modes and reads as deliberate
+- [x] 6.8 All three Banner variants are legible in both modes at 4.5:1
+- [x] 6.9 Banner renders correctly on every page when `missingConfigs` is non-empty
 
 ### Phase 7: System Preference & the Gate
 
