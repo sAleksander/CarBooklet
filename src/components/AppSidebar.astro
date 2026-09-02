@@ -12,6 +12,7 @@ interface Props {
 const { pathname, userEmail, selectedCar } = Astro.props;
 const t = getT(Astro.locals.lang);
 const lang = Astro.locals.lang;
+const theme = Astro.locals.theme;
 ---
 
 <aside class="flex h-full w-60 flex-shrink-0 flex-col border-r border-sidebar-border bg-sidebar">
@@ -83,6 +84,37 @@ const lang = Astro.locals.lang;
           ].join(" ")}
         >
           {t("sidebar.langPl")}
+        </button>
+      </form>
+    </div>
+
+    <!-- Theme toggle. No onClick and no preventDefault: a plain form POST
+         full-reloads, which is how the locale switch already works. -->
+    <div class="mb-3 flex gap-1">
+      <form method="POST" action="/api/theme/light">
+        <button
+          type="submit"
+          class:list={[
+            "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+            theme === "light"
+              ? "bg-sidebar-accent text-sidebar-primary"
+              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+          ].join(" ")}
+        >
+          {t("sidebar.themeLight")}
+        </button>
+      </form>
+      <form method="POST" action="/api/theme/dark">
+        <button
+          type="submit"
+          class:list={[
+            "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+            theme === "dark"
+              ? "bg-sidebar-accent text-sidebar-primary"
+              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+          ].join(" ")}
+        >
+          {t("sidebar.themeDark")}
         </button>
       </form>
     </div>

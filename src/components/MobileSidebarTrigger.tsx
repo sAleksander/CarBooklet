@@ -9,12 +9,14 @@ import { cn } from "@/lib/utils";
 import { createClientI18n } from "@/i18n/client";
 import type { Car } from "@/types";
 import type { Locale } from "@/i18n/config";
+import type { ThemePreference } from "@/lib/theme-preference";
 
 interface Props {
   pathname: string;
   userEmail: string;
   selectedCar?: Car;
   lang: Locale;
+  theme: ThemePreference;
 }
 
 interface InnerProps {
@@ -22,9 +24,10 @@ interface InnerProps {
   userEmail: string;
   selectedCar?: Car;
   lang: Locale;
+  theme: ThemePreference;
 }
 
-function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerProps) {
+function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }: InnerProps) {
   const { t } = useTranslation();
 
   return (
@@ -115,6 +118,36 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
             </form>
           </div>
 
+          {/* Theme toggle. Byte-for-byte counterpart of AppSidebar.astro's. */}
+          <div className="mb-3 flex gap-1">
+            <form method="POST" action="/api/theme/light">
+              <button
+                type="submit"
+                className={cn(
+                  "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+                  theme === "light"
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                )}
+              >
+                {t("sidebar.themeLight")}
+              </button>
+            </form>
+            <form method="POST" action="/api/theme/dark">
+              <button
+                type="submit"
+                className={cn(
+                  "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+                  theme === "dark"
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                )}
+              >
+                {t("sidebar.themeDark")}
+              </button>
+            </form>
+          </div>
+
           <form method="POST" action="/api/auth/signout">
             <button
               type="submit"
@@ -129,11 +162,17 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang }: InnerP
   );
 }
 
-export function MobileSidebarTrigger({ pathname, userEmail, selectedCar, lang }: Props) {
+export function MobileSidebarTrigger({ pathname, userEmail, selectedCar, lang, theme }: Props) {
   const [i18n] = useState(() => createClientI18n(lang));
   return (
     <I18nextProvider i18n={i18n}>
-      <MobileSidebarContent pathname={pathname} userEmail={userEmail} selectedCar={selectedCar} lang={lang} />
+      <MobileSidebarContent
+        pathname={pathname}
+        userEmail={userEmail}
+        selectedCar={selectedCar}
+        lang={lang}
+        theme={theme}
+      />
     </I18nextProvider>
   );
 }

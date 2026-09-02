@@ -2,6 +2,7 @@ import { defineMiddleware } from "astro:middleware";
 import { createClient } from "@/lib/supabase";
 import { logSsrError } from "@/lib/api-errors";
 import { LOCALES, DEFAULT_LOCALE } from "@/i18n/config";
+import { DEFAULT_THEME, isTheme } from "@/lib/theme-preference";
 
 const PROTECTED_ROUTES = ["/dashboard", "/cars", "/ai-chat", "/entries"];
 
@@ -39,6 +40,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   context.locals.lang = LOCALES.includes(rawLang as (typeof LOCALES)[number])
     ? (rawLang as (typeof LOCALES)[number])
     : DEFAULT_LOCALE;
+
+  // Same placement rule as `lang` above: outside the Supabase if/else and before
+  // the PROTECTED_ROUTES gate, because App.Locals.theme is non-optional.
+  // Resolved here so the palette is decided before a single byte of HTML exists.
+  const rawTheme = context.cookies.get("theme")?.value;
+  context.locals.theme = isTheme(rawTheme) ? rawTheme : DEFAULT_THEME;
 
   if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
     if (!context.locals.user) {

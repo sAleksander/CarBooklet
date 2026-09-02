@@ -920,34 +920,34 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Type checking passes: `npm run typecheck`
-- [x] 1.3 Unit tests pass, including the new mapper test: `npm test`
-- [x] 1.4 Production build succeeds: `npm run build`
-- [x] 1.5 No importers were missed for the deleted files
+- [x] 1.1 Linting passes: `npm run lint` — e9a0eb7
+- [x] 1.2 Type checking passes: `npm run typecheck` — e9a0eb7
+- [x] 1.3 Unit tests pass, including the new mapper test: `npm test` — e9a0eb7
+- [x] 1.4 Production build succeeds: `npm run build` — e9a0eb7
+- [x] 1.5 No importers were missed for the deleted files — e9a0eb7
 
 #### Manual
 
-- [x] 1.6 Every route renders byte-identically except the sidebar's now-yellow active indicator
-- [x] 1.7 The sidebar utility rename produced no visual change whatsoever
-- [x] 1.8 New `--color-status-*` / `--color-accent-ink` utilities resolve to real values in DevTools
+- [x] 1.6 Every route renders byte-identically except the sidebar's now-yellow active indicator — e9a0eb7
+- [x] 1.7 The sidebar utility rename produced no visual change whatsoever — e9a0eb7
+- [x] 1.8 New `--color-status-*` / `--color-accent-ink` utilities resolve to real values in DevTools — e9a0eb7
 
 ### Phase 2: The Theme Rail (Server-Only)
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Type checking passes: `npm run typecheck`
-- [ ] 2.3 Unit tests pass: `npm test`
-- [ ] 2.4 Production build succeeds: `npm run build`
-- [ ] 2.5 E2E suite passes with the pinned theme cookie: `npm run test:e2e`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Type checking passes: `npm run typecheck`
+- [x] 2.3 Unit tests pass: `npm test`
+- [x] 2.4 Production build succeeds: `npm run build`
+- [x] 2.5 E2E suite passes with the pinned theme cookie: `npm run test:e2e`
 
 #### Manual
 
-- [ ] 2.6 With no cookie, the app renders exactly as before (dark)
-- [ ] 2.7 Clicking Light sets the cookie and `<html class="light">` is in view-source
-- [ ] 2.8 The preference survives a hard refresh and a new tab
-- [ ] 2.9 The class is in the first HTML response; no flash on a throttled connection
+- [x] 2.6 With no cookie, the app renders exactly as before (dark)
+- [x] 2.7 Clicking Light sets the cookie and `<html class="light">` is in view-source
+- [x] 2.8 The preference survives a hard refresh and a new tab
+- [x] 2.9 The class is in the first HTML response; no flash on a throttled connection
 
 ### Phase 3: App Shell & Auth
 

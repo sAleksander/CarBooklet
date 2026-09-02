@@ -119,3 +119,51 @@ tweaks are safe — but re-verify if any lightness is changed.
   those three files are removed?
 - Migration sequencing: is this one sweep, or tokens-first then per-route
   conversion? 31 files is large enough that a staged order probably matters.
+
+## Implementation notes
+
+### Phase 1 (e9a0eb7)
+
+- **Dark `--input` is `oklch(0.510 0.020 90)`, not the planned `0.486`.** The plan's
+  table (`plan.md:838`) records 3.00 against a 3.0 threshold, but its own prose says
+  the grounds are `--card`. Against `--card` the planned value measures **2.75** — the
+  3.00 came from `--background`. Phase 3 puts auth inputs inside `bg-card` panels and
+  asserts a 3:1 border, so the planned value would have shipped a known WCAG 1.4.11
+  failure. 0.510 gives 3.05 on `--card` and 3.33 on `--background`.
+  `--muted-foreground` has the same ground ambiguity but clears 4.5 either way
+  (6.00/5.83 light, 7.06/7.71 dark), so it was left as planned.
+- **The sidebar rename was not entirely byte-identical.** The 25 `var()` sites were.
+  The car switcher also carried four raw `white` literals that Phase 7's gate would
+  reject, so they moved onto sidebar tokens now: `border-white/10` →
+  `border-sidebar-border` (identical), `bg-white/5` → `bg-sidebar-accent/60` (4.8% vs
+  5%), `hover:bg-white/10` → `hover:bg-sidebar-accent` (8% vs 10%).
+- **`MobileSidebarTrigger.tsx:33`'s `text-white/80` is deliberately deferred to Phase 3** —
+  it sits on the mobile top bar, not inside the sidebar, so it belongs with its sibling
+  at `AppLayout.astro:35`.
+- **`--sidebar` keeps its navy tint** (`oklch(0.13 0.025 265)`), untouched because Phase 1
+  promises no visual change. Phase 6 reuses `bg-sidebar` for a "flat black" hero, so the
+  tint should be revisited there.
+- **`/cars` is missing from the plan's final route inventory** (`plan.md:880`). The page
+  and `components/cars/` are already fully tokenized (zero literals), but they render on
+  `bg-cosmic`, so the "My Cars" heading is currently 1.07:1 — a pre-existing defect
+  (1.09:1 before this change) that Phase 3 fixes by deleting `bg-cosmic`. Add `/cars` to
+  the closing two-mode walkthrough.
+- **`research.md:205`'s fence was retagged `astro` → `ts`.** It holds a bare frontmatter
+  fragment, which Astro's parser rejects; lint-staged runs `prettier --write` over staged
+  `*.md` and the pre-commit hook failed on it.
+
+### Phase 2
+
+- **The dev server wedges after edits that change the import graph.** Adding
+  `@/lib/theme-preference` to `src/middleware.ts` made Vite re-optimize `deps_ssr`
+  ("Re-optimizing dependencies because vite config has changed" → "optimized
+  dependencies changed. reloading"), which briefly loads two copies of React and
+  throws `Invalid hook call` / `Cannot read properties of null (reading 'useState')`
+  in `SignInForm`. The server then serves **empty 200s** until restarted. Not caused
+  by this change and self-healing on a fresh start — but expect it again in Phases 3–6,
+  and restart `npm run dev` rather than debugging the page.
+- **`class:list` rather than `class` on `<html>`**, because `astro/prefer-class-list-directive`
+  warns otherwise. It emits no attribute when the value is `undefined`, so Phase 7's
+  "act only when the class is absent" invariant is unaffected.
+- The four `Layout.astro`-only routes correctly carry **no** theme toggle, per the plan's
+  "What We're NOT Doing" — verified in the served HTML.

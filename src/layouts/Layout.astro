@@ -8,10 +8,20 @@ interface Props {
 }
 
 const { title = "10x Astro Starter" } = Astro.props;
+
+// The resolved theme, straight from the cookie via src/middleware.ts, so the
+// correct palette is in the FIRST byte of HTML — no flash, no JavaScript.
+// "system" means no stated preference, so no class is emitted and the client
+// decides.
+//
+// INVARIANT: this is the ONLY place <html>'s class attribute is written.
+// Phase 7's inline script relies on it: it acts only when the class is absent,
+// which is exactly the "system" case. Adding another writer breaks that.
+const themeClass = Astro.locals.theme === "system" ? undefined : Astro.locals.theme;
 ---
 
 <!doctype html>
-<html lang={Astro.locals.lang}>
+<html lang={Astro.locals.lang} class:list={[themeClass]}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />

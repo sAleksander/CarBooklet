@@ -164,7 +164,12 @@ export const test = base.extend<AppFixtures>({
     // Every accessible name in this app comes from i18n (`t()`), and the locale
     // is read from a `lang` cookie (src/middleware.ts). Pin it, or name-based
     // locators break the day someone's browser carries `lang=pl`.
-    await context.addCookies([{ name: "lang", value: "en", url: baseURL }]);
+    // Pin the theme too: it changes rendered classes the same way, and keeps
+    // runs independent of Chromium's `prefers-color-scheme`.
+    await context.addCookies([
+      { name: "lang", value: "en", url: baseURL },
+      { name: "theme", value: "dark", url: baseURL },
+    ]);
 
     await page.goto("/auth/signin");
 

@@ -57,7 +57,13 @@ setup("authenticate the shared user", async ({ page, context, baseURL }) => {
   // Every accessible name in this app comes from i18n and the locale is a
   // `lang` cookie — a storageState carrying `lang=pl` would break every
   // English name-based locator that loads it.
-  await context.addCookies([{ name: "lang", value: "en", url: baseURL }]);
+  // Pin the theme for the same reason: it changes rendered classes, and once
+  // the inline script starts consulting `prefers-color-scheme` an unpinned run
+  // would depend on Chromium's OS setting.
+  await context.addCookies([
+    { name: "lang", value: "en", url: baseURL },
+    { name: "theme", value: "dark", url: baseURL },
+  ]);
 
   await page.goto("/auth/signin");
 

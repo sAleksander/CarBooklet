@@ -31,6 +31,7 @@ const userEmail = Astro.locals.user?.email ?? "";
           userEmail={userEmail}
           selectedCar={selectedCar}
           lang={Astro.locals.lang}
+          theme={Astro.locals.theme}
         />
         {title && <span class="text-sm font-medium text-white/80">{title}</span>}
       </header>
