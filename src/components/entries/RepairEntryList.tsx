@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { RepairEntry } from "@/types";
+import { entryRow } from "@/lib/theme";
 
 interface RepairEntryListProps {
   entries: RepairEntry[];
@@ -16,10 +17,7 @@ export function RepairEntryList({ entries }: RepairEntryListProps) {
     <ul className="space-y-3">
       {entries.map((entry) => (
         <li key={entry.id}>
-          <a
-            href={`/entries/${entry.entry_type}/${entry.id}`}
-            className="block rounded-lg border border-white/10 bg-white/5 p-4 text-white transition-colors hover:bg-white/10"
-          >
+          <a href={`/entries/${entry.entry_type}/${entry.id}`} className={entryRow()}>
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (

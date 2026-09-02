@@ -8,7 +8,7 @@ export function StreamingText({ text, isDone, error }: Props) {
   if (!text && !error && !isDone) return null;
 
   return (
-    <div className="text-white/90">
+    <div className="text-foreground">
       <div className="whitespace-pre-wrap">
         {text}
         {!isDone && !error && <span className="inline-block animate-pulse">▋</span>}

@@ -22,11 +22,11 @@ export function InsuranceEntries({ initialEntries, carId }: InsuranceEntriesProp
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("entries.log.insurance")}</h2>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">{t("entries.log.insurance")}</h2>
         <InsuranceEntryForm key={formKey} carId={carId} onSuccess={handleSuccess} />
       </div>
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("entries.history")}</h2>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">{t("entries.history")}</h2>
         <InsuranceEntryList entries={entries} />
       </div>
     </div>

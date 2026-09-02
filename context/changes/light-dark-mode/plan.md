@@ -972,35 +972,35 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 4.1 Linting passes: `npm run lint`
-- [x] 4.2 Type checking passes: `npm run typecheck`
-- [x] 4.3 Unit tests pass: `npm test`
-- [x] 4.4 Production build succeeds: `npm run build`
-- [x] 4.5 No color literals remain in `DeadlineCard.astro`
+- [x] 4.1 Linting passes: `npm run lint` — 76d49c6
+- [x] 4.2 Type checking passes: `npm run typecheck` — 76d49c6
+- [x] 4.3 Unit tests pass: `npm test` — 76d49c6
+- [x] 4.4 Production build succeeds: `npm run build` — 76d49c6
+- [x] 4.5 No color literals remain in `DeadlineCard.astro` — 76d49c6
 
 #### Manual
 
-- [x] 4.6 All five DeadlineStatus states render distinctly in both modes; idle states read as recessed
-- [x] 4.7 The warn state is distinguishable from brand yellow with a yellow CTA on screen
-- [x] 4.8 Status dots are discernible against their wash in light mode
-- [x] 4.9 The dashboard label/value hierarchy still reads clearly after flattening
+- [x] 4.6 All five DeadlineStatus states render distinctly in both modes; idle states read as recessed — 76d49c6
+- [x] 4.7 The warn state is distinguishable from brand yellow with a yellow CTA on screen — 76d49c6
+- [x] 4.8 Status dots are discernible against their wash in light mode — 76d49c6
+- [x] 4.9 The dashboard label/value hierarchy still reads clearly after flattening — 76d49c6
 
 ### Phase 5: Entries & Chat
 
 #### Automated
 
-- [ ] 5.1 Linting passes: `npm run lint`
-- [ ] 5.2 Type checking passes: `npm run typecheck`
-- [ ] 5.3 Unit tests pass: `npm test`
-- [ ] 5.4 Production build succeeds: `npm run build`
-- [ ] 5.5 Full E2E suite passes, including the AI specs: `npm run test:e2e`
+- [x] 5.1 Linting passes: `npm run lint`
+- [x] 5.2 Type checking passes: `npm run typecheck`
+- [x] 5.3 Unit tests pass: `npm test`
+- [x] 5.4 Production build succeeds: `npm run build`
+- [x] 5.5 Full E2E suite passes, including the AI specs: `npm run test:e2e`
 
 #### Manual
 
-- [ ] 5.6 All four entry types list, detail, create, and edit correctly in both modes
-- [ ] 5.7 The active tab underline is visible in light mode
-- [ ] 5.8 Inspection Passed/Failed labels are legible at text contrast in both modes
-- [ ] 5.9 AI chat input, streaming response, and cursor render correctly in both modes
+- [x] 5.6 All four entry types list, detail, create, and edit correctly in both modes
+- [x] 5.7 The active tab underline is visible in light mode
+- [x] 5.8 Inspection Passed/Failed labels are legible at text contrast in both modes
+- [x] 5.9 AI chat input, streaming response, and cursor render correctly in both modes
 
 ### Phase 6: Landing & Banner
 

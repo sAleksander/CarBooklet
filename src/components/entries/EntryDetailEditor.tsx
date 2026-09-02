@@ -128,7 +128,7 @@ function EntryDetailEditorContent({ entry, children }: EntryDetailEditorProps) {
       {!editing ? (
         <>
           {children}
-          <hr className="mt-6 border-white/10" />
+          <hr className="mt-6 border-border" />
           <div className="mt-4 flex gap-2">
             <Button
               onClick={() => {

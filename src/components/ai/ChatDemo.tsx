@@ -5,6 +5,8 @@ import type { Locale } from "@/i18n/config";
 import { Button } from "@/components/ui/button";
 import { useStreamingText } from "@/components/hooks/useStreamingText";
 import { StreamingText } from "./StreamingText";
+import { Textarea } from "@/components/ui/textarea";
+import { surface } from "@/lib/theme";
 
 interface ChatDemoProps {
   lang: Locale;
@@ -64,13 +66,13 @@ function ChatDemoContent() {
   return (
     <div className="space-y-4">
       <form onSubmit={handleSubmit} className="space-y-3">
-        <textarea
+        <Textarea
           value={prompt}
           onChange={(e) => {
             setPrompt(e.target.value);
           }}
           placeholder={t("aiChat.placeholder")}
-          className="w-full resize-none rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/40 focus:ring-2 focus:ring-purple-400 focus:outline-none"
+          className="resize-none"
           rows={3}
           disabled={isSubmitting}
         />
@@ -82,8 +84,8 @@ function ChatDemoContent() {
       {fetchError && <p className="text-sm text-destructive">{fetchError}</p>}
 
       {hasResponse && (
-        <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-          <p className="mb-2 text-xs tracking-wide text-white/40 uppercase">{t("aiChat.assistant")}</p>
+        <div className={surface({ level: "row" }) + " p-4"}>
+          <p className="mb-2 text-xs tracking-wide text-muted-foreground uppercase">{t("aiChat.assistant")}</p>
           <StreamingText text={text} isDone={isDone} error={error} />
         </div>
       )}

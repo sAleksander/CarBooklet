@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { InspectionEntry } from "@/types";
+import { entryRow, statusText, toneForResult } from "@/lib/theme";
 
 interface InspectionEntryListProps {
   entries: InspectionEntry[];
@@ -16,10 +17,7 @@ export function InspectionEntryList({ entries }: InspectionEntryListProps) {
     <ul className="space-y-3">
       {entries.map((entry) => (
         <li key={entry.id}>
-          <a
-            href={`/entries/${entry.entry_type}/${entry.id}`}
-            className="block rounded-lg border border-white/10 bg-white/5 p-4 text-white transition-colors hover:bg-white/10"
-          >
+          <a href={`/entries/${entry.entry_type}/${entry.id}`} className={entryRow()}>
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
@@ -31,7 +29,7 @@ export function InspectionEntryList({ entries }: InspectionEntryListProps) {
             {entry.result && (
               <p className="text-sm">
                 <span className="font-medium text-muted-foreground">{t("entries.detail.result")}:</span>{" "}
-                <span className={entry.result === "Passed" ? "text-green-400" : "text-red-400"}>
+                <span className={statusText({ tone: toneForResult(entry.result) })}>
                   {entry.result === "Passed" ? t("entries.results.passed") : t("entries.results.failed")}
                 </span>
               </p>

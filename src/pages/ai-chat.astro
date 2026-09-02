@@ -5,6 +5,7 @@ import { getCarById } from "@/lib/services/cars";
 import { logSsrError } from "@/lib/api-errors";
 import { ChatDemo } from "@/components/ai/ChatDemo";
 import { getT } from "@/i18n/server";
+import { surface } from "@/lib/theme";
 
 const { selectedCarId, user, lang } = Astro.locals;
 const t = getT(lang);
@@ -37,13 +38,13 @@ if (car?.user_id !== user.id) {
 
 <AppLayout title={t("nav.aiChat")} selectedCar={car}>
   <div class="flex justify-center pt-4">
-    <div class="w-full max-w-2xl rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
-      <h1 class="mb-2 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
+    <div class:list={[surface({ level: "panel" }), "w-full max-w-2xl p-8"]}>
+      <h1 class="mb-2 text-2xl font-bold text-foreground">
         {car.brand}
         {car.model}
         — {t("nav.aiChat")}
       </h1>
-      <p class="mb-8 text-sm text-blue-100/60">{car.production_year}</p>
+      <p class="mb-8 text-sm text-muted-foreground">{car.production_year}</p>
       <ChatDemo lang={lang} client:load />
     </div>
   </div>

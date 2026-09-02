@@ -22,11 +22,11 @@ export function OilChangeEntries({ initialEntries, carId }: OilChangeEntriesProp
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("entries.log.oilChange")}</h2>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">{t("entries.log.oilChange")}</h2>
         <OilChangeEntryForm key={formKey} carId={carId} onSuccess={handleSuccess} />
       </div>
       <div>
-        <h2 className="mb-4 text-lg font-semibold text-white">{t("entries.history")}</h2>
+        <h2 className="mb-4 text-lg font-semibold text-foreground">{t("entries.history")}</h2>
         <OilChangeEntryList entries={entries} />
       </div>
     </div>

@@ -46,7 +46,7 @@ function EntriesTabsContent({
 
   return (
     <div>
-      <div className="mb-6 flex gap-1 border-b border-white/10">
+      <div className="mb-6 flex gap-1 border-b border-border">
         {TABS.map((tab) => (
           <button
             key={tab.id}
@@ -54,7 +54,9 @@ function EntriesTabsContent({
               setActiveTab(tab.id);
             }}
             className={`px-4 py-2 text-sm font-medium transition-colors ${
-              activeTab === tab.id ? "border-b-2 border-purple-400 text-white" : "text-white/60 hover:text-white"
+              activeTab === tab.id
+                ? "border-b-2 border-accent-ink text-foreground"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             {tab.label}
