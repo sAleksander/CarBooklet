@@ -146,6 +146,19 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
                 {t("sidebar.themeDark")}
               </button>
             </form>
+            <form method="POST" action="/api/theme/system">
+              <button
+                type="submit"
+                className={cn(
+                  "rounded px-2 py-0.5 text-xs font-medium transition-colors",
+                  theme === "system"
+                    ? "bg-sidebar-accent text-sidebar-primary"
+                    : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
+                )}
+              >
+                {t("sidebar.themeSystem")}
+              </button>
+            </form>
           </div>
 
           <form method="POST" action="/api/auth/signout">

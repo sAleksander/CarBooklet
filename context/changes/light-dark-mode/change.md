@@ -249,3 +249,26 @@ the hero follow the theme too, or give it its own always-black values. Decide th
 - **Astro excludes `_`-prefixed files from routing.** Phase 1's `__token_probe.astro`
   was therefore never a route — it worked only because Tailwind's content scan is
   independent of routing. A probe page that must actually be served needs a normal name.
+
+### Phase 7
+
+- **The gate lives in `scripts/lint-colors.sh`, not a package.json one-liner.** The
+  pattern deliberately avoids `\b`: this machine's `grep` is **ugrep**, which rejects
+  `\b` as an empty sub-expression (it broke an earlier grep during Phase 1). Keeping
+  it POSIX-safe means the same script runs here and under GNU grep in CI. It checks
+  three literal forms — Tailwind palette utilities, raw hex, and `rgba(` — and
+  excludes `src/components/ui/` wholesale.
+- **Gate proven to fire** on a bare `text-white`, a suffixed `bg-blue-100/60`, and a
+  raw hex, and proven NOT to fire on the four legitimate `ui/` literals
+  (`button.tsx`'s contrast-locked `text-white`, the three `bg-black/50` scrims).
+  A real commit carrying `text-white` was rejected by `.husky/pre-commit`; HEAD did
+  not move. Ordered before `typecheck` so it fails in ~50 ms rather than after the
+  slow checks.
+- **No-flash evidence.** With no cookie and the OS set to dark, the class is already
+  `dark` at navigation _commit_ — before paint — because the `is:inline` script is
+  synchronous in `<head>`. With the OS light there is deliberately no class at all,
+  since light is `:root`'s default.
+- **Verified through Playwright's `prefers-color-scheme` emulation**, which is the
+  only way to exercise the OS-preference paths: live OS switch flips the class with
+  no reload; an explicit choice overrides the OS and survives a refresh; choosing
+  System deletes the cookie and returns to following the OS.

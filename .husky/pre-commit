@@ -8,6 +8,9 @@ npx lint-staged
 echo "▶ lint"
 npm run lint
 
+echo "▶ colors"
+npm run lint:colors
+
 echo "▶ typecheck"
 npm run typecheck
 

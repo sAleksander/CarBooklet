@@ -1006,38 +1006,38 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 6.1 Linting passes: `npm run lint`
-- [x] 6.2 Type checking passes: `npm run typecheck`
-- [x] 6.3 Unit tests pass: `npm test`
-- [x] 6.4 Production build succeeds: `npm run build`
-- [x] 6.5 No raw hex remains outside `global.css`
-- [x] 6.6 No `rgba(` remains in `src`
+- [x] 6.1 Linting passes: `npm run lint` — 126130a
+- [x] 6.2 Type checking passes: `npm run typecheck` — 126130a
+- [x] 6.3 Unit tests pass: `npm test` — 126130a
+- [x] 6.4 Production build succeeds: `npm run build` — 126130a
+- [x] 6.5 No raw hex remains outside `global.css` — 126130a
+- [x] 6.6 No `rgba(` remains in `src` — 126130a
 
 #### Manual
 
-- [x] 6.7 The landing page renders identically in both modes and reads as deliberate
-- [x] 6.8 All three Banner variants are legible in both modes at 4.5:1
-- [x] 6.9 Banner renders correctly on every page when `missingConfigs` is non-empty
+- [x] 6.7 The landing page renders identically in both modes and reads as deliberate — 126130a
+- [x] 6.8 All three Banner variants are legible in both modes at 4.5:1 — 126130a
+- [x] 6.9 Banner renders correctly on every page when `missingConfigs` is non-empty — 126130a
 
 ### Phase 7: System Preference & the Gate
 
 #### Automated
 
-- [ ] 7.1 `npm run lint:colors` exits 0
-- [ ] 7.2 The gate fires on a deliberately added literal (revert after)
-- [ ] 7.3 Linting passes: `npm run lint`
-- [ ] 7.4 Type checking passes: `npm run typecheck`
-- [ ] 7.5 Unit tests pass: `npm test`
-- [ ] 7.6 Production build succeeds: `npm run build`
-- [ ] 7.7 Full E2E suite passes: `npm run test:e2e`
-- [ ] 7.8 Pre-commit rejects a commit containing a hardcoded color
+- [x] 7.1 `npm run lint:colors` exits 0
+- [x] 7.2 The gate fires on a deliberately added literal (revert after)
+- [x] 7.3 Linting passes: `npm run lint`
+- [x] 7.4 Type checking passes: `npm run typecheck`
+- [x] 7.5 Unit tests pass: `npm test`
+- [x] 7.6 Production build succeeds: `npm run build`
+- [x] 7.7 Full E2E suite passes: `npm run test:e2e`
+- [x] 7.8 Pre-commit rejects a commit containing a hardcoded color
 
 #### Manual
 
-- [ ] 7.9 No cookie + OS light loads light with no flash (throttled)
-- [ ] 7.10 No cookie + OS dark loads dark with no flash
-- [ ] 7.11 Switching the OS theme flips the app live, no reload
-- [ ] 7.12 An explicit Light/Dark overrides the OS preference and survives a refresh
-- [ ] 7.13 Choosing System clears the override and follows the OS again
-- [ ] 7.14 View-source shows the class server-rendered for an explicit preference
-- [ ] 7.15 Native controls, scrollbars, and the pre-paint canvas follow the theme
+- [x] 7.9 No cookie + OS light loads light with no flash (throttled)
+- [x] 7.10 No cookie + OS dark loads dark with no flash
+- [x] 7.11 Switching the OS theme flips the app live, no reload
+- [x] 7.12 An explicit Light/Dark overrides the OS preference and survives a refresh
+- [x] 7.13 Choosing System clears the override and follows the OS again
+- [x] 7.14 View-source shows the class server-rendered for an explicit preference
+- [x] 7.15 Native controls, scrollbars, and the pre-paint canvas follow the theme

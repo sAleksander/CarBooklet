@@ -27,6 +27,32 @@ const themeClass = Astro.locals.theme === "system" ? undefined : Astro.locals.th
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>{title}</title>
+    {
+      /* Resolves the theme for users who have stated no preference — the one case
+        the server genuinely cannot know.
+
+        `is:inline` is mandatory. Without it Astro hoists this into a deferred
+        external module that runs after paint, which is the exact flash this
+        exists to prevent. It must also stay in <head>: Astro streams, so <head>
+        is flushed before <body> finishes and the class attribute written above
+        is already serialised by the time any body script could run.
+
+        It acts ONLY when <html> carries no class, which is precisely the
+        "system" case, because Layout.astro is the sole writer of that attribute.
+        It never reads the cookie, so httpOnly survives intact. */
+    }
+    <script is:inline>
+      (function () {
+        var el = document.documentElement;
+        if (el.className) return;
+        var mq = window.matchMedia("(prefers-color-scheme: dark)");
+        var apply = function (m) {
+          el.classList.toggle("dark", m.matches);
+        };
+        apply(mq);
+        mq.addEventListener("change", apply);
+      })();
+    </script>
   </head>
   <body>
     {

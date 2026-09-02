@@ -9,6 +9,7 @@
     "astro": "astro",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
+    "lint:colors": "sh scripts/lint-colors.sh",
     "typecheck": "astro check",
     "format": "prettier --write .",
     "test": "vitest run --project unit",

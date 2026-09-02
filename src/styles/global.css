@@ -4,16 +4,37 @@
 @custom-variant dark (&:is(.dark *));
 
 /* ─── Design tokens ───────────────────────────────────────────────────────────
-   Renault-derived palette: yellow / black / white.
+   Renault-derived palette: yellow / black / white. This file IS the design
+   system; the four rules below are the whole contract.
 
-   Adding a token is a TWO-STEP edit and the second step fails SILENTLY:
-     1. the raw value in BOTH `:root` and `.dark` below, and
-     2. a matching `--color-*` alias in the `@theme inline` block.
-   Skip step 2 and the utility compiles to nothing — no error, no warning, just
-   an unstyled element.
+   1. ADDING A TOKEN IS A TWO-STEP EDIT, AND THE SECOND STEP FAILS SILENTLY.
+        a. the raw value in BOTH `:root` and `.dark` below, and
+        b. a matching `--color-*` alias in the `@theme inline` block.
+      Skip (b) and the utility compiles to nothing — no error, no warning, just
+      an unstyled element. That is the single most common way to break this file.
 
-   Cross-ref: `src/lib/theme.ts` maps domain vocabulary onto these tokens. Every
-   token it names must exist as `--color-*` in `@theme inline`. */
+   2. `inline` IS LOAD-BEARING. `@theme inline` substitutes the value into the
+      utility at build time. Without `inline`, the alias resolves against `:root`
+      once and freezes the LIGHT value, so `.dark` never reaches it and dark mode
+      silently stops working for that token.
+
+   3. YELLOW IS A SURFACE, NEVER TEXT. Brand yellow is oklch(0.867 …): 12.90:1
+      with a dark label on top of it, but only 1.46:1 as ink on white. It can be
+      a button fill or a bar; it can never be a link, label, icon or rule in
+      light mode. Use `--accent-ink` for those — that is the entire reason it
+      exists. Dark mode has no such constraint (the same yellow is 12.71:1 on
+      the dark ground), which is why `--accent-ink` equals the brand there.
+
+   4. FILL vs INK IS A REAL DISTINCTION, NOT A NAMING HABIT. `--status-*` are
+      fills (dots, borders) verified at >=3:1; `--status-*-ink` are text,
+      verified at >=4.5:1. Rendering a fill token as text is a contrast failure.
+      Measure a fill against what is ADJACENT to it — for a dot inside a 10%
+      wash that is the wash, not the card.
+
+   Cross-refs: `src/lib/theme.ts` maps domain vocabulary onto these tokens, and
+   every token it names must exist as `--color-*` in `@theme inline`.
+   `npm run lint:colors` (scripts/lint-colors.sh) keeps the rest of src/ from
+   reintroducing hardcoded colours. */
 
 :root {
   color-scheme: light;
