@@ -186,3 +186,37 @@ tweaks are safe — but re-verify if any lightness is changed.
   The `ok` / `warn` / `bad` variants were verified by injecting the real cva class
   strings into the page and reading back computed styles — all four tones resolve to
   distinct values in both modes — not by rendering a real red/yellow/green deadline.
+
+### Sidebar: theme-following (reverses a recorded decision)
+
+At the user's request the sidebar now **follows the theme** instead of staying black in
+both modes. This reverses a decision recorded twice — `change.md`'s "Decisions already
+taken" and `plan.md`'s "What We're NOT Doing" — so the reasoning for the new shape:
+
+- **Brand yellow cannot be the light-mode active indicator.** At 1.46:1 on white it is
+  invisible as text. The light sidebar therefore uses `--accent-ink` (the darkened brand
+  yellow) at **4.76:1**, which is precisely the case `--accent-ink` was introduced for.
+  Dark mode keeps the brand yellow proper at 12.04:1 on the active chip.
+- **The light active state is a WHITE chip on a warm-grey rail**, not a darker pill. A
+  darker pill drove `--accent-ink` down to 3.56:1; inverting it to white lifts the same
+  token to 4.76 with no new colour. Dark mode keeps the light wash (`white/8%`).
+- **`--sidebar-muted-foreground` is new.** `text-sidebar-foreground/50` measured
+  **4.14:1** on a light rail — a fail, and the same alpha-reduced-text anti-pattern this
+  change removes everywhere else. The 14 `/50`, `/60`, `/70` usages collapse to one
+  token: 6.34 light / 8.11 dark.
+- **Dark `--sidebar` was neutralised** from the starter's navy `oklch(0.13 0.025 265)`
+  (#040711) to `oklch(0.13 0.004 90)` (#080706), so the rail matches the warm-neutral
+  palette instead of reading blue. Yellow contrast is unchanged (13.38 -> 13.37).
+
+Verified pairs (rail / active chip):
+
+| token                           |           light |          dark | needs |
+| ------------------------------- | --------------: | ------------: | ----: |
+| `--sidebar-foreground`          |   17.28 / 19.41 | 16.87 / 15.20 |   4.5 |
+| `--sidebar-muted-foreground`    |     6.34 / 7.12 |   8.11 / 7.31 |   4.5 |
+| `--sidebar-primary` (indicator) | 4.24 / **4.76** | 13.37 / 12.04 |   4.5 |
+
+**Consequence for Phase 6:** the landing hero planned to reuse `bg-sidebar` /
+`text-sidebar-foreground` for a "flat black section, identical in both modes". Those
+tokens are now theme-following, so that plan no longer holds. Phase 6 must either let
+the hero follow the theme too, or give it its own always-black values. Decide there.

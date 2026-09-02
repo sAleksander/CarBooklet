@@ -56,7 +56,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
                   {selectedCar.brand} {selectedCar.model}
                 </span>
               ) : (
-                <span className="text-sidebar-foreground/50">{t("sidebar.selectACar")}</span>
+                <span className="text-sidebar-muted-foreground">{t("sidebar.selectACar")}</span>
               )}
             </a>
           </SheetClose>
@@ -86,7 +86,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
 
         {/* Footer */}
         <div className="border-t border-sidebar-border p-4">
-          <p className="mb-3 truncate text-xs text-sidebar-foreground/60">{userEmail}</p>
+          <p className="mb-3 truncate text-xs text-sidebar-muted-foreground">{userEmail}</p>
 
           {/* Language toggle */}
           <div className="mb-3 flex gap-1">
@@ -97,7 +97,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   lang === "en"
                     ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                    : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
                 )}
               >
                 {t("sidebar.langEn")}
@@ -110,7 +110,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   lang === "pl"
                     ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                    : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
                 )}
               >
                 {t("sidebar.langPl")}
@@ -127,7 +127,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   theme === "light"
                     ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                    : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
                 )}
               >
                 {t("sidebar.themeLight")}
@@ -140,7 +140,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
                   "rounded px-2 py-0.5 text-xs font-medium transition-colors",
                   theme === "dark"
                     ? "bg-sidebar-accent text-sidebar-primary"
-                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+                    : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
                 )}
               >
                 {t("sidebar.themeDark")}
@@ -151,7 +151,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
           <form method="POST" action="/api/auth/signout">
             <button
               type="submit"
-              className="text-sm text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground"
+              className="text-sm text-sidebar-muted-foreground transition-colors hover:text-sidebar-foreground"
             >
               {t("sidebar.signOut")}
             </button>

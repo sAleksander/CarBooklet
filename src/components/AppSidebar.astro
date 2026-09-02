@@ -28,7 +28,7 @@ const theme = Astro.locals.theme;
             {selectedCar.brand} {selectedCar.model}
           </span>
         ) : (
-          <span class="text-sidebar-foreground/50">{t("sidebar.selectACar")}</span>
+          <span class="text-sidebar-muted-foreground">{t("sidebar.selectACar")}</span>
         )
       }
     </a>
@@ -56,7 +56,7 @@ const theme = Astro.locals.theme;
 
   <!-- Footer -->
   <div class="border-t border-sidebar-border p-4">
-    <p class="mb-3 truncate text-xs text-sidebar-foreground/60">{userEmail}</p>
+    <p class="mb-3 truncate text-xs text-sidebar-muted-foreground">{userEmail}</p>
 
     <!-- Language toggle -->
     <div class="mb-3 flex gap-1">
@@ -67,7 +67,7 @@ const theme = Astro.locals.theme;
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             lang === "en"
               ? "bg-sidebar-accent text-sidebar-primary"
-              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+              : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
           ].join(" ")}
         >
           {t("sidebar.langEn")}
@@ -80,7 +80,7 @@ const theme = Astro.locals.theme;
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             lang === "pl"
               ? "bg-sidebar-accent text-sidebar-primary"
-              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+              : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
           ].join(" ")}
         >
           {t("sidebar.langPl")}
@@ -98,7 +98,7 @@ const theme = Astro.locals.theme;
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             theme === "light"
               ? "bg-sidebar-accent text-sidebar-primary"
-              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+              : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
           ].join(" ")}
         >
           {t("sidebar.themeLight")}
@@ -111,7 +111,7 @@ const theme = Astro.locals.theme;
             "rounded px-2 py-0.5 text-xs font-medium transition-colors",
             theme === "dark"
               ? "bg-sidebar-accent text-sidebar-primary"
-              : "text-sidebar-foreground/50 hover:text-sidebar-foreground",
+              : "text-sidebar-muted-foreground hover:text-sidebar-foreground",
           ].join(" ")}
         >
           {t("sidebar.themeDark")}
@@ -120,7 +120,10 @@ const theme = Astro.locals.theme;
     </div>
 
     <form method="POST" action="/api/auth/signout">
-      <button type="submit" class="text-sm text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground">
+      <button
+        type="submit"
+        class="text-sm text-sidebar-muted-foreground transition-colors hover:text-sidebar-foreground"
+      >
         {t("sidebar.signOut")}
       </button>
     </form>

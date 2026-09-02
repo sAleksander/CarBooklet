@@ -66,18 +66,23 @@
   /* Aliases a token that already has a `.dark` value, so it needs no override. */
   --status-idle: var(--muted-foreground);
 
-  /* Sidebar is deliberately black in BOTH themes, with a yellow active
-     indicator — it is the brand's strongest expression (yellow on black is
-     12.71:1) and it keeps the shell stable across a theme switch. These values
-     are therefore intentionally not overridden in `.dark`. */
-  --sidebar: oklch(0.13 0.025 265);
-  --sidebar-foreground: oklch(0.94 0 0);
-  --sidebar-primary: oklch(0.867 0.164 88.7);
-  --sidebar-primary-foreground: oklch(0.16 0.005 90);
-  --sidebar-accent: oklch(1 0 0 / 0.08);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 0.1);
-  --sidebar-ring: oklch(0.867 0.164 88.7);
+  /* The sidebar follows the theme. In light mode it is a warm-grey rail with a
+     WHITE active chip: brand yellow is 1.46:1 on white and can never be the
+     indicator here, so the active item uses `--accent-ink` (the darkened brand
+     yellow) at 4.76:1 on the chip. In dark mode the chip inverts to a light
+     wash and the indicator becomes the brand yellow proper at 12.04:1.
+     `--sidebar-muted-foreground` exists so secondary sidebar text is a real
+     token rather than `--sidebar-foreground/50`, which lands at 4.14:1 on a
+     light rail. */
+  --sidebar: oklch(0.96 0.004 90);
+  --sidebar-foreground: oklch(0.16 0.005 90);
+  --sidebar-muted-foreground: oklch(0.46 0.008 90);
+  --sidebar-primary: oklch(0.556 0.11 88.7);
+  --sidebar-primary-foreground: oklch(0.99 0.002 90);
+  --sidebar-accent: oklch(1 0 0);
+  --sidebar-accent-foreground: oklch(0.16 0.005 90);
+  --sidebar-border: oklch(0.9 0.005 90);
+  --sidebar-ring: oklch(0.556 0.11 88.7);
 }
 
 .dark {
@@ -121,6 +126,17 @@
   --status-warn-ink: oklch(0.822 0.116 55);
   --status-bad-ink: oklch(0.754 0.092 25);
   --status-info-ink: oklch(0.8 0.104 250);
+
+  /* Neutral near-black, not the starter's navy #040711. */
+  --sidebar: oklch(0.13 0.004 90);
+  --sidebar-foreground: oklch(0.94 0.002 90);
+  --sidebar-muted-foreground: oklch(0.72 0.006 90);
+  --sidebar-primary: oklch(0.867 0.164 88.7);
+  --sidebar-primary-foreground: oklch(0.16 0.005 90);
+  --sidebar-accent: oklch(1 0 0 / 0.08);
+  --sidebar-accent-foreground: oklch(0.97 0.002 90);
+  --sidebar-border: oklch(1 0 0 / 0.1);
+  --sidebar-ring: oklch(0.867 0.164 88.7);
 }
 
 @theme inline {
@@ -164,6 +180,7 @@
   --color-status-info-ink: var(--status-info-ink);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-muted-foreground: var(--sidebar-muted-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
   --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
   --color-sidebar-accent: var(--sidebar-accent);
