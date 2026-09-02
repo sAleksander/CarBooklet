@@ -1023,21 +1023,21 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 7.1 `npm run lint:colors` exits 0
-- [x] 7.2 The gate fires on a deliberately added literal (revert after)
-- [x] 7.3 Linting passes: `npm run lint`
-- [x] 7.4 Type checking passes: `npm run typecheck`
-- [x] 7.5 Unit tests pass: `npm test`
-- [x] 7.6 Production build succeeds: `npm run build`
-- [x] 7.7 Full E2E suite passes: `npm run test:e2e`
-- [x] 7.8 Pre-commit rejects a commit containing a hardcoded color
+- [x] 7.1 `npm run lint:colors` exits 0 — d39ef81
+- [x] 7.2 The gate fires on a deliberately added literal (revert after) — d39ef81
+- [x] 7.3 Linting passes: `npm run lint` — d39ef81
+- [x] 7.4 Type checking passes: `npm run typecheck` — d39ef81
+- [x] 7.5 Unit tests pass: `npm test` — d39ef81
+- [x] 7.6 Production build succeeds: `npm run build` — d39ef81
+- [x] 7.7 Full E2E suite passes: `npm run test:e2e` — d39ef81
+- [x] 7.8 Pre-commit rejects a commit containing a hardcoded color — d39ef81
 
 #### Manual
 
-- [x] 7.9 No cookie + OS light loads light with no flash (throttled)
-- [x] 7.10 No cookie + OS dark loads dark with no flash
-- [x] 7.11 Switching the OS theme flips the app live, no reload
-- [x] 7.12 An explicit Light/Dark overrides the OS preference and survives a refresh
-- [x] 7.13 Choosing System clears the override and follows the OS again
-- [x] 7.14 View-source shows the class server-rendered for an explicit preference
-- [x] 7.15 Native controls, scrollbars, and the pre-paint canvas follow the theme
+- [x] 7.9 No cookie + OS light loads light with no flash (throttled) — d39ef81
+- [x] 7.10 No cookie + OS dark loads dark with no flash — d39ef81
+- [x] 7.11 Switching the OS theme flips the app live, no reload — d39ef81
+- [x] 7.12 An explicit Light/Dark overrides the OS preference and survives a refresh — d39ef81
+- [x] 7.13 Choosing System clears the override and follows the OS again — d39ef81
+- [x] 7.14 View-source shows the class server-rendered for an explicit preference — d39ef81
+- [x] 7.15 Native controls, scrollbars, and the pre-paint canvas follow the theme — d39ef81
