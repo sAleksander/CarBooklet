@@ -15,7 +15,7 @@ const userEmail = Astro.locals.user?.email ?? "";
 ---
 
 <Layout title={title}>
-  <div class="flex h-screen overflow-hidden bg-cosmic">
+  <div class="flex h-screen overflow-hidden bg-background">
     <!-- Desktop sidebar -->
     <div class="hidden md:flex">
       <AppSidebar pathname={pathname} userEmail={userEmail} selectedCar={selectedCar} />
@@ -24,7 +24,7 @@ const userEmail = Astro.locals.user?.email ?? "";
     <!-- Main column -->
     <div class="flex flex-1 flex-col overflow-hidden">
       <!-- Mobile top bar -->
-      <header class="flex items-center gap-3 border-b border-white/10 px-4 py-3 md:hidden">
+      <header class="flex items-center gap-3 border-b border-border px-4 py-3 md:hidden">
         <MobileSidebarTrigger
           client:only="react"
           pathname={pathname}
@@ -33,7 +33,7 @@ const userEmail = Astro.locals.user?.email ?? "";
           lang={Astro.locals.lang}
           theme={Astro.locals.theme}
         />
-        {title && <span class="text-sm font-medium text-white/80">{title}</span>}
+        {title && <span class="text-sm font-medium text-muted-foreground">{title}</span>}
       </header>
 
       <!-- Content area -->

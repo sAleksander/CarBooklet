@@ -72,7 +72,9 @@ function SignUpFormContent({ serverError }: { serverError?: string | null }) {
   const remainingChars = MIN_PASSWORD_LENGTH - password.length;
   const passwordHint =
     !errors.password && password.length > 0 && password.length < MIN_PASSWORD_LENGTH ? (
-      <p className="mt-1 text-xs text-blue-100/50">{t("auth.passwordCharactersNeeded", { count: remainingChars })}</p>
+      <p className="mt-1 text-xs text-muted-foreground">
+        {t("auth.passwordCharactersNeeded", { count: remainingChars })}
+      </p>
     ) : undefined;
 
   return (

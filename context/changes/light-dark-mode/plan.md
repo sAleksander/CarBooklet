@@ -936,37 +936,37 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Type checking passes: `npm run typecheck`
-- [x] 2.3 Unit tests pass: `npm test`
-- [x] 2.4 Production build succeeds: `npm run build`
-- [x] 2.5 E2E suite passes with the pinned theme cookie: `npm run test:e2e`
+- [x] 2.1 Linting passes: `npm run lint` — 5b3a2ef
+- [x] 2.2 Type checking passes: `npm run typecheck` — 5b3a2ef
+- [x] 2.3 Unit tests pass: `npm test` — 5b3a2ef
+- [x] 2.4 Production build succeeds: `npm run build` — 5b3a2ef
+- [x] 2.5 E2E suite passes with the pinned theme cookie: `npm run test:e2e` — 5b3a2ef
 
 #### Manual
 
-- [x] 2.6 With no cookie, the app renders exactly as before (dark)
-- [x] 2.7 Clicking Light sets the cookie and `<html class="light">` is in view-source
-- [x] 2.8 The preference survives a hard refresh and a new tab
-- [x] 2.9 The class is in the first HTML response; no flash on a throttled connection
+- [x] 2.6 With no cookie, the app renders exactly as before (dark) — 5b3a2ef
+- [x] 2.7 Clicking Light sets the cookie and `<html class="light">` is in view-source — 5b3a2ef
+- [x] 2.8 The preference survives a hard refresh and a new tab — 5b3a2ef
+- [x] 2.9 The class is in the first HTML response; no flash on a throttled connection — 5b3a2ef
 
 ### Phase 3: App Shell & Auth
 
 #### Automated
 
-- [ ] 3.1 Linting passes: `npm run lint`
-- [ ] 3.2 Type checking passes: `npm run typecheck`
-- [ ] 3.3 Unit tests pass: `npm test`
-- [ ] 3.4 Production build succeeds: `npm run build`
-- [ ] 3.5 Auth E2E flows pass: `npm run test:e2e`
-- [ ] 3.6 `grep -rn "bg-cosmic" src` returns nothing
+- [x] 3.1 Linting passes: `npm run lint`
+- [x] 3.2 Type checking passes: `npm run typecheck`
+- [x] 3.3 Unit tests pass: `npm test`
+- [x] 3.4 Production build succeeds: `npm run build`
+- [x] 3.5 Auth E2E flows pass: `npm run test:e2e`
+- [x] 3.6 `grep -rn "bg-cosmic" src` returns nothing
 
 #### Manual
 
-- [ ] 3.7 Sign-in, sign-up, confirm-email render correctly in both modes
-- [ ] 3.8 Validation errors are legible in both modes; error border meets 3:1
-- [ ] 3.9 Input focus rings are visible and consistent
-- [ ] 3.10 Submit button is brand yellow with a dark label; spinner visible against the fill
-- [ ] 3.11 The authenticated shell is correct in both modes
+- [x] 3.7 Sign-in, sign-up, confirm-email render correctly in both modes
+- [x] 3.8 Validation errors are legible in both modes; error border meets 3:1
+- [x] 3.9 Input focus rings are visible and consistent
+- [x] 3.10 Submit button is brand yellow with a dark label; spinner visible against the fill
+- [x] 3.11 The authenticated shell is correct in both modes
 
 ### Phase 4: Dashboard & the Deadline Traffic Light
 

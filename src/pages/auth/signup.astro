@@ -2,6 +2,7 @@
 import Layout from "@/layouts/Layout.astro";
 import SignUpForm from "@/components/auth/SignUpForm";
 import { getT } from "@/i18n/server";
+import { surface } from "@/lib/theme";
 
 const { lang } = Astro.locals;
 const t = getT(lang);
@@ -9,17 +10,15 @@ const error = Astro.url.searchParams.get("error");
 ---
 
 <Layout title={t("auth.signUp")}>
-  <div class="flex min-h-screen items-center justify-center bg-cosmic p-4">
-    <div class="w-full max-w-sm rounded-2xl border border-white/10 bg-white/10 p-8 text-white backdrop-blur-xl">
-      <h1
-        class="mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-center text-2xl font-bold text-transparent"
-      >
+  <div class="flex min-h-screen items-center justify-center bg-background p-4">
+    <div class:list={[surface({ level: "panel" }), "w-full max-w-sm p-8"]}>
+      <h1 class="mb-6 text-center text-2xl font-bold text-foreground">
         {t("auth.signUp")}
       </h1>
       <SignUpForm serverError={error} lang={lang} client:load />
-      <p class="mt-4 text-center text-sm text-blue-100/60">
+      <p class="mt-4 text-center text-sm text-muted-foreground">
         {t("auth.haveAccount")}
-        <a href="/auth/signin" class="text-purple-300 hover:underline">{t("auth.signIn")}</a>
+        <a href="/auth/signin" class="text-accent-ink hover:underline">{t("auth.signIn")}</a>
       </p>
     </div>
   </div>

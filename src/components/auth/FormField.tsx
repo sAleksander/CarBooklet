@@ -1,9 +1,6 @@
 import type { ReactNode } from "react";
 import { CircleAlert } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-const inputBase =
-  "w-full rounded-lg bg-white/10 border px-3 py-2 pl-10 text-white placeholder-white/40 focus:outline-none focus:ring-2 transition-colors";
+import { Input } from "@/components/ui/input";
 
 interface FormFieldProps {
   id: string;
@@ -34,12 +31,16 @@ export function FormField({
 }: FormFieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-sm text-blue-100/80">
+      <label htmlFor={id} className="mb-1 block text-sm text-muted-foreground">
         {label}
       </label>
       <div className="relative">
-        <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">{icon}</span>
-        <input
+        <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground">{icon}</span>
+        {/* The control itself is ui/input.tsx, which is already fully tokenized.
+            This wrapper keeps only what it adds: the label, the leading icon and
+            the error slot. Error styling rides on aria-invalid, which the
+            primitive handles — and which the hand-rolled version never set. */}
+        <Input
           id={id}
           name={name ?? id}
           type={type}
@@ -48,15 +49,13 @@ export function FormField({
             onChange(e.target.value);
           }}
           placeholder={placeholder}
-          className={cn(
-            inputBase,
-            error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
-          )}
+          aria-invalid={!!error}
+          className="pl-10"
         />
         {endContent}
       </div>
       {error ? (
-        <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
+        <p className="mt-1 flex items-center gap-1 text-xs text-status-bad-ink">
           <CircleAlert className="size-3" />
           {error}
         </p>

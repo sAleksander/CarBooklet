@@ -33,7 +33,7 @@ function MobileSidebarContent({ pathname, userEmail, selectedCar, lang, theme }:
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="text-white/80 hover:text-white">
+        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
           <Menu className="h-5 w-5" />
           <span className="sr-only">{t("sidebar.openNavigation")}</span>
         </Button>
