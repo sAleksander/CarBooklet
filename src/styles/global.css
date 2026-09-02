@@ -56,7 +56,7 @@
      `--status-warn` is orange, not yellow: the brand yellow sits ~6 deg from
      amber, so the warning state had to move away from it. */
   --status-ok: oklch(0.6 0.15 150);
-  --status-warn: oklch(0.658 0.16 55);
+  --status-warn: oklch(0.638 0.158 55);
   --status-bad: oklch(0.6 0.21 25);
   --status-info: oklch(0.548 0.15 250);
   --status-ok-ink: oklch(0.48 0.128 150);

@@ -167,3 +167,22 @@ tweaks are safe — but re-verify if any lightness is changed.
   "act only when the class is absent" invariant is unaffected.
 - The four `Layout.astro`-only routes correctly carry **no** theme toggle, per the plan's
   "What We're NOT Doing" — verified in the served HTML.
+
+### Phase 4
+
+- **Light `--status-warn` moved from `oklch(0.658 0.16 55)` to `oklch(0.638 0.158 55)`.**
+  Criterion 4.8 asks whether the dots are discernible against their own 10% wash, and
+  the warn dot measured **2.91:1** there — under 3:1 — even though it passes against
+  `--card` (3.30), which is the ground the plan's table uses. The wash is what is
+  actually adjacent to the dot, so the wash is the correct reference. The new value
+  gives 3.13 on the wash, 3.57 on the card, and moves _further_ from brand yellow
+  (2.37 vs 2.19). In gamut. `ok` (3.21) and `bad` (3.80) already passed and were left
+  alone; dark mode is unaffected (6.58 / 6.74 / 5.29).
+- **The light dashboard was unusable before this phase**, which the plan's sequencing
+  intends but is worth recording as measured: heading 1.38:1, labels 1.09–1.13:1, links
+  1.25:1, and `bg-white/10` / `border-white/10` panels compositing to _exactly_ the page
+  colour (1.00:1) — i.e. no card at all. After: 18.86 / 6.00 / 4.76 with real cards.
+- **4.6 caveat:** the test car has no entries, so only the `idle` state rendered live.
+  The `ok` / `warn` / `bad` variants were verified by injecting the real cva class
+  strings into the page and reading back computed styles — all four tones resolve to
+  distinct values in both modes — not by rendering a real red/yellow/green deadline.

@@ -953,37 +953,37 @@ tests and refuses the commit otherwise.
 
 #### Automated
 
-- [x] 3.1 Linting passes: `npm run lint`
-- [x] 3.2 Type checking passes: `npm run typecheck`
-- [x] 3.3 Unit tests pass: `npm test`
-- [x] 3.4 Production build succeeds: `npm run build`
-- [x] 3.5 Auth E2E flows pass: `npm run test:e2e`
-- [x] 3.6 `grep -rn "bg-cosmic" src` returns nothing
+- [x] 3.1 Linting passes: `npm run lint` — 5475cba
+- [x] 3.2 Type checking passes: `npm run typecheck` — 5475cba
+- [x] 3.3 Unit tests pass: `npm test` — 5475cba
+- [x] 3.4 Production build succeeds: `npm run build` — 5475cba
+- [x] 3.5 Auth E2E flows pass: `npm run test:e2e` — 5475cba
+- [x] 3.6 `grep -rn "bg-cosmic" src` returns nothing — 5475cba
 
 #### Manual
 
-- [x] 3.7 Sign-in, sign-up, confirm-email render correctly in both modes
-- [x] 3.8 Validation errors are legible in both modes; error border meets 3:1
-- [x] 3.9 Input focus rings are visible and consistent
-- [x] 3.10 Submit button is brand yellow with a dark label; spinner visible against the fill
-- [x] 3.11 The authenticated shell is correct in both modes
+- [x] 3.7 Sign-in, sign-up, confirm-email render correctly in both modes — 5475cba
+- [x] 3.8 Validation errors are legible in both modes; error border meets 3:1 — 5475cba
+- [x] 3.9 Input focus rings are visible and consistent — 5475cba
+- [x] 3.10 Submit button is brand yellow with a dark label; spinner visible against the fill — 5475cba
+- [x] 3.11 The authenticated shell is correct in both modes — 5475cba
 
 ### Phase 4: Dashboard & the Deadline Traffic Light
 
 #### Automated
 
-- [ ] 4.1 Linting passes: `npm run lint`
-- [ ] 4.2 Type checking passes: `npm run typecheck`
-- [ ] 4.3 Unit tests pass: `npm test`
-- [ ] 4.4 Production build succeeds: `npm run build`
-- [ ] 4.5 No color literals remain in `DeadlineCard.astro`
+- [x] 4.1 Linting passes: `npm run lint`
+- [x] 4.2 Type checking passes: `npm run typecheck`
+- [x] 4.3 Unit tests pass: `npm test`
+- [x] 4.4 Production build succeeds: `npm run build`
+- [x] 4.5 No color literals remain in `DeadlineCard.astro`
 
 #### Manual
 
-- [ ] 4.6 All five DeadlineStatus states render distinctly in both modes; idle states read as recessed
-- [ ] 4.7 The warn state is distinguishable from brand yellow with a yellow CTA on screen
-- [ ] 4.8 Status dots are discernible against their wash in light mode
-- [ ] 4.9 The dashboard label/value hierarchy still reads clearly after flattening
+- [x] 4.6 All five DeadlineStatus states render distinctly in both modes; idle states read as recessed
+- [x] 4.7 The warn state is distinguishable from brand yellow with a yellow CTA on screen
+- [x] 4.8 Status dots are discernible against their wash in light mode
+- [x] 4.9 The dashboard label/value hierarchy still reads clearly after flattening
 
 ### Phase 5: Entries & Chat
 

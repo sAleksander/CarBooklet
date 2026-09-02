@@ -1,6 +1,7 @@
 ---
 import type { Entry } from "@/types";
 import { getT } from "@/i18n/server";
+import { surface } from "@/lib/theme";
 
 interface Props {
   entry: Entry;
@@ -36,14 +37,14 @@ switch (entry.entry_type) {
 
 <a
   href={`/entries/${entry.entry_type}/${entry.id}`}
-  class="block rounded-2xl border border-white/10 bg-white/10 p-6 text-white backdrop-blur-xl transition-colors hover:bg-white/15"
+  class:list={[surface({ level: "panel" }), "block p-6 transition-colors hover:bg-accent"]}
 >
-  <p class="mb-3 text-xs font-semibold tracking-wide text-blue-100/60 uppercase">{t("dashboard.lastEntry")}</p>
+  <p class="mb-3 text-xs font-semibold tracking-wide text-muted-foreground uppercase">{t("dashboard.lastEntry")}</p>
   <div class="flex items-start justify-between gap-4">
     <div class="min-w-0">
-      <p class="text-sm font-semibold text-white">{t(`entries.types.${entry.entry_type}`)}</p>
-      <p class="mt-0.5 truncate text-sm text-blue-100/70" title={summary}>{summary}</p>
+      <p class="text-sm font-semibold text-foreground">{t(`entries.types.${entry.entry_type}`)}</p>
+      <p class="mt-0.5 truncate text-sm text-muted-foreground" title={summary}>{summary}</p>
     </div>
-    <p class="shrink-0 text-sm text-blue-100/50">{new Date(entry.conducted_at).toLocaleDateString()}</p>
+    <p class="shrink-0 text-sm text-muted-foreground">{new Date(entry.conducted_at).toLocaleDateString()}</p>
   </div>
 </a>
