@@ -133,7 +133,7 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
         )}
       </div>
 
-      {error && <p className="text-destructive text-sm">{error}</p>}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       {showAddForm && (
         <div className="rounded-lg border p-4">
@@ -161,15 +161,15 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
                     <p className="font-semibold">
                       {car.brand} {car.model}
                     </p>
-                    <p className="text-muted-foreground text-sm">
+                    <p className="text-sm text-muted-foreground">
                       {car.production_year} · {t(ENGINE_TYPE_KEYS[car.engine_type])} · {car.engine_capacity} ·{" "}
                       {car.engine_power}
                     </p>
                     {car.registration_number && (
-                      <p className="text-muted-foreground text-sm">{car.registration_number}</p>
+                      <p className="text-sm text-muted-foreground">{car.registration_number}</p>
                     )}
                     {isSelected && (
-                      <span className="text-primary mt-1 inline-block text-xs font-medium">{t("cars.selected")}</span>
+                      <span className="mt-1 inline-block text-xs font-medium text-primary">{t("cars.selected")}</span>
                     )}
                   </div>
                   <div className="flex shrink-0 gap-2">

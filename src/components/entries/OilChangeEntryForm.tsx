@@ -100,7 +100,7 @@ export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps
           disabled={isLoading}
         />
       </div>
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
       <Button type="submit" disabled={isLoading}>
         {isLoading ? t("common.saving") : t("entries.actions.logOilChange")}
       </Button>

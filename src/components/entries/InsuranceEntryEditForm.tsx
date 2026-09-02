@@ -143,10 +143,10 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
             }}
             disabled={isLoading}
           />
-          {fieldErrors.renewal_date && <p className="text-destructive text-sm">{fieldErrors.renewal_date}</p>}
+          {fieldErrors.renewal_date && <p className="text-sm text-destructive">{fieldErrors.renewal_date}</p>}
         </div>
       </div>
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? t("common.saving") : t("common.save")}

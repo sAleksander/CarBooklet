@@ -110,7 +110,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             }}
             placeholder="e.g. Toyota"
           />
-          {fieldErrors.brand && <p className="text-destructive text-sm">{fieldErrors.brand}</p>}
+          {fieldErrors.brand && <p className="text-sm text-destructive">{fieldErrors.brand}</p>}
         </div>
 
         <div className="space-y-1">
@@ -123,7 +123,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             }}
             placeholder="e.g. Corolla"
           />
-          {fieldErrors.model && <p className="text-destructive text-sm">{fieldErrors.model}</p>}
+          {fieldErrors.model && <p className="text-sm text-destructive">{fieldErrors.model}</p>}
         </div>
 
         <div className="space-y-1">
@@ -136,7 +136,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             }}
             placeholder="e.g. 2020"
           />
-          {fieldErrors.production_year && <p className="text-destructive text-sm">{fieldErrors.production_year}</p>}
+          {fieldErrors.production_year && <p className="text-sm text-destructive">{fieldErrors.production_year}</p>}
         </div>
 
         <div className="space-y-1">
@@ -182,7 +182,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             }}
             placeholder="e.g. 1.6L"
           />
-          {fieldErrors.engine_capacity && <p className="text-destructive text-sm">{fieldErrors.engine_capacity}</p>}
+          {fieldErrors.engine_capacity && <p className="text-sm text-destructive">{fieldErrors.engine_capacity}</p>}
         </div>
 
         <div className="space-y-1">
@@ -195,7 +195,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
             }}
             placeholder="e.g. 132hp"
           />
-          {fieldErrors.engine_power && <p className="text-destructive text-sm">{fieldErrors.engine_power}</p>}
+          {fieldErrors.engine_power && <p className="text-sm text-destructive">{fieldErrors.engine_power}</p>}
         </div>
 
         <div className="space-y-1">
@@ -223,7 +223,7 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         </div>
       </div>
 
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>

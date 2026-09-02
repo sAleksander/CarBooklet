@@ -9,7 +9,7 @@ export function OilChangeEntryList({ entries }: OilChangeEntryListProps) {
   const { t } = useTranslation();
 
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">{t("entries.empty.oilChange")}</p>;
+    return <p className="text-sm text-muted-foreground">{t("entries.empty.oilChange")}</p>;
   }
 
   return (
@@ -23,13 +23,13 @@ export function OilChangeEntryList({ entries }: OilChangeEntryListProps) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {t("common.mileageKm", { value: entry.mileage.toLocaleString() })}
                 </span>
               )}
             </div>
             {entry.oil_details && (
-              <p className="text-muted-foreground text-xs">
+              <p className="text-xs text-muted-foreground">
                 <span className="font-medium">{t("entries.detail.detailsLabel")}:</span> {entry.oil_details}
               </p>
             )}

@@ -108,7 +108,7 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
           rows={3}
           disabled={isLoading}
         />
-        {fieldErrors.description && <p className="text-destructive text-sm">{fieldErrors.description}</p>}
+        {fieldErrors.description && <p className="text-sm text-destructive">{fieldErrors.description}</p>}
       </div>
       <div className="space-y-1">
         <Label htmlFor="edit_cause">{t("entries.fields.cause")}</Label>
@@ -123,7 +123,7 @@ export function RepairEntryEditForm({ entry, onSuccess, onCancel }: RepairEntryE
           disabled={isLoading}
         />
       </div>
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? t("common.saving") : t("common.save")}

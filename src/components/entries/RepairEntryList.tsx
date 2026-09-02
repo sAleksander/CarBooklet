@@ -9,7 +9,7 @@ export function RepairEntryList({ entries }: RepairEntryListProps) {
   const { t } = useTranslation();
 
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">{t("entries.empty.repair")}</p>;
+    return <p className="text-sm text-muted-foreground">{t("entries.empty.repair")}</p>;
   }
 
   return (
@@ -23,14 +23,14 @@ export function RepairEntryList({ entries }: RepairEntryListProps) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {t("common.mileageKm", { value: entry.mileage.toLocaleString() })}
                 </span>
               )}
             </div>
             <p className="text-sm">{entry.description}</p>
             {entry.cause && (
-              <p className="text-muted-foreground mt-1 text-xs">
+              <p className="mt-1 text-xs text-muted-foreground">
                 <span className="font-medium">{t("entries.detail.cause")}:</span> {entry.cause}
               </p>
             )}

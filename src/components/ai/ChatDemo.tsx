@@ -79,7 +79,7 @@ function ChatDemoContent() {
         </Button>
       </form>
 
-      {fetchError && <p className="text-destructive text-sm">{fetchError}</p>}
+      {fetchError && <p className="text-sm text-destructive">{fetchError}</p>}
 
       {hasResponse && (
         <div className="rounded-lg border border-white/10 bg-white/5 p-4">

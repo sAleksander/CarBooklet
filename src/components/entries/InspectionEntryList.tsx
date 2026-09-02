@@ -9,7 +9,7 @@ export function InspectionEntryList({ entries }: InspectionEntryListProps) {
   const { t } = useTranslation();
 
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">{t("entries.empty.inspection")}</p>;
+    return <p className="text-sm text-muted-foreground">{t("entries.empty.inspection")}</p>;
   }
 
   return (
@@ -23,21 +23,21 @@ export function InspectionEntryList({ entries }: InspectionEntryListProps) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {t("common.mileageKm", { value: entry.mileage.toLocaleString() })}
                 </span>
               )}
             </div>
             {entry.result && (
               <p className="text-sm">
-                <span className="text-muted-foreground font-medium">{t("entries.detail.result")}:</span>{" "}
+                <span className="font-medium text-muted-foreground">{t("entries.detail.result")}:</span>{" "}
                 <span className={entry.result === "Passed" ? "text-green-400" : "text-red-400"}>
                   {entry.result === "Passed" ? t("entries.results.passed") : t("entries.results.failed")}
                 </span>
               </p>
             )}
             {entry.next_inspection_date && (
-              <p className="text-muted-foreground mt-1 text-xs">
+              <p className="mt-1 text-xs text-muted-foreground">
                 <span className="font-medium">{t("entries.detail.nextDueLabel")}:</span>{" "}
                 {new Date(entry.next_inspection_date).toLocaleDateString()}
               </p>

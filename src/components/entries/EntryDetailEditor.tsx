@@ -163,7 +163,7 @@ function EntryDetailEditorContent({ entry, children }: EntryDetailEditorProps) {
             <AlertDialogTitle>{t("entries.detail.deleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>{t("entries.detail.deleteDesc")}</AlertDialogDescription>
           </AlertDialogHeader>
-          {deleteError && <p className="text-destructive text-sm">{deleteError}</p>}
+          {deleteError && <p className="text-sm text-destructive">{deleteError}</p>}
           <AlertDialogFooter>
             <AlertDialogCancel
               disabled={isDeleting}

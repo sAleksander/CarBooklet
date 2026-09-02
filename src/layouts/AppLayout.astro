@@ -15,7 +15,7 @@ const userEmail = Astro.locals.user?.email ?? "";
 ---
 
 <Layout title={title}>
-  <div class="bg-cosmic flex h-screen overflow-hidden">
+  <div class="flex h-screen overflow-hidden bg-cosmic">
     <!-- Desktop sidebar -->
     <div class="hidden md:flex">
       <AppSidebar pathname={pathname} userEmail={userEmail} selectedCar={selectedCar} />

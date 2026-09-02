@@ -129,7 +129,7 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
           />
         </div>
       </div>
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
       <Button type="submit" disabled={isLoading}>
         {isLoading ? t("common.saving") : t("entries.actions.logInspection")}
       </Button>

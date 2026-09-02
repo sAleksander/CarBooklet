@@ -88,7 +88,7 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
             }}
             disabled={isLoading}
           />
-          {fieldErrors.conducted_at && <p className="text-destructive text-sm">{fieldErrors.conducted_at}</p>}
+          {fieldErrors.conducted_at && <p className="text-sm text-destructive">{fieldErrors.conducted_at}</p>}
         </div>
         <div className="space-y-1">
           <Label htmlFor="edit_insp_mileage">{t("entries.fields.mileage")}</Label>
@@ -138,7 +138,7 @@ export function InspectionEntryEditForm({ entry, onSuccess, onCancel }: Inspecti
           />
         </div>
       </div>
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
       <div className="flex gap-2">
         <Button type="submit" disabled={isLoading}>
           {isLoading ? t("common.saving") : t("common.save")}

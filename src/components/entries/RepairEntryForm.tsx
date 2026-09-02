@@ -110,7 +110,7 @@ export function RepairEntryForm({ carId, onSuccess }: RepairEntryFormProps) {
           rows={3}
           disabled={isLoading}
         />
-        {fieldErrors.description && <p className="text-destructive text-sm">{fieldErrors.description}</p>}
+        {fieldErrors.description && <p className="text-sm text-destructive">{fieldErrors.description}</p>}
       </div>
       <div className="space-y-1">
         <Label htmlFor="cause">{t("entries.fields.cause")}</Label>
@@ -125,7 +125,7 @@ export function RepairEntryForm({ carId, onSuccess }: RepairEntryFormProps) {
           disabled={isLoading}
         />
       </div>
-      {apiError && <p className="text-destructive text-sm">{apiError}</p>}
+      {apiError && <p className="text-sm text-destructive">{apiError}</p>}
       <Button type="submit" disabled={isLoading}>
         {isLoading ? t("common.saving") : t("entries.actions.logRepair")}
       </Button>

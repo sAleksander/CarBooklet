@@ -9,7 +9,7 @@ export function InsuranceEntryList({ entries }: InsuranceEntryListProps) {
   const { t } = useTranslation();
 
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">{t("entries.empty.insurance")}</p>;
+    return <p className="text-sm text-muted-foreground">{t("entries.empty.insurance")}</p>;
   }
 
   return (
@@ -23,24 +23,24 @@ export function InsuranceEntryList({ entries }: InsuranceEntryListProps) {
             <div className="mb-1 flex items-center justify-between">
               <span className="text-sm font-semibold">{new Date(entry.conducted_at).toLocaleDateString()}</span>
               {entry.mileage !== null && (
-                <span className="text-muted-foreground text-xs">
+                <span className="text-xs text-muted-foreground">
                   {t("common.mileageKm", { value: entry.mileage.toLocaleString() })}
                 </span>
               )}
             </div>
             {entry.insurer && (
               <p className="text-sm">
-                <span className="text-muted-foreground font-medium">{t("entries.detail.insurer")}:</span>{" "}
+                <span className="font-medium text-muted-foreground">{t("entries.detail.insurer")}:</span>{" "}
                 {entry.insurer}
               </p>
             )}
             {entry.policy_start_date && (
-              <p className="text-muted-foreground mt-1 text-xs">
+              <p className="mt-1 text-xs text-muted-foreground">
                 <span className="font-medium">{t("entries.detail.policyFrom")}:</span>{" "}
                 {new Date(entry.policy_start_date).toLocaleDateString()}
               </p>
             )}
-            <p className="text-muted-foreground mt-1 text-xs">
+            <p className="mt-1 text-xs text-muted-foreground">
               <span className="font-medium">{t("entries.detail.renewalLabel")}:</span>{" "}
               {new Date(entry.renewal_date).toLocaleDateString()}
             </p>

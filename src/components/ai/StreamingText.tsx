@@ -13,7 +13,7 @@ export function StreamingText({ text, isDone, error }: Props) {
         {text}
         {!isDone && !error && <span className="inline-block animate-pulse">▋</span>}
       </div>
-      {error && <p className="text-destructive mt-2 text-sm">{error}</p>}
+      {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
     </div>
   );
 }
