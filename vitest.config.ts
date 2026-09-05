@@ -13,12 +13,18 @@ export default defineConfig({
     // runner was stood up before any spec did.
     passWithNoTests: true,
 
-    // Two projects, because the two suites have incompatible prerequisites.
+    // Three projects, because the three suites have incompatible prerequisites.
     //
     // `unit` must stay runnable with Docker stopped — `.husky/pre-commit` runs
     // `npm test`, and a pre-commit hook that needs a database is a pre-commit
     // hook people start bypassing. `integration` needs a live local Supabase
     // and is opted into explicitly via `npm run test:integration`.
+    //
+    // `client` needs a DOM, which the other two must not pay for: `environment:
+    // "jsdom"` costs real startup time per file and would buy nothing for a
+    // route handler or a service function. It is still Docker-free, so it joins
+    // `unit` in the pre-commit path — the streaming hook is exactly the kind of
+    // code where a regression is invisible until a user sees it.
     //
     // The split is by directory, not by filename convention, so a spec cannot
     // drift into the wrong project by being named carelessly.
@@ -38,7 +44,23 @@ export default defineConfig({
         test: {
           name: "unit",
           environment: "node",
+          // `.ts` only: a `.tsx` spec under `src/test/` needs a DOM and belongs
+          // to the `client` project, whose own glob picks it up.
           include: ["src/test/**/*.test.ts"],
+          exclude: ["src/test/client/**"],
+        },
+      },
+      {
+        resolve: {
+          alias: {
+            "@": atAlias,
+            "astro:env/server": fileURLToPath(new URL("./src/test/__mocks__/astro-env-server.ts", import.meta.url)),
+          },
+        },
+        test: {
+          name: "client",
+          environment: "jsdom",
+          include: ["src/test/client/**/*.test.{ts,tsx}"],
         },
       },
       {

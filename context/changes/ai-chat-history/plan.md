@@ -877,26 +877,26 @@ The request schema change is breaking for the old client, which ships in the sam
 
 #### Automated
 
-- [x] 2.1 Unit suite green
-- [x] 2.2 Tripwire pair green
-- [x] 2.3 Type check passes
-- [x] 2.4 Lint passes
-- [x] 2.5 No positional console.error remains in chat.ts
+- [x] 2.1 Unit suite green — cce99eb
+- [x] 2.2 Tripwire pair green — cce99eb
+- [x] 2.3 Type check passes — cce99eb
+- [x] 2.4 Lint passes — cce99eb
+- [x] 2.5 No positional console.error remains in chat.ts — cce99eb
 
 #### Manual
 
-- [x] 2.6 curl create/resume session persists two complete turns with model ids
-- [x] 2.7 Killed curl mid-stream yields an aborted row with partial text
+- [x] 2.6 curl create/resume session persists two complete turns with model ids — cce99eb
+- [x] 2.7 Killed curl mid-stream yields an aborted row with partial text — cce99eb
 
 ### Phase 3: Client Test Infrastructure and the Conversation Hook
 
 #### Automated
 
-- [ ] 3.1 Client project runs and is green
-- [ ] 3.2 Unit project green including sse.test.ts
-- [ ] 3.3 Pre-commit path green
-- [ ] 3.4 Type check passes
-- [ ] 3.5 Lint passes
+- [x] 3.1 Client project runs and is green
+- [x] 3.2 Unit project green including sse.test.ts
+- [x] 3.3 Pre-commit path green
+- [x] 3.4 Type check passes
+- [x] 3.5 Lint passes
 
 ### Phase 4: Client UI, Pages and i18n
 
