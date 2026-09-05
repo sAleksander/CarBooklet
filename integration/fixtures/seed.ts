@@ -106,3 +106,63 @@ export async function seedEntry(
   if (res.error) throw new Error(`could not seed ${type} entry: ${res.error.message}`);
   return res.data as SeededEntry;
 }
+
+export interface SeededConversation {
+  id: string;
+  car_id: string;
+  user_id: string;
+  title: string;
+  locale: string;
+  [column: string]: unknown;
+}
+
+export async function seedConversation(
+  client: TestClient,
+  owner: { userId: string; carId: string },
+  overrides: Record<string, unknown> = {},
+): Promise<SeededConversation> {
+  const res = await client
+    .from("conversations")
+    .insert({
+      user_id: owner.userId,
+      car_id: owner.carId,
+      title: marker("thread"),
+      locale: "en",
+      ...overrides,
+    })
+    .select()
+    .single();
+  if (res.error) throw new Error(`could not seed conversation: ${res.error.message}`);
+  return res.data as SeededConversation;
+}
+
+export interface SeededMessage {
+  id: string;
+  conversation_id: string;
+  user_id: string;
+  role: string;
+  content: string;
+  status: string;
+  [column: string]: unknown;
+}
+
+export async function seedMessage(
+  client: TestClient,
+  owner: { userId: string; conversationId: string },
+  overrides: Record<string, unknown> = {},
+): Promise<SeededMessage> {
+  const res = await client
+    .from("messages")
+    .insert({
+      user_id: owner.userId,
+      conversation_id: owner.conversationId,
+      role: "user",
+      content: marker("message"),
+      status: "complete",
+      ...overrides,
+    })
+    .select()
+    .single();
+  if (res.error) throw new Error(`could not seed message: ${res.error.message}`);
+  return res.data as SeededMessage;
+}

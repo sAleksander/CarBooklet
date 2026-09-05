@@ -445,3 +445,101 @@ export async function getLastEntry(supabase: SupabaseClient, carId: string, user
     return best;
   }, null);
 }
+
+/**
+ * The car's most recent entries across all four tables, newest first.
+ *
+ * Feeds the AI system prompt, which is why the shape is "a flat list ordered by
+ * date" rather than the per-type grouping every UI uses: the model reads it as a
+ * short service history, and the most recent work is the part most likely to be
+ * relevant to whatever is being asked.
+ *
+ * Same four-parallel-queries-then-merge-in-JS shape as `getLastEntry`, for the
+ * same reason — the four tables share no parent to join through, and PostgREST
+ * has no union. Each query fetches `limit` rows so the merged result can still
+ * be `limit` long even when one type dominates the history.
+ *
+ * Ties on `conducted_at` are broken by `created_at` (later first), then by table
+ * order. Entries carry a date, not a timestamp, so same-day ties are the common
+ * case rather than the exotic one, and "the one I logged most recently" is the
+ * better guess at what a user means by "the latest".
+ */
+export async function getRecentEntries(
+  supabase: SupabaseClient,
+  carId: string,
+  userId: string,
+  limit = 10,
+): Promise<Entry[]> {
+  const [repairRes, oilRes, inspRes, insRes] = await Promise.all([
+    supabase
+      .from("repair_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("oil_change_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("inspection_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(limit),
+    supabase
+      .from("insurance_entries")
+      .select("*")
+      .eq("car_id", carId)
+      .eq("user_id", userId)
+      .order("conducted_at", { ascending: false })
+      .limit(limit),
+  ]);
+  if (repairRes.error) throw toServiceError(repairRes.error, "getRecentEntries");
+  if (oilRes.error) throw toServiceError(oilRes.error, "getRecentEntries");
+  if (inspRes.error) throw toServiceError(inspRes.error, "getRecentEntries");
+  if (insRes.error) throw toServiceError(insRes.error, "getRecentEntries");
+
+  // `entry_type` is injected here, at the return site: the column does not exist
+  // in any of the four tables.
+  const merged: Entry[] = [
+    ...(repairRes.data as Omit<RepairEntry, "entry_type">[]).map((row) => ({
+      ...row,
+      entry_type: "repair" as const,
+    })),
+    ...(oilRes.data as Omit<OilChangeEntry, "entry_type">[]).map((row) => ({
+      ...row,
+      entry_type: "oil_change" as const,
+    })),
+    ...(inspRes.data as Omit<InspectionEntry, "entry_type">[]).map((row) => ({
+      ...row,
+      entry_type: "inspection" as const,
+    })),
+    ...(insRes.data as Omit<InsuranceEntry, "entry_type">[]).map((row) => ({
+      ...row,
+      entry_type: "insurance" as const,
+    })),
+  ];
+
+  const priority: Record<Entry["entry_type"], number> = {
+    repair: 0,
+    oil_change: 1,
+    inspection: 2,
+    insurance: 3,
+  };
+
+  merged.sort((a, b) => {
+    const byConducted = new Date(b.conducted_at).getTime() - new Date(a.conducted_at).getTime();
+    if (byConducted !== 0) return byConducted;
+    const byCreated = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    if (byCreated !== 0) return byCreated;
+    return priority[a.entry_type] - priority[b.entry_type];
+  });
+
+  return merged.slice(0, limit);
+}

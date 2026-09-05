@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/config";
+
 export type EngineType = "electric" | "gas" | "diesel" | "lpg";
 
 export interface Car {
@@ -126,4 +128,73 @@ export interface CarDeadlines {
   oilChange: OilChangeDeadline;
   inspection: InspectionDeadline;
   insurance: InsuranceDeadline;
+}
+
+// ─── AI chat types ────────────────────────────────────────────────────────────
+
+export type MessageRole = "user" | "assistant";
+
+/**
+ * Whether a stored message is the whole thing.
+ *
+ * Only ever `complete` for a user message — the client had the whole prompt
+ * before it sent anything. For an assistant message it records how the stream
+ * ended: `aborted` when the reader went away (the user pressed stop, or closed
+ * the tab), `error` when the upstream failed part-way through.
+ *
+ * Load-bearing, not cosmetic. A partial reply replayed as context makes the
+ * model imitate a reply that stops mid-word, so `buildHistoryWindow` in
+ * `src/lib/chat.ts` drops any pair whose assistant half is not `complete`.
+ */
+export type MessageStatus = "complete" | "aborted" | "error";
+
+export interface Conversation {
+  id: string;
+  car_id: string;
+  user_id: string;
+  title: string;
+  /**
+   * Fixed when the thread is created, from the UI language at that moment.
+   * The system prompt asks for this language on every turn, so a thread answers
+   * in one language for its whole life even if the user switches the UI later.
+   */
+  locale: Locale;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Message {
+  id: string;
+  conversation_id: string;
+  user_id: string;
+  role: MessageRole;
+  content: string;
+  status: MessageStatus;
+  /**
+   * The model OpenRouter actually resolved for this reply, read off the stream
+   * chunks. Null on user messages, and on assistant messages the router never
+   * named one for. `openrouter/free` picks a different model per request, so
+   * this is the only way drift between turns is visible after the fact.
+   */
+  model: string | null;
+  created_at: string;
+}
+
+/** What a page hands to the chat island — no ids or timestamps it cannot use. */
+export type ChatMessage = Pick<Message, "id" | "role" | "content" | "status">;
+
+export interface ConversationCreateData {
+  user_id: string;
+  car_id: string;
+  title: string;
+  locale: Locale;
+}
+
+export interface MessageCreateData {
+  conversation_id: string;
+  user_id: string;
+  role: MessageRole;
+  content: string;
+  status?: MessageStatus;
+  model?: string | null;
 }
