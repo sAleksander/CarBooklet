@@ -862,31 +862,31 @@ The request schema change is breaking for the old client, which ships in the sam
 
 #### Automated
 
-- [x] 1.1 Migration applies cleanly on a reset local stack
-- [x] 1.2 Isolation spec green
-- [x] 1.3 Existing integration suite still green
-- [x] 1.4 Unit tests green including chat.test.ts
-- [x] 1.5 Type check passes
-- [x] 1.6 Lint passes
+- [x] 1.1 Migration applies cleanly on a reset local stack — 4e4af81
+- [x] 1.2 Isolation spec green — 4e4af81
+- [x] 1.3 Existing integration suite still green — 4e4af81
+- [x] 1.4 Unit tests green including chat.test.ts — 4e4af81
+- [x] 1.5 Type check passes — 4e4af81
+- [x] 1.6 Lint passes — 4e4af81
 
 #### Manual
 
-- [x] 1.7 Studio shows RLS enabled, four authenticated policies per table, two indexes
+- [x] 1.7 Studio shows RLS enabled, four authenticated policies per table, two indexes — 4e4af81
 
 ### Phase 2: Server — Prompt, Stream and Persistence
 
 #### Automated
 
-- [ ] 2.1 Unit suite green
-- [ ] 2.2 Tripwire pair green
-- [ ] 2.3 Type check passes
-- [ ] 2.4 Lint passes
-- [ ] 2.5 No positional console.error remains in chat.ts
+- [x] 2.1 Unit suite green
+- [x] 2.2 Tripwire pair green
+- [x] 2.3 Type check passes
+- [x] 2.4 Lint passes
+- [x] 2.5 No positional console.error remains in chat.ts
 
 #### Manual
 
-- [ ] 2.6 curl create/resume session persists two complete turns with model ids
-- [ ] 2.7 Killed curl mid-stream yields an aborted row with partial text
+- [x] 2.6 curl create/resume session persists two complete turns with model ids
+- [x] 2.7 Killed curl mid-stream yields an aborted row with partial text
 
 ### Phase 3: Client Test Infrastructure and the Conversation Hook
 

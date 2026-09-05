@@ -34,6 +34,15 @@ const CAR: Car = {
 
 describe("createChatStream config guard", () => {
   it("rejects with a generic message (no secret) when the key is not configured", async () => {
-    await expect(createChatStream("any prompt", CAR)).rejects.toThrow("OPENROUTER_API_KEY is not configured");
+    await expect(
+      createChatStream({
+        car: CAR,
+        entries: [],
+        locale: "en",
+        history: [],
+        prompt: "any prompt",
+        sessionId: "conv-1",
+      }),
+    ).rejects.toThrow("OPENROUTER_API_KEY is not configured");
   });
 });

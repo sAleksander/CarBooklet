@@ -126,6 +126,20 @@ export interface ApiErrorContext {
    * and SSR redirects.
    */
   surface?: "api" | "ssr";
+  /**
+   * Extra top-level fields for this one log line, e.g. the `x-ratelimit-*`
+   * values off a 429 from OpenRouter.
+   *
+   * Top-level rather than nested because Cloudflare indexes the top-level keys
+   * of the single logged object and nothing deeper — a `{ rateLimit: {...} }`
+   * would be stored but not queryable, which is the same trap the
+   * single-object rule exists to avoid.
+   *
+   * Operator-facing only, like every other field here. Nothing put in `extra`
+   * reaches a response body, so it must never be used to smuggle a message to
+   * the client.
+   */
+  extra?: Record<string, string | null>;
 }
 
 /**
@@ -161,6 +175,7 @@ export function logApiError(err: unknown, context: ApiErrorContext, mapping: Err
     message: messageOf(err),
     details: service?.details ?? null,
     hint: service?.hint ?? null,
+    ...context.extra,
   });
 }
 
