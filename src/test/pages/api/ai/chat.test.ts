@@ -32,7 +32,7 @@ import {
   appendMessage,
   touchConversation,
 } from "@/lib/services/conversations";
-import { createChatStream, isRateLimitError } from "@/lib/services/ai";
+import { createChatStream, isRateLimitError, rateLimitHeaders } from "@/lib/services/ai";
 import { POST } from "@/pages/api/ai/chat";
 
 type ChatStream = Awaited<ReturnType<typeof createChatStream>>;
@@ -443,6 +443,32 @@ describe("POST /api/ai/chat", () => {
       expect(res.status).toBe(429);
       expect(await readJson(res)).toEqual({ error: "AI assistant is rate-limited" });
       expect(appendMessage).toHaveBeenCalledTimes(1); // the question survives
+    });
+
+    it("logs the 429 with the rate-limit headers, the only budget signal there is", async () => {
+      // Measured in this change's Phase 5: `GET /v1/key` reports *dollar* usage,
+      // which is zero for a free-tier key spending only free models, and its one
+      // `rate_limit` field is self-described as deprecated. So there is no way to
+      // ask OpenRouter how much of the 50/day request cap is left — these two
+      // header values, captured off the failure, are the entire record of it.
+      // Dropping them would make the cap unobservable rather than merely tight.
+      vi.mocked(isRateLimitError).mockReturnValue(true);
+      vi.mocked(rateLimitHeaders).mockReturnValue({ remaining: "0", reset: "1788800000" });
+      vi.mocked(createChatStream).mockRejectedValue(new Error("429 rate limit exceeded"));
+
+      await POST(makeContext());
+
+      const logged = vi.mocked(console.error);
+      expect(logged).toHaveBeenCalledTimes(1);
+      expect(logged.mock.calls[0]).toHaveLength(1);
+      expect(logged.mock.calls[0][0]).toMatchObject({
+        event: "api_error",
+        route: "/api/ai/chat",
+        method: "POST",
+        status: 429,
+        rateLimitRemaining: "0",
+        rateLimitReset: "1788800000",
+      });
     });
 
     it("500 without leaking the API key when the SDK throws (R2)", async () => {

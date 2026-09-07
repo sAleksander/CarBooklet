@@ -902,32 +902,32 @@ The request schema change is breaking for the old client, which ships in the sam
 
 #### Automated
 
-- [x] 4.1 All Docker-free projects green
-- [x] 4.2 Type check passes
-- [x] 4.3 Lint passes
-- [x] 4.4 Build passes
-- [x] 4.5 No import of ChatDemo or useStreamingText remains
+- [x] 4.1 All Docker-free projects green — 13da8e3
+- [x] 4.2 Type check passes — 13da8e3
+- [x] 4.3 Lint passes — 13da8e3
+- [x] 4.4 Build passes — 13da8e3
+- [x] 4.5 No import of ChatDemo or useStreamingText remains — 13da8e3
 
 #### Manual
 
-- [x] 4.6 Follow-up in context and transcript persists across reload at /ai-chat/[id]
-- [x] 4.7 New chat and thread list with derived titles, newest first
-- [x] 4.8 Car switch scopes the list; foreign-car thread id shows not-found
-- [x] 4.9 Stop keeps partial text marked interrupted and excludes it from the next turn
-- [x] 4.10 Delete thread with confirm dialog redirects to /ai-chat
-- [x] 4.11 PL locale thread answers in Polish; EN thread stays EN
-- [x] 4.12 Mobile width usable
+- [x] 4.6 Follow-up in context and transcript persists across reload at /ai-chat/[id] — 13da8e3
+- [x] 4.7 New chat and thread list with derived titles, newest first — 13da8e3
+- [x] 4.8 Car switch scopes the list; foreign-car thread id shows not-found — 13da8e3
+- [x] 4.9 Stop keeps partial text marked interrupted and excludes it from the next turn — 13da8e3
+- [x] 4.10 Delete thread with confirm dialog redirects to /ai-chat — 13da8e3
+- [x] 4.11 PL locale thread answers in Polish; EN thread stays EN — 13da8e3
+- [x] 4.12 Mobile width usable — 13da8e3
 
 ### Phase 5: Verification and Hardening
 
 #### Automated
 
-- [ ] 5.1 Full local suite green
-- [ ] 5.2 Build and dry-run deploy succeed
+- [x] 5.1 Full local suite green
+- [x] 5.2 Build and dry-run deploy succeed
 
 #### Manual
 
-- [ ] 5.3 OpenRouter cap and session_id experiment results recorded
-- [ ] 5.4 Bundle size before/after recorded
-- [ ] 5.5 Car-delete cascade and 429 log line confirmed
-- [ ] 5.6 Documentation edits reviewed
+- [x] 5.3 OpenRouter cap and session_id experiment results recorded
+- [x] 5.4 Bundle size before/after recorded
+- [x] 5.5 Car-delete cascade and 429 log line confirmed
+- [x] 5.6 Documentation edits reviewed

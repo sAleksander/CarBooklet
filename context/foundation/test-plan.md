@@ -421,6 +421,17 @@ underlying assumption changes.
 - **Resource abuse / rate-limiting of the free AI model** — real exposure,
   but a rate-limit + observability concern, not a unit test. Re-evaluate if
   AI cost or abuse becomes a live problem. (Source: §2 abuse-lens note.)
+  _Updated 2026-09-07 (`ai-chat-history`):_ the observability half now
+  exists — a 429 from OpenRouter is logged as one flat `api_error` object
+  carrying `x-ratelimit-remaining` / `x-ratelimit-reset`, and the user sees
+  a translated "temporarily rate-limited" message rather than a generic
+  error. An app-side per-user limiter is still **deliberately deferred**:
+  the account cap is 50 requests/day and we have no usage data to size a
+  per-user share against. Re-evaluate once those log lines have run long
+  enough to show whether one user can starve the others. Note also that
+  `GET /v1/key` does **not** expose the request-count cap (it reports
+  dollar usage, which is zero for free models), so those 429 log lines are
+  the only signal there is.
 
 ## 8. Freshness Ledger
 

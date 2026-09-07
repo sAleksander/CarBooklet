@@ -53,6 +53,7 @@ Specific UX failures observed during manual testing:
 User can navigate to any feature from any other feature without guessing URLs, and can open individual entries to read them in full.
 
 MVP core flow (proof it works):
+
 1. User arrives at `/` → redirected to `/dashboard` (logged in) or `/auth/signin` (not logged in) — no starter boilerplate
 2. User navigates between sections via navbar; active section is visually indicated at all times
 3. User opens `/entries` → clicks any entry → full-screen detail view renders with rich text fully readable
@@ -89,15 +90,19 @@ MVP core flow (proof it works):
 ### New
 
 - [new] **FR-001**: Minimal public landing page at `/` with clear sign-in and sign-up calls to action; if already authenticated, the user is immediately redirected to `/dashboard`. Priority: must-have. (was: 10x Astro starter boilerplate at `/` with no auth-state routing)
+
   > Socrates: Counter-argument considered: "Design a real landing page instead of just redirecting." Resolution: accepted as a scope change — a minimal landing page is now in scope as must-have. The redirect-only approach would have erased the possibility of a public landing entirely. Minimal scope: links to sign-in/sign-up + brief value prop sentence.
 
 - [new] **FR-002**: Responsive sidebar navigation on all protected pages, with visible links to all major sections (Dashboard, Entries, AI Chat). Priority: must-have.
+
   > Socrates: Counter-argument considered: "Sidebar is overkill for 3–4 sections; an improved top navbar is simpler." Resolution: rejected — sidebar chosen as the target pattern. Counter-argument stands as a valid alternative but user confirmed sidebar. The mobile-collapse requirement (FR-004) must be explicitly delivered alongside this FR.
 
 - [new] **FR-003**: Sidebar navigation displays an active-state indicator for the current section so the user always knows where they are. Priority: must-have.
+
   > Socrates: (Batched with FR-002 above.)
 
 - [new] **FR-004**: Sidebar navigation collapses to a mobile-friendly pattern on small screens (specific pattern is an implementation decision). Priority: must-have.
+
   > Socrates: Counter-argument considered: "Mobile nav pattern should be decided before building, not left open." Resolution: noted — the specific pattern is an implementation decision deferred to the plan stage. The requirement is mobile-accessible sidebar; the implementation chooses the pattern.
 
 - [new] **FR-005**: User can click any entry in the `/entries` list to open a full-screen detail view at `/entries/[id]`, displaying all entry fields with full rich-text rendering. The route is auth-guarded. Priority: must-have.
@@ -111,6 +116,7 @@ MVP core flow (proof it works):
 ### Preserved
 
 - [preserved] **FR-007**: User can add, edit, and delete cars and all entry types (repair, oil change, inspection, insurance) without any change to existing flows. Priority: must-have.
+
   > Socrates: Counter-argument considered: "Preserved FRs are redundant — preservation is implied, not worth making explicit." Resolution: kept as guardrail-only entries (not implementation tasks). These FRs exist to make the regression surface explicit, not to drive new work. Implementation should treat them as a test checklist, not a build list.
 
 - [preserved] **FR-008**: AI chat backend continues to function (API call, response display) after navigation structure changes. Priority: must-have.
@@ -139,7 +145,7 @@ Current model: email and password authentication. Single flat user role — all 
 ## Non-Goals
 
 - **No changes to API routes or backend logic**: All existing API routes, queries, and AI call logic are untouched. This is a frontend-only change. Rationale: any backend touch is out of scope and risks introducing regressions in data flows the UI change has no reason to modify.
-- **AI Chat UX improvements** (loading state, conversation history, persistence across reloads): The chat page will be reachable via sidebar navigation but its internal UX is a separate future change.
+- **AI Chat UX improvements** (loading state, conversation history, persistence across reloads): The chat page will be reachable via sidebar navigation but its internal UX is a separate future change. — **Delivered 2026-09-07 by `context/changes/ai-chat-history/`**, which is that separate change: per-car conversation threads persisted in Supabase, a transcript that survives reload at `/ai-chat/[id]`, a thread list with per-thread delete, and a Stop control that replaces the button-stuck-on-"sending…" state this PRD recorded.
 - **Inspections/Insurance dedicated tab**: Grouped with Repairs/Oil Changes in the current entry list for now. Dedicated section deferred.
 - **Redesigning add/edit entry forms**: Form UX and field structure are unchanged. Only the entry list view and new detail view are in scope.
 
