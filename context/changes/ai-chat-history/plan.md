@@ -892,31 +892,31 @@ The request schema change is breaking for the old client, which ships in the sam
 
 #### Automated
 
-- [x] 3.1 Client project runs and is green
-- [x] 3.2 Unit project green including sse.test.ts
-- [x] 3.3 Pre-commit path green
-- [x] 3.4 Type check passes
-- [x] 3.5 Lint passes
+- [x] 3.1 Client project runs and is green — e51ca9c
+- [x] 3.2 Unit project green including sse.test.ts — e51ca9c
+- [x] 3.3 Pre-commit path green — e51ca9c
+- [x] 3.4 Type check passes — e51ca9c
+- [x] 3.5 Lint passes — e51ca9c
 
 ### Phase 4: Client UI, Pages and i18n
 
 #### Automated
 
-- [ ] 4.1 All Docker-free projects green
-- [ ] 4.2 Type check passes
-- [ ] 4.3 Lint passes
-- [ ] 4.4 Build passes
-- [ ] 4.5 No import of ChatDemo or useStreamingText remains
+- [x] 4.1 All Docker-free projects green
+- [x] 4.2 Type check passes
+- [x] 4.3 Lint passes
+- [x] 4.4 Build passes
+- [x] 4.5 No import of ChatDemo or useStreamingText remains
 
 #### Manual
 
-- [ ] 4.6 Follow-up in context and transcript persists across reload at /ai-chat/[id]
-- [ ] 4.7 New chat and thread list with derived titles, newest first
-- [ ] 4.8 Car switch scopes the list; foreign-car thread id shows not-found
-- [ ] 4.9 Stop keeps partial text marked interrupted and excludes it from the next turn
-- [ ] 4.10 Delete thread with confirm dialog redirects to /ai-chat
-- [ ] 4.11 PL locale thread answers in Polish; EN thread stays EN
-- [ ] 4.12 Mobile width usable
+- [x] 4.6 Follow-up in context and transcript persists across reload at /ai-chat/[id]
+- [x] 4.7 New chat and thread list with derived titles, newest first
+- [x] 4.8 Car switch scopes the list; foreign-car thread id shows not-found
+- [x] 4.9 Stop keeps partial text marked interrupted and excludes it from the next turn
+- [x] 4.10 Delete thread with confirm dialog redirects to /ai-chat
+- [x] 4.11 PL locale thread answers in Polish; EN thread stays EN
+- [x] 4.12 Mobile width usable
 
 ### Phase 5: Verification and Hardening
 

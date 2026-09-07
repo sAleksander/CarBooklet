@@ -6,8 +6,8 @@ import type { ChatMessage } from "@/types";
 /**
  * The hook's contract, pinned in a DOM.
  *
- * Every case here is either a bug the old `useStreamingText` shipped with, or a
- * rule the persisted transcript depends on. None of it was reachable before this
+ * Every case here is either a bug the old one-shot streaming hook shipped with,
+ * or a rule the persisted transcript depends on. None of it was reachable before this
  * project existed — the client half of chat had no test path at all.
  */
 

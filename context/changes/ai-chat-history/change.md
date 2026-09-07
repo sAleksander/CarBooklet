@@ -3,7 +3,7 @@ change_id: ai-chat-history
 title: Multi-turn AI chat — conversation history instead of one-shot Q&A
 status: implementing
 created: 2026-09-02
-updated: 2026-09-05
+updated: 2026-09-07
 archived_at: null
 ---
 

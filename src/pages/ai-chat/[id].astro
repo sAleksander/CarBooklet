@@ -1,0 +1,88 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import { createClient } from "@/lib/supabase";
+import { getCarById } from "@/lib/services/cars";
+import { listConversations, getConversationById, getMessages } from "@/lib/services/conversations";
+import { logSsrError } from "@/lib/api-errors";
+import ChatShell from "@/components/ai/ChatShell.astro";
+import { ChatThread } from "@/components/ai/ChatThread";
+import { getT } from "@/i18n/server";
+import type { ChatMessage, Conversation } from "@/types";
+
+const { id } = Astro.params;
+const { selectedCarId, user, lang } = Astro.locals;
+const t = getT(lang);
+
+if (!selectedCarId) {
+  return Astro.redirect("/cars");
+}
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+if (!supabase || !user) {
+  return Astro.redirect("/cars");
+}
+
+// Validated before it reaches PostgREST, which answers a malformed uuid with
+// `22P02` — a 500 for what is plainly a bad link. Same reason as the DELETE
+// route's `z.uuid()` on the same parameter.
+const isUuid = typeof id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+let car;
+let conversations: Conversation[];
+let conversation: Conversation | null = null;
+try {
+  car = await getCarById(supabase, selectedCarId, user.id);
+  if (car?.user_id !== user.id) {
+    return Astro.redirect("/cars");
+  }
+  conversations = await listConversations(supabase, car.id, user.id);
+  if (isUuid) {
+    conversation = await getConversationById(supabase, id, user.id);
+  }
+} catch (err) {
+  logSsrError(err, { route: "/ai-chat/[id]", method: "GET", userId: user.id });
+  return Astro.redirect("/cars?error=load_failed");
+}
+
+// A thread belonging to another *car* of the same user is refused exactly like
+// one belonging to another user: the transcript is grounded on the car that was
+// selected when it started, and re-opening it under a different car would show a
+// conversation about a vehicle the model is no longer being told about. The chat
+// route makes the same call on the same comparison.
+if (conversation?.car_id !== car.id) {
+  conversation = null;
+  Astro.response.status = 404;
+}
+
+let messages: ChatMessage[] = [];
+if (conversation) {
+  try {
+    const rows = await getMessages(supabase, conversation.id, user.id);
+    messages = rows.map(({ id: messageId, role, content, status }) => ({ id: messageId, role, content, status }));
+  } catch (err) {
+    logSsrError(err, { route: "/ai-chat/[id]", method: "GET", userId: user.id });
+    return Astro.redirect("/cars?error=load_failed");
+  }
+}
+
+const title = conversation ? `${conversation.title} — ${t("nav.aiChat")}` : t("aiChat.notFoundTitle");
+---
+
+<AppLayout title={title} selectedCar={car}>
+  <ChatShell car={car} conversations={conversations} activeId={conversation?.id ?? null}>
+    {
+      conversation ? (
+        <ChatThread lang={lang} conversationId={conversation.id} initialMessages={messages} client:load />
+      ) : (
+        <div class="py-8 text-center">
+          <h2 class="mb-2 text-lg font-bold text-foreground">{t("aiChat.notFoundTitle")}</h2>
+          <p class="mb-6 text-sm text-muted-foreground">{t("aiChat.conversationNotFound")}</p>
+          <a href="/ai-chat?new=1" class="text-sm text-accent-ink transition-colors hover:underline">
+            {t("aiChat.backToChat")}
+          </a>
+        </div>
+      )
+    }
+  </ChatShell>
+</AppLayout>

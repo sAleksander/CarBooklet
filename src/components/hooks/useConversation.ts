@@ -50,9 +50,10 @@ function localId(prefix: string): string {
 /**
  * The transcript, the in-flight turn, and the abort controller.
  *
- * Replaces `useStreamingText`, which could not be reused: it owned exactly one
- * answer and reset it at the top of every read, so a caller wanting to keep a
- * transcript had to snapshot the text on the `isDone` edge, racing that reset.
+ * Replaces the old one-shot streaming hook, which could not be reused: it owned
+ * exactly one answer and reset it at the top of every read, so a caller wanting
+ * to keep a transcript had to snapshot the text on the done edge, racing that
+ * reset.
  *
  * The server remains authoritative. This hook never sends prior turns — only
  * `{ conversation_id, prompt }` — and never invents an assistant message the

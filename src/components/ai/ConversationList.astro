@@ -1,0 +1,82 @@
+---
+import type { Conversation } from "@/types";
+import { getT } from "@/i18n/server";
+import { DeleteConversationButton } from "./DeleteConversationButton";
+import { surface } from "@/lib/theme";
+
+interface Props {
+  conversations: Conversation[];
+  /** The thread currently on screen, or `null` on an unsaved new one. */
+  activeId: string | null;
+}
+
+const { conversations, activeId } = Astro.props;
+const lang = Astro.locals.lang;
+const t = getT(lang);
+
+/**
+ * "3 days ago", in the user's language, with no translation keys of our own.
+ *
+ * `Intl.RelativeTimeFormat` already knows Polish plural forms — which are three
+ * for most units — so hand-rolling this in `en.json` and `pl.json` would mean
+ * re-deriving grammar the platform ships. Rendered server-side, so it is
+ * accurate as of the request rather than as of the last hydration.
+ */
+const SECOND = 1000;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+
+function relativeTime(iso: string): string {
+  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < HOUR) return rtf.format(-Math.round(diff / MINUTE), "minute");
+  if (diff < DAY) return rtf.format(-Math.round(diff / HOUR), "hour");
+  return rtf.format(-Math.round(diff / DAY), "day");
+}
+---
+
+<nav aria-label={t("aiChat.conversations")} class:list={[surface({ level: "panel" }), "flex flex-col gap-3 p-4"]}>
+  <a
+    href="/ai-chat?new=1"
+    class="rounded-md bg-primary px-3 py-2 text-center text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+  >
+    {t("aiChat.newChat")}
+  </a>
+
+  <p class="text-xs font-medium tracking-wide text-muted-foreground uppercase">{t("aiChat.conversations")}</p>
+
+  {
+    conversations.length === 0 ? (
+      <p class="text-sm text-muted-foreground">{t("aiChat.noConversations")}</p>
+    ) : (
+      <ul class="space-y-1">
+        {conversations.map((conversation) => (
+          <li
+            class:list={[
+              "flex items-center gap-1 rounded-lg transition-colors",
+              conversation.id === activeId ? "bg-accent" : "hover:bg-accent/50",
+            ]}
+          >
+            {/* The delete control is a sibling, not a child: a button nested
+                inside an anchor is invalid content and swallows the click. */}
+            <a
+              href={`/ai-chat/${conversation.id}`}
+              aria-current={conversation.id === activeId ? "page" : undefined}
+              class="min-w-0 flex-1 px-3 py-2"
+            >
+              <span class="block truncate text-sm text-foreground">{conversation.title}</span>
+              <span class="block text-xs text-muted-foreground">{relativeTime(conversation.updated_at)}</span>
+            </a>
+            <DeleteConversationButton
+              client:visible
+              conversationId={conversation.id}
+              title={conversation.title}
+              lang={lang}
+            />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</nav>

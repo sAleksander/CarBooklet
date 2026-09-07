@@ -2,10 +2,12 @@
 import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { getCarById } from "@/lib/services/cars";
+import { listConversations } from "@/lib/services/conversations";
 import { logSsrError } from "@/lib/api-errors";
-import { ChatDemo } from "@/components/ai/ChatDemo";
+import ChatShell from "@/components/ai/ChatShell.astro";
+import { ChatThread } from "@/components/ai/ChatThread";
 import { getT } from "@/i18n/server";
-import { surface } from "@/lib/theme";
+import type { Conversation } from "@/types";
 
 const { selectedCarId, user, lang } = Astro.locals;
 const t = getT(lang);
@@ -24,28 +26,33 @@ if (!supabase || !user) {
 // user setting it by hand. An unparseable value reached PostgREST as `22P02`,
 // threw here with no handler at all, and rendered Astro's raw 500 page.
 let car;
+let conversations: Conversation[];
 try {
   car = await getCarById(supabase, selectedCarId, user.id);
+  if (car?.user_id !== user.id) {
+    return Astro.redirect("/cars");
+  }
+  conversations = await listConversations(supabase, car.id, user.id);
 } catch (err) {
   logSsrError(err, { route: "/ai-chat", method: "GET", userId: user.id });
   return Astro.redirect("/cars?error=load_failed");
 }
 
-if (car?.user_id !== user.id) {
-  return Astro.redirect("/cars");
+// This route is the entry point, not a thread of its own: land the user on the
+// thread they were last in, so /ai-chat means "continue" rather than "start
+// over". `?new=1` is the explicit opt-out, and the only way to reach an empty
+// composer once a car has any history at all.
+//
+// The redirect target is the first row of a list already ordered by `updated_at`
+// descending, so it is the most recently active thread rather than the newest.
+const wantsNew = Astro.url.searchParams.has("new");
+if (!wantsNew && conversations.length > 0) {
+  return Astro.redirect(`/ai-chat/${conversations[0].id}`);
 }
 ---
 
 <AppLayout title={t("nav.aiChat")} selectedCar={car}>
-  <div class="flex justify-center pt-4">
-    <div class:list={[surface({ level: "panel" }), "w-full max-w-2xl p-8"]}>
-      <h1 class="mb-2 text-2xl font-bold text-foreground">
-        {car.brand}
-        {car.model}
-        — {t("nav.aiChat")}
-      </h1>
-      <p class="mb-8 text-sm text-muted-foreground">{car.production_year}</p>
-      <ChatDemo lang={lang} client:load />
-    </div>
-  </div>
+  <ChatShell car={car} conversations={conversations} activeId={null}>
+    <ChatThread lang={lang} conversationId={null} initialMessages={[]} client:load />
+  </ChatShell>
 </AppLayout>

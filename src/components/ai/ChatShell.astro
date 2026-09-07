@@ -1,0 +1,43 @@
+---
+import type { Car, Conversation } from "@/types";
+import { getT } from "@/i18n/server";
+import { surface } from "@/lib/theme";
+import ConversationList from "./ConversationList.astro";
+
+interface Props {
+  car: Car;
+  conversations: Conversation[];
+  /** The thread on screen. `null` on a new thread and on the not-found state. */
+  activeId: string | null;
+}
+
+const { car, conversations, activeId } = Astro.props;
+const t = getT(Astro.locals.lang);
+
+// Height is claimed only from `lg` up. `AppLayout`'s `<main>` already scrolls,
+// so on a phone the page scrolls as one column and the composer is reached by
+// scrolling; forcing `h-full` there would trap the transcript in a
+// viewport-sized box under the stacked thread list, with two nested scrollers
+// competing for the same gesture.
+---
+
+<div class="mx-auto flex w-full max-w-6xl flex-col gap-4 lg:h-full lg:min-h-0 lg:flex-row">
+  <aside class="lg:w-72 lg:shrink-0 lg:overflow-y-auto">
+    <ConversationList conversations={conversations} activeId={activeId} />
+  </aside>
+
+  <div class:list={[surface({ level: "panel" }), "flex min-h-0 flex-1 flex-col p-6"]}>
+    <header class="mb-6">
+      <h1 class="text-2xl font-bold text-foreground">
+        {car.brand}
+        {car.model}
+        — {t("nav.aiChat")}
+      </h1>
+      <p class="mt-1 text-sm text-muted-foreground">{car.production_year}</p>
+    </header>
+
+    <div class="flex min-h-0 flex-1 flex-col">
+      <slot />
+    </div>
+  </div>
+</div>

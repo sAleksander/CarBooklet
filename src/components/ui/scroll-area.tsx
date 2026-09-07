@@ -5,10 +5,25 @@ import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 
-function ScrollArea({ className, children, ...props }: React.ComponentProps<typeof ScrollAreaPrimitive.Root>) {
+function ScrollArea({
+  className,
+  children,
+  viewportRef,
+  ...props
+}: React.ComponentProps<typeof ScrollAreaPrimitive.Root> & {
+  /**
+   * The scrolling element itself, which the Root does not expose.
+   *
+   * Needed by anything that has to read or set scroll position — the chat
+   * transcript sticks to the bottom only while the user has not scrolled up,
+   * and that is a `scrollTop` question no wrapper prop can answer.
+   */
+  viewportRef?: React.Ref<HTMLDivElement>;
+}) {
   return (
     <ScrollAreaPrimitive.Root data-slot="scroll-area" className={cn("relative", className)} {...props}>
       <ScrollAreaPrimitive.Viewport
+        ref={viewportRef}
         data-slot="scroll-area-viewport"
         className="size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1"
       >

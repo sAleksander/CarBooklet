@@ -75,11 +75,13 @@ cover, because two things make "progress was visible" hard to assert honestly:
 1. `StreamingText.tsx` renders the streaming cursor as
    `<span className="animate-pulse">▋</span>` — no `role`, no `aria-live`, no
    accessible name. No role locator can see it.
-2. `ChatDemo.tsx` sets `isSubmitting = false` in a `finally` that runs when the
-   response _headers_ arrive, so the button reverts from "Sending…" to "Ask"
-   **while the stream is still streaming**.
+2. ~~The composer's submit button reverted from "Sending…" to "Ask" when the
+   response _headers_ arrived, while the stream was still streaming.~~ Fixed by
+   `ai-chat-history`: the button now becomes "Stop" and stays that way for the
+   whole streaming window, so it _is_ a usable progress locator.
 
-So during the streaming window there is no accessible progress signal at all.
+So during the streaming window the only accessible progress signal is the button
+label; the streamed text region itself still has no live-region role.
 With real-model timing on top, an assertion that progress was visible is a race.
 Prefer fixing the UI (`role="status" aria-live="polite"` on the streaming
 region) over reaching for `getByTestId` — the missing role is a real

@@ -179,7 +179,22 @@
     "placeholder": "Zapytaj cokolwiek o swoim samochodzie…",
     "ask": "Zapytaj",
     "sending": "Wysyłam…",
-    "assistant": "Asystent"
+    "assistant": "Asystent",
+    "you": "Ty",
+    "stop": "Zatrzymaj",
+    "newChat": "Nowa rozmowa",
+    "conversations": "Rozmowy",
+    "noConversations": "Nie masz jeszcze żadnych rozmów.",
+    "emptyState": "Zadaj pierwsze pytanie o ten samochód.",
+    "deleteConversation": "Usunąć tę rozmowę?",
+    "deleteConversationDesc": "Cały wątek wraz ze wszystkimi wiadomościami zostanie trwale usunięty. Tej operacji nie można cofnąć.",
+    "deleting": "Usuwanie…",
+    "interrupted": "Odpowiedź przerwana",
+    "failed": "Asystent nie zdołał dokończyć tej odpowiedzi. Spróbuj ponownie.",
+    "rateLimited": "Asystent jest chwilowo niedostępny z powodu limitu zapytań. Spróbuj ponownie później.",
+    "conversationNotFound": "Ta rozmowa już nie istnieje albo należy do innego samochodu.",
+    "backToChat": "Wróć do czatu",
+    "notFoundTitle": "Nie znaleziono rozmowy"
   },
   "landing": {
     "title": "CarBooklet",

@@ -179,7 +179,22 @@
     "placeholder": "Ask anything about your car…",
     "ask": "Ask",
     "sending": "Sending…",
-    "assistant": "Assistant"
+    "assistant": "Assistant",
+    "you": "You",
+    "stop": "Stop",
+    "newChat": "New chat",
+    "conversations": "Conversations",
+    "noConversations": "No conversations yet.",
+    "emptyState": "Ask your first question about this car.",
+    "deleteConversation": "Delete this conversation?",
+    "deleteConversationDesc": "The whole thread and every message in it will be permanently removed. This cannot be undone.",
+    "deleting": "Deleting…",
+    "interrupted": "Answer interrupted",
+    "failed": "The assistant couldn't finish this answer. Please try again.",
+    "rateLimited": "The assistant is temporarily rate-limited. Please try again later.",
+    "conversationNotFound": "This conversation no longer exists, or it belongs to another car.",
+    "backToChat": "Back to chat",
+    "notFoundTitle": "Conversation not found"
   },
   "landing": {
     "title": "CarBooklet",
