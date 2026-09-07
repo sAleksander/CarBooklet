@@ -6,24 +6,69 @@
 - **Scope**: Phases 1–5 (full plan)
 - **Date**: 2026-09-07
 - **Commits reviewed**: `4e4af81`, `cce99eb`, `e51ca9c`, `13da8e3`, `11cfd8b`, `fb20d06` (49 files, +6825/−350)
-- **Verdict**: REJECTED
-- **Findings**: 1 critical, 6 warnings, 3 observations
+- **Verdict at review**: REJECTED — **resolved by triage the same day; now APPROVED**
+- **Findings**: 1 critical, 6 warnings, 3 observations — 9 fixed, 1 accepted, 0 outstanding
+- **Triage commits**: `41c0dad` (F1–F4), `f3e00b6` (F5–F10)
 
-The verdict is driven entirely by **F1**, which needs a 200-message thread to bite and has a
-two-line fix. The rest of the change is unusually well built: RLS, XSS, secret handling,
+The REJECTED verdict was driven entirely by **F1**, which needed a 200-message thread to bite and
+had a two-line fix. The rest of the change was unusually well built: RLS, XSS, secret handling,
 authn/authz, the double-commit guard and all six Critical Implementation Details verified clean;
 scope discipline intact; nothing MISSING.
 
 ## Verdicts
 
-| Dimension           | Verdict | Findings               |
-| ------------------- | ------- | ---------------------- |
-| Plan Adherence      | WARNING | F4, F8                 |
-| Scope Discipline    | PASS    | —                      |
-| Safety & Quality    | FAIL    | F1, F2, F3, F5, F6, F9 |
-| Architecture        | PASS    | —                      |
-| Pattern Consistency | WARNING | F7, F10                |
-| Success Criteria    | PASS    | —                      |
+Both columns are kept on purpose: the review found what it found, and erasing that would leave no
+record of why the fixes exist.
+
+| Dimension           | At review | After triage | Findings                         |
+| ------------------- | --------- | ------------ | -------------------------------- |
+| Plan Adherence      | WARNING   | PASS         | F4 fixed, F8 accepted            |
+| Scope Discipline    | PASS      | PASS         | —                                |
+| Safety & Quality    | FAIL      | PASS         | F1, F2, F3, F5, F6, F9 all fixed |
+| Architecture        | PASS      | PASS         | —                                |
+| Pattern Consistency | WARNING   | PASS         | F7, F10 fixed                    |
+| Success Criteria    | PASS      | PASS         | —                                |
+
+► **Post-triage overall: APPROVED.**
+
+## Post-triage status (2026-09-07)
+
+Every finding carries a decision below; none is left PENDING. Nine were fixed, one (F8, the stream
+architecture's deliberate departure from the plan) was accepted with no code change.
+
+**Each fix carries a regression test verified by reverting the fix and confirming that test — and
+only that test — fails.** That method paid for itself twice:
+
+- **F2's stated blind spot was real.** The report flagged "whether a test pins the exact error body
+  shape"; two route tests did, and the PostToolUse tripwire failed on the first edit. Both now
+  assert the id while keeping the R2 exact-match that stops a future field smuggling the SDK
+  message into a response body.
+- **F5's stated blind spot was not.** No assertion depended on `<` surviving in a car field, and all
+  twelve prior `ai.test.ts` cases passed unchanged, because `sanitiseForPrompt` is a strict superset
+  of `sanitise`.
+
+One fix deviates from its own recommendation: **F7** said "hoist into a single island, mirroring
+`CarList`", which read literally means moving the thread list into React and breaking the project
+rule that non-interactive sections stay `.astro`. The rows keep their server-rendered markup and a
+single delegated dialog serves them all — the same N→1 result with the rule intact.
+
+### Final gate, re-run after triage
+
+`npm run test:all` 561/561 across all three projects (21 files) · `eslint` clean ·
+`astro check` 0 errors, 0 warnings (224 files) · `npm run build` · `wrangler deploy --dry-run`
+3268.45 KiB / **658.15 KiB gzipped** (+0.18 KiB against the pre-triage 657.97, ~21% of the 3 MB
+limit).
+
+Test count moved 554 → 561: seven cases added by the fixes (two integration for F1, one route +
+one client for F2, one route for F3, one client for F4, two unit for F5, one route for F9).
+
+### Deferred, with reasons
+
+Three items are recorded in `../follow-ups/review-fixes.md` rather than fixed here: bounding car
+fields at the API boundary (F5's unapplied Fix B — the prompt-side half is done, the storage-side
+half is not), a live-region role for the streaming answer (needs an i18n string and a real
+screen-reader decision), and **a browser re-check of the delete flow**, whose manual sign-off
+(item 4.10) predates F7's rewrite and which no automated test reaches.
 
 ### Success criteria — all 23 automated checks re-run in this review pass
 
