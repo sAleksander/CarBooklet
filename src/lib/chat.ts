@@ -150,9 +150,13 @@ export const TITLE_MAX_CHARS = 60;
  * waiting for their actual answer.
  *
  * Cuts on a word boundary when there is a reasonable one, so a truncated title
- * reads as a phrase rather than as a severed word. The prompt is already
- * non-empty by the time it gets here (the route's zod schema refuses an empty
- * one), and a prompt of nothing but whitespace cannot reach this either.
+ * reads as a phrase rather than as a severed word.
+ *
+ * The prompt is non-empty *and* non-blank by the time it gets here, because the
+ * route's schema trims before it counts. That trim is load-bearing rather than
+ * cosmetic: without it `"   "` satisfied `.min(1)`, reached this function, and
+ * returned `""` — which the `conversations_title_length` CHECK then rejected,
+ * turning a bad prompt into a generic "Invalid request" three calls downstream.
  */
 export function titleFromPrompt(prompt: string): string {
   const collapsed = prompt.replace(/\s+/g, " ").trim();

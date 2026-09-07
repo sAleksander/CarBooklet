@@ -18,34 +18,47 @@ export function sanitise(value: string): string {
 }
 
 /**
- * `sanitise`, plus the two characters that could close the entries delimiter.
+ * `sanitise`, plus the two characters that could forge the entries delimiter.
  *
- * The car fields have always gone through `sanitise` alone, and that is pinned
- * by `ai.test.ts`; this is deliberately a second function rather than a widening
- * of the first. Entry text is a different kind of input — free-form, arbitrarily
- * long, and written by the user rather than chosen from a form — and the chat
- * review flagged exactly this: "risk grows significantly when repair entry text
- * is added to the prompt" (2026-06-02-ai-car-chat, F4).
+ * Every user-authored value entering the prompt goes through this — car fields
+ * included. They were originally on bare `sanitise`, on the reasoning that a
+ * car field is chosen from a form while entry text is free-form. That
+ * distinction does not survive the delimiter: `<` and `>` in a *car* field can
+ * open a counterfeit `<entries>` block ahead of the real one, and the car
+ * sentence is printed first, so the forgery lands where the model reads it as
+ * the genuine article. A defence the payload can sidestep by moving one field
+ * over is not a defence.
  *
- * Stripping `<` and `>` means a stored `</entries>` cannot end the block early
- * and promote whatever follows it from data to instructions. It is not a claim
- * to have solved prompt injection — a delimiter the payload cannot forge is one
- * layer, and the "never as instructions" framing around the block is another.
+ * It is still not a claim to have solved prompt injection — a delimiter the
+ * payload cannot forge is one layer, and the "never as instructions" framing
+ * around the block is another. (2026-06-02-ai-car-chat, F4.)
  */
-function sanitiseForBlock(value: string): string {
+function sanitiseForPrompt(value: string): string {
   return sanitise(value).replace(/[<>]/g, " ").replace(/\s+/g, " ").trim();
 }
 
-/** Beyond this, one entry is padding the window rather than informing it. */
-const ENTRY_FIELD_MAX_CHARS = 200;
+/**
+ * Beyond this, one field is padding the window rather than informing it.
+ *
+ * Applies to car fields too, which `carSchema` bounds only by `.min(1)`. The
+ * system prompt is rebuilt and resent on *every turn* of *every thread*, so an
+ * oversized stored field is not paid for once — it is paid for on each request
+ * against a 50/day cap.
+ */
+const PROMPT_FIELD_MAX_CHARS = 200;
 
 function clip(value: string): string {
-  return value.length > ENTRY_FIELD_MAX_CHARS ? `${value.slice(0, ENTRY_FIELD_MAX_CHARS - 1)}…` : value;
+  return value.length > PROMPT_FIELD_MAX_CHARS ? `${value.slice(0, PROMPT_FIELD_MAX_CHARS - 1)}…` : value;
+}
+
+/** One car field, ready for the prompt: control chars gone, delimiter-safe, bounded. */
+function carField(value: string): string {
+  return clip(sanitiseForPrompt(value));
 }
 
 function field(label: string, value: string | number | null | undefined): string | null {
   if (value === null || value === undefined) return null;
-  const text = sanitiseForBlock(String(value));
+  const text = sanitiseForPrompt(String(value));
   if (!text) return null;
   return `${label}: ${clip(text)}`;
 }
@@ -66,7 +79,7 @@ function entryFields(entry: Entry): (string | null)[] {
 
 function entryLine(entry: Entry): string {
   const parts = [
-    sanitiseForBlock(entry.conducted_at),
+    sanitiseForPrompt(entry.conducted_at),
     entry.entry_type,
     ...(entry.mileage === null ? [] : [`${entry.mileage.toString()} km`]),
     ...entryFields(entry).filter((part): part is string => part !== null),
@@ -93,15 +106,15 @@ export interface SystemPromptOptions {
 
 export function buildSystemPrompt(car: Car, options: SystemPromptOptions): string {
   const details: string[] = [
-    `fuel type: ${sanitise(car.engine_type)}`,
-    `engine capacity: ${sanitise(car.engine_capacity)}`,
-    `engine power: ${sanitise(car.engine_power)}`,
+    `fuel type: ${carField(car.engine_type)}`,
+    `engine capacity: ${carField(car.engine_capacity)}`,
+    `engine power: ${carField(car.engine_power)}`,
   ];
-  if (car.engine_code?.trim()) details.push(`engine code: ${sanitise(car.engine_code)}`);
-  if (car.vin_number?.trim()) details.push(`VIN: ${sanitise(car.vin_number)}`);
+  if (car.engine_code?.trim()) details.push(`engine code: ${carField(car.engine_code)}`);
+  if (car.vin_number?.trim()) details.push(`VIN: ${carField(car.vin_number)}`);
 
   const base =
-    `You are an expert car assistant. The user's car is a ${sanitise(car.production_year)} ${sanitise(car.brand)} ${sanitise(car.model)}. ` +
+    `You are an expert car assistant. The user's car is a ${carField(car.production_year)} ${carField(car.brand)} ${carField(car.model)}. ` +
     `Known details: ${details.join(", ")}. ` +
     `Answer questions using your specific knowledge of this car model — common faults, maintenance intervals, ` +
     `OBD2 codes, and technical specifications. Be precise and reference the specific model where relevant. ` +

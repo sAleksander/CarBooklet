@@ -14,17 +14,29 @@ import { toServiceError } from "./errors";
  * that these filters cannot hide a policy regression.
  */
 
+/**
+ * Every thread for one car, most recently active first.
+ *
+ * Bounded for the same reason `getMessages` is: nothing stops a user
+ * accumulating threads, and both chat pages render this list in full on every
+ * load. The order is by activity, so the bound trims the threads nobody has
+ * touched in longest — the right end to lose. The index
+ * `conversations (car_id, updated_at DESC)` serves the sort and the limit
+ * together.
+ */
 export async function listConversations(
   supabase: SupabaseClient,
   carId: string,
   userId: string,
+  limit = 100,
 ): Promise<Conversation[]> {
   const res = await supabase
     .from("conversations")
     .select("*")
     .eq("car_id", carId)
     .eq("user_id", userId)
-    .order("updated_at", { ascending: false });
+    .order("updated_at", { ascending: false })
+    .limit(limit);
   if (res.error) throw toServiceError(res.error, "listConversations");
   return res.data as Conversation[];
 }

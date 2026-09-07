@@ -180,6 +180,17 @@ describe("POST /api/ai/chat", () => {
       expect(await readJson(res)).toEqual({ error: "Prompt is required" });
     });
 
+    it("400 naming the prompt when it is only whitespace", async () => {
+      // `.min(1)` alone let "   " through; `titleFromPrompt` then produced an
+      // empty title, the CHECK constraint rejected it, and the caller got a
+      // generic "Invalid request" for what is plainly an empty question.
+      const res = await POST(makeContext({ json: () => Promise.resolve({ prompt: "   \n\t " }) }));
+
+      expect(res.status).toBe(400);
+      expect(await readJson(res)).toEqual({ error: "Prompt is required" });
+      expect(createConversation).not.toHaveBeenCalled();
+    });
+
     it("400 with the first zod issue when the prompt is too long", async () => {
       const res = await POST(makeContext({ json: () => Promise.resolve({ prompt: "a".repeat(2001) }) }));
 

@@ -19,7 +19,11 @@ import type { Conversation, Entry, MessageStatus } from "@/types";
 const ROUTE = "/api/ai/chat";
 
 export const chatRequestSchema = z.object({
-  prompt: z.string().min(1, "Prompt is required").max(2000, "Prompt is too long"),
+  // Trimmed before the length checks, so "   " is refused as "Prompt is
+  // required" rather than sailing past `.min(1)` and failing three calls later
+  // on the `conversations_title_length` CHECK — which surfaces as a generic
+  // 400 "Invalid request" and names the wrong problem.
+  prompt: z.string().trim().min(1, "Prompt is required").max(2000, "Prompt is too long"),
   /**
    * Absent starts a new thread. Present resumes one — and the route still
    * decides whether the caller may, from the row it reads, never from this.

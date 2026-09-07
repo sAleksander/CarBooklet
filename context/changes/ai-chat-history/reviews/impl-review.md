@@ -204,7 +204,13 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: Leaves the forging vector open; does nothing for cars already stored.
   - Confidence: MEDIUM — bounds new input only.
   - Blind spot: Existing oversized rows.
-- **Decision**: PENDING
+- **Decision**: FIXED via Fix A — `sanitiseForBlock` renamed `sanitiseForPrompt` (it now serves
+  both kinds of input) and car fields go through a new `carField` = `clip(sanitiseForPrompt(...))`.
+  `ENTRY_FIELD_MAX_CHARS` renamed `PROMPT_FIELD_MAX_CHARS`. The named blind spot did not
+  materialise: no existing assertion depended on `<` surviving, and all 12 prior cases still pass
+  because `sanitiseForPrompt` is a strict superset of `sanitise`. Two new cases pin the forging
+  vector and the clip; verified by reverting the car-field call sites and watching both fail.
+  Fix B (`.max()` on `carSchema`) was NOT applied — see the follow-up note below.
 
 ### F6 — listConversations is unbounded
 
@@ -221,7 +227,9 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: Needs a "show older" affordance if a user ever exceeds the bound.
   - Confidence: HIGH.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED — `listConversations` takes `limit = 100`, ordered by `updated_at DESC` so
+  the bound drops the least recently active threads. Served by the existing
+  `conversations (car_id, updated_at DESC)` index.
 
 ### F7 — One React island per conversation row
 
@@ -247,7 +255,14 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: Still N i18next instances for N visible rows.
   - Confidence: MEDIUM — mitigates rather than fixes.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED via Fix A, adapted — the literal "move the list into React" reading would
+  break the project rule that non-interactive sections stay `.astro`. Instead the rows keep their
+  server-rendered markup (a plain `<button data-delete-conversation>` with an inline SVG) and a
+  single `DeleteConversationDialog` island, mounted once with `client:idle`, picks up their
+  clicks by delegation. N React roots + N i18n instances + N Radix dialogs → one of each,
+  independent of thread count. `DeleteConversationButton.tsx` deleted; the dialog now also names
+  the thread being deleted, which the per-row version could not.
+  **Needs a browser re-check**: this reworks the delete flow that manual item 4.10 covered.
 
 ### F8 — chat.ts stream architecture departs from the approved design
 
@@ -265,7 +280,10 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   reviewer's judgement, correct — recorded so it is a conscious acceptance rather than an
   unnoticed one.
 - **Fix**: None proposed — the deviation is better than the plan.
-- **Decision**: PENDING
+- **Decision**: ACCEPTED — no code change. The deviation is better than the plan and the reason
+  is recorded in the source: on workerd, killing a reader mid-stream ran neither `cancel()` nor
+  the completion path, so the approved design would have lost the assistant message in exactly
+  the case persistence exists for. Logged here so the departure is a conscious acceptance.
 
 ### F9 — Whitespace-only prompt yields the wrong 400, and a false comment
 
@@ -282,7 +300,9 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: `.trim()` changes what reaches `titleFromPrompt` — harmless, it collapses anyway.
   - Confidence: HIGH.
   - Blind spot: Whether a schema test pins the untrimmed behaviour.
-- **Decision**: PENDING
+- **Decision**: FIXED — `z.string().trim().min(1, "Prompt is required")`, and the false claim in
+  `src/lib/chat.ts` replaced with a note on why the trim is load-bearing. New guard case pins it;
+  verified by removing `.trim()` and watching only that case fail.
 
 ### F10 — Cancelling the delete dialog leaves a stale error
 
@@ -297,4 +317,6 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: None.
   - Confidence: HIGH.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED as part of F7 — `DeleteConversationButton.tsx` no longer exists; its
+  replacement `DeleteConversationDialog.tsx` clears `error` in `close()` alongside the target, so
+  a failed delete cannot greet the user on the next thread they open the dialog for.

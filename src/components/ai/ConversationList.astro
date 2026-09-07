@@ -1,7 +1,7 @@
 ---
 import type { Conversation } from "@/types";
 import { getT } from "@/i18n/server";
-import { DeleteConversationButton } from "./DeleteConversationButton";
+import { DeleteConversationDialog } from "./DeleteConversationDialog";
 import { surface } from "@/lib/theme";
 
 interface Props {
@@ -68,15 +68,39 @@ function relativeTime(iso: string): string {
               <span class="block truncate text-sm text-foreground">{conversation.title}</span>
               <span class="block text-xs text-muted-foreground">{relativeTime(conversation.updated_at)}</span>
             </a>
-            <DeleteConversationButton
-              client:visible
-              conversationId={conversation.id}
-              title={conversation.title}
-              lang={lang}
-            />
+            {/* Server-rendered markup, not an island. The dialog is mounted
+                once below and finds these by delegation, so the page pays for
+                one React root and one i18n instance however long the list is. */}
+            <button
+              type="button"
+              data-delete-conversation={conversation.id}
+              data-conversation-title={conversation.title}
+              aria-label={`${t("common.delete")} — ${conversation.title}`}
+              class="mr-1 rounded p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-destructive"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="size-4"
+                aria-hidden="true"
+              >
+                <path d="M3 6h18" />
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                <line x1="10" x2="10" y1="11" y2="17" />
+                <line x1="14" x2="14" y1="11" y2="17" />
+              </svg>
+            </button>
           </li>
         ))}
       </ul>
     )
   }
+
+  {conversations.length > 0 && <DeleteConversationDialog client:idle lang={lang} />}
 </nav>
