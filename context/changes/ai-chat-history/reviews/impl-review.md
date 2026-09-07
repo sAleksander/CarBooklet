@@ -96,7 +96,10 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: None — the ascending contract is preserved by the reverse.
   - Confidence: HIGH — ORDER BY/LIMIT semantics are unambiguous.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED — ordered descending + `.reverse()`; doc comment corrected. Regression
+  pinned by two integration cases in `integration/crud-integrity.test.ts` ("messages"): the
+  over-limit case fails if the ordering regresses, the under-limit case is the control.
+  Verified by reverting the fix and watching exactly the first fail.
 
 ### F2 — Every retry after a 429 spawns another empty conversation
 
@@ -123,7 +126,12 @@ passes) — only the prose is stale. Worth folding into any fix pass.
     failed turn, which is what Phase 2 explicitly chose.
   - Confidence: MEDIUM — simple to write, but undoes a recorded intent rather than a bug.
   - Blind spot: Interaction with the meta-frame-first rule.
-- **Decision**: PENDING
+- **Decision**: FIXED via Fix A — `conversation_id` now rides the 429 and 500 bodies; the hook
+  adopts it before setting the error. The named blind spot was real: two route tests pinned the
+  exact body with `toEqual` and failed immediately (caught by the tripwire hook); both updated to
+  assert the id, keeping the R2 exact-match that stops a new field smuggling in the SDK message.
+  New client case pins the adoption and the retry resuming the same thread; verified by removing
+  the hook branch and watching only that case fail.
 
 ### F3 — An empty model reply is a silently dead turn
 
@@ -142,7 +150,10 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: None.
   - Confidence: HIGH — the client branch is already tested.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED — the route now emits `{"error":"Stream failed"}` before the terminal
+  `done` on the empty-reply path; `aborted` is exempt, since the user pressed stop and knows why.
+  The misleadingly-named route test was strengthened to assert the error frame AND its ordering
+  before `done`, not just `done:"error"`. Verified by removing the push and watching that case fail.
 
 ### F4 — The client shows "conversation not found" when the CAR is missing
 
@@ -162,7 +173,10 @@ passes) — only the prose is stale. Worth folding into any fix pass.
   - Tradeoff: Couples the client to a server literal — which the plan already accepted.
   - Confidence: HIGH.
   - Blind spot: None significant.
-- **Decision**: PENDING
+- **Decision**: FIXED — the 404 → `conversation_not_found` mapping is now gated on the server's
+  `"Conversation not found"` literal, hoisted to a named constant explaining why it is matched
+  rather than assumed. A "Car not found" 404 falls through to `server`. New client case pins it;
+  verified by reverting the condition and watching only that case fail.
 
 ### F5 — Car fields reach the system prompt uncapped and `<>`-permitting
 

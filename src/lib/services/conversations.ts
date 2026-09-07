@@ -72,10 +72,15 @@ export async function deleteConversation(supabase: SupabaseClient, id: string, u
  * context window are built in.
  *
  * `limit` is a safety bound, not pagination: it caps what a single pathological
- * thread can pull into a Worker's memory. The window built from these messages
- * keeps only the last few pairs anyway, so a thread longer than the bound loses
- * nothing the model would have seen. If threads ever need to render beyond it,
- * that is a paging feature, not a bigger number.
+ * thread can pull into a Worker's memory. The bound has to trim the *head* of
+ * the thread, which is why the query orders descending and the result is
+ * reversed here rather than ordering ascending and letting LIMIT cut the tail.
+ * Postgres applies ORDER BY before LIMIT, so ascending + LIMIT would return the
+ * OLDEST rows: past the bound the replayed window would be built from the
+ * thread's opening turns and the transcript would stop before the message the
+ * user just sent — both silently. Reversing in JS keeps the oldest-first
+ * contract every caller depends on. If threads ever need to render beyond the
+ * bound, that is a paging feature, not a bigger number.
  */
 export async function getMessages(
   supabase: SupabaseClient,
@@ -88,10 +93,11 @@ export async function getMessages(
     .select("*")
     .eq("conversation_id", conversationId)
     .eq("user_id", userId)
-    .order("created_at", { ascending: true })
+    .order("created_at", { ascending: false })
     .limit(limit);
   if (res.error) throw toServiceError(res.error, "getMessages");
-  return res.data as Message[];
+  // Newest-first off the wire, oldest-first out the door.
+  return (res.data as Message[]).reverse();
 }
 
 export async function appendMessage(supabase: SupabaseClient, data: MessageCreateData): Promise<Message> {

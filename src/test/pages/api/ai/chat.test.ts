@@ -359,7 +359,13 @@ describe("POST /api/ai/chat", () => {
       const text = await res.text();
       await settle(ctx);
 
+      // An error frame, and not only the terminal `done`. The client commits an
+      // empty buffer as no message at all, so without this the turn ends with
+      // the question on screen and nothing to explain the silence — the test
+      // used to assert `done:"error"` alone and call that "reports error".
+      expect(text).toContain('data: {"error":"Stream failed"}');
       expect(text).toContain('data: {"done":"error"}');
+      expect(text.indexOf('"error":"Stream failed"')).toBeLessThan(text.indexOf('"done":"error"'));
       // An empty bubble tells the user nothing, and the column refuses it anyway.
       const assistantWrites = vi.mocked(appendMessage).mock.calls.filter((c) => c[1].role === "assistant");
       expect(assistantWrites).toHaveLength(0);
@@ -441,7 +447,14 @@ describe("POST /api/ai/chat", () => {
       const res = await POST(makeContext());
 
       expect(res.status).toBe(429);
-      expect(await readJson(res)).toEqual({ error: "AI assistant is rate-limited" });
+      // The id rides along with the failure. The question survives (below), and
+      // this is the only way the client can learn *where* it survived — the
+      // `meta` frame never gets sent. Without it a retry opens a second thread
+      // holding a second copy, which at 50 requests/day is routine, not rare.
+      expect(await readJson(res)).toEqual({
+        error: "AI assistant is rate-limited",
+        conversation_id: CONV_ID,
+      });
       expect(appendMessage).toHaveBeenCalledTimes(1); // the question survives
     });
 
@@ -478,7 +491,10 @@ describe("POST /api/ai/chat", () => {
 
       expect(res.status).toBe(500);
       const body = await readJson(res);
-      expect(body).toEqual({ error: "AI service error" });
+      // The thread id, and nothing else: an exact match is what keeps R2 honest,
+      // since a looser assertion would not notice a new field carrying the SDK's
+      // message alongside the fixed literal.
+      expect(body).toEqual({ error: "AI service error", conversation_id: CONV_ID });
       // R2: the secret-bearing SDK message never reaches the response body.
       expect(JSON.stringify(body)).not.toContain("sk-or-test-LEAK");
     });

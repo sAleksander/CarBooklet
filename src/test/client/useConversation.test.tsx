@@ -66,8 +66,9 @@ function okResponse(lines: string[], onCancel?: () => void): Response {
   return { ok: true, status: 200, body: sseBody(lines, onCancel) } as unknown as Response;
 }
 
-function errorResponse(status: number, error: string): Response {
-  return { ok: false, status, body: null, json: () => Promise.resolve({ error }) } as unknown as Response;
+function errorResponse(status: number, error: string, conversationId?: string): Response {
+  const payload = conversationId === undefined ? { error } : { error, conversation_id: conversationId };
+  return { ok: false, status, body: null, json: () => Promise.resolve(payload) } as unknown as Response;
 }
 
 const COMPLETE_TURN = [
@@ -381,6 +382,21 @@ describe("useConversation", () => {
     expect(result.current.error).toEqual({ kind: "conversation_not_found" });
   });
 
+  it("does not call a missing CAR a missing conversation", async () => {
+    // The route answers 404 for both "Conversation not found" and "Car not
+    // found" — the latter when the selected-car cookie has gone stale, which
+    // another tab can do at any time. Reading the status alone would tell the
+    // user their thread was deleted and point them at the wrong recovery.
+    vi.mocked(fetch).mockResolvedValue(errorResponse(404, "Car not found"));
+    const { result } = setup({ conversationId: "conv-1" });
+
+    await act(async () => {
+      await result.current.send("what oil?");
+    });
+
+    expect(result.current.error).toEqual({ kind: "server", message: "Car not found" });
+  });
+
   it("reports a transport failure as a network error", async () => {
     vi.mocked(fetch).mockRejectedValue(new TypeError("Failed to fetch"));
     const { result } = setup();
@@ -408,6 +424,34 @@ describe("useConversation", () => {
     // The in-flight guard must not latch on a failed turn.
     expect(result.current.error).toBeNull();
     expect(result.current.messages.at(-1)).toMatchObject({ role: "assistant", status: "complete" });
+  });
+
+  it("adopts the thread id off a failure so a retry does not open a second thread", async () => {
+    // The route creates the conversation and writes the question *before* it
+    // calls the model, so a 429 leaves a real thread behind. The `meta` frame
+    // never arrives on that path, making the error body the only carrier of the
+    // id — and at 50 requests/day a 429 is an ordinary outcome. Without this,
+    // every retry starts a fresh thread holding another copy of the question.
+    vi.mocked(fetch).mockResolvedValueOnce(errorResponse(429, "AI assistant is rate-limited", "conv-429"));
+    const { result } = setup({ conversationId: null });
+
+    await act(async () => {
+      await result.current.send("what oil?");
+    });
+
+    expect(result.current.error).toEqual({ kind: "rate_limited" });
+    expect(result.current.conversationId).toBe("conv-429");
+    expect(window.location.pathname).toBe("/ai-chat/conv-429");
+
+    vi.mocked(fetch).mockResolvedValue(okResponse(COMPLETE_TURN));
+    await act(async () => {
+      await result.current.send("what oil?");
+    });
+
+    // The retry resumed the existing thread rather than creating another.
+    const retry = vi.mocked(fetch).mock.calls.at(-1);
+    const sent = JSON.parse(retry?.[1]?.body as string) as Record<string, unknown>;
+    expect(sent).toMatchObject({ conversation_id: "conv-429" });
   });
 
   it("ignores an empty or whitespace-only prompt", async () => {

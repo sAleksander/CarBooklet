@@ -139,7 +139,14 @@ export function useConversation({ conversationId, initialMessages }: UseConversa
       }
 
       if (!res.ok || !res.body) {
-        const body = (await res.json().catch(() => ({}))) as { error?: string };
+        const body = (await res.json().catch(() => ({}))) as { error?: string; conversation_id?: string };
+        // A failure *after* the thread was created still carries its id. Adopt
+        // it before reporting the error, so a retry continues this thread
+        // instead of opening another one beside it — and so a reload lands on
+        // the question the user already asked.
+        if (body.conversation_id) {
+          adoptConversation(body.conversation_id, currentId, setCurrentId);
+        }
         setError(errorForResponse(res.status, body.error));
         setPending({ text: "", active: false });
         inFlight.current = false;
@@ -203,8 +210,17 @@ function adoptConversation(id: string, current: string | null, setId: (id: strin
   }
 }
 
+/**
+ * The literal the route sends when the thread is gone or was never the
+ * caller's. Matched rather than assumed, because the same 404 status also
+ * carries "Car not found" — a stale selected-car cookie, which is a different
+ * problem with a different fix, and telling the user their thread vanished
+ * sends them to recover the wrong thing.
+ */
+const CONVERSATION_MISSING = "Conversation not found";
+
 function errorForResponse(status: number, message: string | undefined): ChatError {
   if (status === 429) return { kind: "rate_limited" };
-  if (status === 404) return { kind: "conversation_not_found" };
+  if (status === 404 && message === CONVERSATION_MISSING) return { kind: "conversation_not_found" };
   return { kind: "server", message: message ?? `Request failed (${status.toString()})` };
 }

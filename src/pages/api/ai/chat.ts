@@ -146,6 +146,12 @@ export const POST: APIRoute = async (context) => {
       signal: upstream.signal,
     });
   } catch (err) {
+    // The thread and the user's question are already committed by this point,
+    // so the id goes out with the failure. Without it the client has no way to
+    // learn which thread its question landed in — the `meta` frame is the only
+    // other carrier and it never gets sent — and the next attempt opens a
+    // *second* thread holding a second copy. Against a 50/day cap a 429 is an
+    // ordinary outcome, so that duplication is a matter of when, not if.
     if (isRateLimitError(err)) {
       const limits = rateLimitHeaders(err);
       logApiError(
@@ -153,14 +159,17 @@ export const POST: APIRoute = async (context) => {
         { ...errorContext, extra: { rateLimitRemaining: limits.remaining, rateLimitReset: limits.reset } },
         { status: 429, message: "AI assistant is rate-limited" },
       );
-      return Response.json({ error: "AI assistant is rate-limited" }, { status: 429 });
+      return Response.json(
+        { error: "AI assistant is rate-limited", conversation_id: conversation.id },
+        { status: 429 },
+      );
     }
     // F9: one flat object through logApiError, never a prefix string plus a
     // positional error. That older form collapsed into a single unqueryable
     // string *and* wrote the SDK's message — which carries the API key on a
     // 401 — into Workers Logs verbatim.
     logApiError(err, errorContext, { status: 500, message: "AI service error" });
-    return Response.json({ error: "AI service error" }, { status: 500 });
+    return Response.json({ error: "AI service error", conversation_id: conversation.id }, { status: 500 });
   }
 
   const encoder = new TextEncoder();
@@ -275,6 +284,12 @@ export const POST: APIRoute = async (context) => {
       }
 
       const status: MessageStatus = clientGone ? "aborted" : answer ? "complete" : "error";
+      // A stream that ended without producing a token needs to say so out loud.
+      // `done` alone is not enough: the client commits an empty buffer as no
+      // message at all, so the turn would end with the question on screen, the
+      // caret gone, and nothing to explain it. An `aborted` turn is exempt —
+      // the user pressed stop and already knows why it ended.
+      if (status === "error") push({ error: "Stream failed" });
       push({ done: status });
       push(`data: ${DONE_TERMINATOR}\n\n`);
       closeStream();

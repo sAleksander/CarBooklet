@@ -15,8 +15,9 @@ import {
   deleteInspectionEntry,
   deleteInsuranceEntry,
 } from "@/lib/services/entries";
+import { getMessages } from "@/lib/services/conversations";
 import { withOneUser, type OneUser, type TestClient } from "./fixtures/users";
-import { seedCar, seedEntry, marker } from "./fixtures/seed";
+import { seedCar, seedEntry, seedConversation, seedMessage, marker } from "./fixtures/seed";
 import type { Car, Entry, EntryType } from "@/types";
 
 /**
@@ -302,6 +303,56 @@ describe("R5 · CRUD integrity · owner path", () => {
       for (const other of others) {
         expect(await getEntryById(owner.client, other.type, other.row.id, owner.id)).not.toBeNull();
       }
+    });
+  });
+  describe("messages", () => {
+    /**
+     * The `limit` on `getMessages` is a safety bound on how much one thread can
+     * pull into a Worker. Which END it trims is the whole question, and it is
+     * not a question a mock can answer honestly: Postgres applies ORDER BY
+     * before LIMIT, so the direction of the sort decides which rows survive.
+     *
+     * Ordering ascending and letting LIMIT cut the tail returned the thread's
+     * OPENING messages. Nothing failed. `buildHistoryWindow` would have built
+     * the replayed context out of the first turns of a long conversation, and
+     * the transcript would have stopped before the message the user had just
+     * sent — both silently, and with the doc comment claiming the opposite.
+     */
+    it("trims the oldest messages when a thread exceeds the limit", async () => {
+      const car = await seedCar(owner.client, owner.id);
+      const conversation = await seedConversation(owner.client, { userId: owner.id, carId: car.id });
+
+      // Serially, so `created_at` orders the way the contents say they do.
+      for (let i = 0; i < 5; i++) {
+        await seedMessage(
+          owner.client,
+          { userId: owner.id, conversationId: conversation.id },
+          { content: `turn-${i.toString()}` },
+        );
+      }
+
+      const kept = await getMessages(owner.client, conversation.id, owner.id, 3);
+
+      expect(kept).toHaveLength(3);
+      // The NEWEST three, still oldest-first: the order every caller relies on.
+      expect(kept.map((m) => m.content)).toEqual(["turn-2", "turn-3", "turn-4"]);
+    });
+
+    it("returns the whole thread oldest-first when it fits inside the limit", async () => {
+      const car = await seedCar(owner.client, owner.id);
+      const conversation = await seedConversation(owner.client, { userId: owner.id, carId: car.id });
+
+      for (let i = 0; i < 3; i++) {
+        await seedMessage(
+          owner.client,
+          { userId: owner.id, conversationId: conversation.id },
+          { content: `turn-${i.toString()}` },
+        );
+      }
+
+      const all = await getMessages(owner.client, conversation.id, owner.id, 200);
+
+      expect(all.map((m) => m.content)).toEqual(["turn-0", "turn-1", "turn-2"]);
     });
   });
 });
