@@ -922,12 +922,12 @@ The request schema change is breaking for the old client, which ships in the sam
 
 #### Automated
 
-- [x] 5.1 Full local suite green
-- [x] 5.2 Build and dry-run deploy succeed
+- [x] 5.1 Full local suite green — 11cfd8b
+- [x] 5.2 Build and dry-run deploy succeed — 11cfd8b
 
 #### Manual
 
-- [x] 5.3 OpenRouter cap and session_id experiment results recorded
-- [x] 5.4 Bundle size before/after recorded
-- [x] 5.5 Car-delete cascade and 429 log line confirmed
-- [x] 5.6 Documentation edits reviewed
+- [x] 5.3 OpenRouter cap and session_id experiment results recorded — 11cfd8b
+- [x] 5.4 Bundle size before/after recorded — 11cfd8b
+- [x] 5.5 Car-delete cascade and 429 log line confirmed — 11cfd8b
+- [x] 5.6 Documentation edits reviewed — 11cfd8b
