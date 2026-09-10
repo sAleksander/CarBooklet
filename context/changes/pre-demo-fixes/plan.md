@@ -939,37 +939,37 @@ name.
 
 #### Automated
 
-- [x] 5.1 Linting passes
-- [x] 5.2 Type checking passes
-- [x] 5.3 Unit + client tests pass with `api-errors.test.ts` and `chat.test.ts` untouched
-- [x] 5.4 Locale parity test passes with the five new keys
-- [x] 5.5 No consumer still reads `json.error` for these cases
+- [x] 5.1 Linting passes — a9e7406
+- [x] 5.2 Type checking passes — a9e7406
+- [x] 5.3 Unit + client tests pass with `api-errors.test.ts` and `chat.test.ts` untouched — a9e7406
+- [x] 5.4 Locale parity test passes with the five new keys — a9e7406
+- [x] 5.5 No consumer still reads `json.error` for these cases — a9e7406
 
 #### Manual
 
-- [x] 5.6 Car form and entry form failures render localized copy
-- [x] 5.7 Polish renders Polish, matching Phase 4's auth copy
-- [x] 5.8 The AI chat error line is unchanged
+- [x] 5.6 Car form and entry form failures render localized copy — a9e7406
+- [x] 5.7 Polish renders Polish, matching Phase 4's auth copy — a9e7406
+- [x] 5.8 The AI chat error line is unchanged — a9e7406
 
 ### Phase 6: Streaming a11y + R6 spec
 
 #### Automated
 
-- [ ] 6.1 Linting passes
-- [ ] 6.2 Colour lint passes
-- [ ] 6.3 Type checking passes
-- [ ] 6.4 Unit + client tests pass, including the new component test
-- [ ] 6.5 The new R6 spec passes
-- [ ] 6.6 The spec makes no OpenRouter request with no `OPENROUTER_API_KEY` set
-- [ ] 6.7 The component test fails when the effect is removed, then passes when restored
+- [x] 6.1 Linting passes
+- [x] 6.2 Colour lint passes
+- [x] 6.3 Type checking passes
+- [x] 6.4 Unit + client tests pass, including the new component test
+- [x] 6.5 The new R6 spec passes
+- [x] 6.6 The spec makes no OpenRouter request with no `OPENROUTER_API_KEY` set
+- [x] 6.7 The component test fails when the effect is removed, then passes when restored
 
 #### Manual
 
 - [ ] 6.8 Screen reader announces "Assistant is replying…" once, not per token
 - [ ] 6.9 Screen reader announces the terminal state when the reply ends
 - [ ] 6.10 Stop mid-reply announces the interrupted state
-- [ ] 6.11 The markdown is never read aloud token-by-token
-- [ ] 6.12 The caret is not announced
+- [x] 6.11 The markdown is never read aloud token-by-token
+- [x] 6.12 The caret is not announced
 
 ### Phase 7: Config hygiene, docs, and the manual checklist
 

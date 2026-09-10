@@ -26,9 +26,18 @@ export function StreamingText({ text, active }: Props) {
   return (
     <div className="space-y-1">
       <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">{t("aiChat.assistant")}</p>
-      <div className="text-sm text-foreground">
+      {/* `aria-busy` marks the region as still filling. The announcements
+          themselves come from the live region in ChatThread, which outlives this
+          component — see the comment there. */}
+      <div className="text-sm text-foreground" aria-busy={active}>
         {text && <Markdown content={text} />}
-        {active && <span className="inline-block animate-pulse">▋</span>}
+        {/* Decorative: it says "still going" to a sighted reader and would say
+            "black vertical rectangle" to a screen reader. */}
+        {active && (
+          <span className="inline-block animate-pulse" aria-hidden="true">
+            ▋
+          </span>
+        )}
       </div>
     </div>
   );
