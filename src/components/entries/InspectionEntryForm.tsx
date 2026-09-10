@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 interface InspectionEntryFormProps {
   carId: string;
@@ -53,9 +54,9 @@ export function InspectionEntryForm({ carId, onSuccess }: InspectionEntryFormPro
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const json = (await res.json().catch(() => ({}))) as { entry?: InspectionEntry; error?: string };
+      const json = (await res.json().catch(() => ({}))) as { entry?: InspectionEntry };
       if (!res.ok) {
-        setApiError(json.error ?? t("common.anErrorOccurred"));
+        setApiError(t(statusErrorKey(res.status)));
         return;
       }
       if (json.entry) onSuccess(json.entry);

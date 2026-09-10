@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 interface OilChangeEntryFormProps {
   carId: string;
@@ -44,9 +45,9 @@ export function OilChangeEntryForm({ carId, onSuccess }: OilChangeEntryFormProps
           mileage: form.mileage,
         }),
       });
-      const json = (await res.json().catch(() => ({}))) as { entry?: OilChangeEntry; error?: string };
+      const json = (await res.json().catch(() => ({}))) as { entry?: OilChangeEntry };
       if (!res.ok) {
-        setApiError(json.error ?? t("common.anErrorOccurred"));
+        setApiError(t(statusErrorKey(res.status)));
         return;
       }
       if (json.entry) onSuccess(json.entry);

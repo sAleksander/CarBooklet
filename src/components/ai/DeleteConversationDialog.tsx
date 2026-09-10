@@ -12,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 interface Target {
   id: string;
@@ -80,8 +81,7 @@ function DeleteConversationDialogContent() {
     try {
       const res = await fetch(`/api/ai/conversations/${target.id}`, { method: "DELETE" });
       if (!res.ok) {
-        const json = (await res.json().catch(() => ({}))) as { error?: string };
-        setError(json.error ?? t("common.anErrorOccurred"));
+        setError(t(statusErrorKey(res.status)));
         setIsDeleting(false);
         return;
       }

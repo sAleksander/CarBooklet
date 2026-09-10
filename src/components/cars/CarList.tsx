@@ -13,6 +13,7 @@ const ENGINE_TYPE_KEYS: Record<EngineType, string> = {
 import { Button } from "@/components/ui/button";
 import CarForm from "./CarForm";
 import DeleteCarDialog from "./DeleteCarDialog";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 interface CarListProps {
   initialCars: Car[];
@@ -53,8 +54,8 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
 
   async function fetchCars(): Promise<Car[]> {
     const res = await fetch("/api/cars");
-    const json = (await res.json()) as { cars?: Car[]; error?: string };
-    if (!res.ok) throw new Error(json.error ?? t("common.anErrorOccurred"));
+    const json = (await res.json()) as { cars?: Car[] };
+    if (!res.ok) throw new Error(t(statusErrorKey(res.status)));
     return json.cars ?? [];
   }
 
@@ -63,8 +64,7 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
     try {
       const res = await fetch(`/api/cars/${id}/select`, { method: "POST" });
       if (!res.ok) {
-        const json = (await res.json()) as { error?: string };
-        setError(json.error ?? t("common.anErrorOccurred"));
+        setError(t(statusErrorKey(res.status)));
         return;
       }
       setSelectedCarId(id);
@@ -101,8 +101,7 @@ function CarListContent({ initialCars, initialSelectedCarId, loadFailed = false 
     try {
       const res = await fetch(`/api/cars/${deletingCar.id}`, { method: "DELETE" });
       if (!res.ok) {
-        const json = (await res.json()) as { error?: string };
-        setError(json.error ?? t("common.anErrorOccurred"));
+        setError(t(statusErrorKey(res.status)));
         return;
       }
       if (selectedCarId === deletingCar.id) {
