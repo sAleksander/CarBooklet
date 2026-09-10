@@ -27,7 +27,12 @@
     "mileageKm": "Mileage: {{value}} km",
     "networkError": "Network error. Please try again.",
     "anErrorOccurred": "An error occurred",
-    "loadFailed": "We couldn't load your data. Please try again."
+    "loadFailed": "We couldn't load your data. Please try again.",
+    "invalidRequest": "That request wasn't valid. Check the form and try again.",
+    "unauthorized": "Your session has expired. Please sign in again.",
+    "notFound": "That item no longer exists",
+    "serverError": "Something went wrong. Please try again.",
+    "serviceUnavailable": "The service is temporarily unavailable. Please try again."
   },
   "dashboard": {
     "changeCar": "Change car",

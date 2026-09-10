@@ -4,6 +4,7 @@ import type { InsuranceEntry, InsuranceEntryFormData } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 interface InsuranceEntryEditFormProps {
   entry: InsuranceEntry;
@@ -63,9 +64,9 @@ export function InsuranceEntryEditForm({ entry, onSuccess, onCancel }: Insurance
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const json = (await res.json().catch(() => ({}))) as { entry?: InsuranceEntry; error?: string };
+      const json = (await res.json().catch(() => ({}))) as { entry?: InsuranceEntry };
       if (!res.ok) {
-        setApiError(json.error ?? t("common.anErrorOccurred"));
+        setApiError(t(statusErrorKey(res.status)));
         return;
       }
       if (json.entry) onSuccess(json.entry);

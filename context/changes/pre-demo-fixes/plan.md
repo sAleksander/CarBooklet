@@ -921,35 +921,35 @@ name.
 
 #### Automated
 
-- [x] 4.1 Linting passes
-- [x] 4.2 Type checking passes
-- [x] 4.3 Unit tests pass, including the new mapper tests
-- [x] 4.4 Locale parity test passes with the new keys
-- [x] 4.5 E2E sign-in still passes
+- [x] 4.1 Linting passes — f7e9b25
+- [x] 4.2 Type checking passes — f7e9b25
+- [x] 4.3 Unit tests pass, including the new mapper tests — f7e9b25
+- [x] 4.4 Locale parity test passes with the new keys — f7e9b25
+- [x] 4.5 E2E sign-in still passes — f7e9b25
 
 #### Manual
 
-- [x] 4.6 `?error=<script>alert(1)</script>` renders no alert box
-- [x] 4.7 A crafted phishing-style `?error=` value renders nothing
-- [x] 4.8 Wrong password and non-existent email render identical localized copy
-- [x] 4.9 Polish locale renders the Polish string
-- [x] 4.10 One structured `api_error` log line with `surface: "ssr"`, route, code, and no email
+- [x] 4.6 `?error=<script>alert(1)</script>` renders no alert box — f7e9b25
+- [x] 4.7 A crafted phishing-style `?error=` value renders nothing — f7e9b25
+- [x] 4.8 Wrong password and non-existent email render identical localized copy — f7e9b25
+- [x] 4.9 Polish locale renders the Polish string — f7e9b25
+- [x] 4.10 One structured `api_error` log line with `surface: "ssr"`, route, code, and no email — f7e9b25
 
 ### Phase 5: API error localization (F10)
 
 #### Automated
 
-- [ ] 5.1 Linting passes
-- [ ] 5.2 Type checking passes
-- [ ] 5.3 Unit + client tests pass with `api-errors.test.ts` and `chat.test.ts` untouched
-- [ ] 5.4 Locale parity test passes with the five new keys
-- [ ] 5.5 No consumer still reads `json.error` for these cases
+- [x] 5.1 Linting passes
+- [x] 5.2 Type checking passes
+- [x] 5.3 Unit + client tests pass with `api-errors.test.ts` and `chat.test.ts` untouched
+- [x] 5.4 Locale parity test passes with the five new keys
+- [x] 5.5 No consumer still reads `json.error` for these cases
 
 #### Manual
 
-- [ ] 5.6 Car form and entry form failures render localized copy
-- [ ] 5.7 Polish renders Polish, matching Phase 4's auth copy
-- [ ] 5.8 The AI chat error line is unchanged
+- [x] 5.6 Car form and entry form failures render localized copy
+- [x] 5.7 Polish renders Polish, matching Phase 4's auth copy
+- [x] 5.8 The AI chat error line is unchanged
 
 ### Phase 6: Streaming a11y + R6 spec
 

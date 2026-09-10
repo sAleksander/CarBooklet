@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 interface CarFormProps {
   car?: Car;
@@ -84,9 +85,9 @@ export default function CarForm({ car, onSuccess, onCancel }: CarFormProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-      const json = (await res.json()) as { car?: Car; error?: string };
+      const json = (await res.json()) as { car?: Car };
       if (!res.ok) {
-        setApiError(json.error ?? t("common.anErrorOccurred"));
+        setApiError(t(statusErrorKey(res.status)));
         return;
       }
       if (json.car) onSuccess(json.car);

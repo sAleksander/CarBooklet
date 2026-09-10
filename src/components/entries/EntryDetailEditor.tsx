@@ -18,6 +18,7 @@ import { RepairEntryEditForm } from "./RepairEntryEditForm";
 import { OilChangeEntryEditForm } from "./OilChangeEntryEditForm";
 import { InspectionEntryEditForm } from "./InspectionEntryEditForm";
 import { InsuranceEntryEditForm } from "./InsuranceEntryEditForm";
+import { statusErrorKey } from "@/lib/http-error-copy";
 
 const API_SLUG: Record<Entry["entry_type"], string> = {
   repair: "repair",
@@ -60,8 +61,7 @@ function EntryDetailEditorContent({ entry, children }: EntryDetailEditorProps) {
       if (res.status === 204) {
         window.location.href = "/entries";
       } else {
-        const json = (await res.json().catch(() => ({}))) as { error?: string };
-        setDeleteError(json.error ?? t("common.anErrorOccurred"));
+        setDeleteError(t(statusErrorKey(res.status)));
       }
     } catch {
       setDeleteError(t("common.networkError"));

@@ -27,7 +27,12 @@
     "mileageKm": "Przebieg: {{value}} km",
     "networkError": "Błąd sieci. Spróbuj ponownie.",
     "anErrorOccurred": "Wystąpił błąd",
-    "loadFailed": "Nie udało się wczytać danych. Spróbuj ponownie."
+    "loadFailed": "Nie udało się wczytać danych. Spróbuj ponownie.",
+    "invalidRequest": "To żądanie było nieprawidłowe. Sprawdź formularz i spróbuj ponownie.",
+    "unauthorized": "Twoja sesja wygasła. Zaloguj się ponownie.",
+    "notFound": "Ten element już nie istnieje",
+    "serverError": "Coś poszło nie tak. Spróbuj ponownie.",
+    "serviceUnavailable": "Usługa jest chwilowo niedostępna. Spróbuj ponownie."
   },
   "dashboard": {
     "changeCar": "Zmień samochód",
