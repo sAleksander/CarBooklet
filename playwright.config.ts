@@ -21,7 +21,9 @@ export default defineConfig({
 
   use: {
     baseURL: BASE_URL,
-    trace: "on-first-retry",
+    // `on-first-retry` never fires: retries are deliberately 0 (below), so the
+    // two settings cancel out and a red CI job would leave nothing to read.
+    trace: process.env.CI ? "retain-on-failure" : "on-first-retry",
     screenshot: "only-on-failure",
   },
 
@@ -60,5 +62,11 @@ export default defineConfig({
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
+    // `process.loadEnvFile()` above puts all of `.env` into this process, and
+    // the server inherits it. `.env.example` documents a CLOUDFLARE_API_TOKEN
+    // for wrangler's own use — which must not reach a wrangler-backed preview
+    // server whose whole reason for existing is that `astro dev` was implicated
+    // in an unexplained upload to the live Worker. Blanked, not omitted.
+    env: { CLOUDFLARE_API_TOKEN: "" },
   },
 });

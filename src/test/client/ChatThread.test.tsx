@@ -50,6 +50,11 @@ function controllableBody() {
   };
 }
 
+/** A non-OK response, for the path where the turn dies before any frame. */
+function errorResponse(status: number, error: string): Response {
+  return { ok: false, status, body: null, json: () => Promise.resolve({ error }) } as unknown as Response;
+}
+
 function renderThread() {
   return render(<ChatThread lang="en" conversationId={null} initialMessages={[]} />);
 }
@@ -169,6 +174,33 @@ describe("ChatThread progress announcements", () => {
 
     await waitFor(() => {
       expect(progressText()).toBe("Answer interrupted");
+    });
+  });
+
+  it("announces the failure, not an interruption, when the server rejects the turn", async () => {
+    // The turn dies without `commitPending`, so the transcript ends on the
+    // user's own message — shape-identical to an abort. Reading the status
+    // alone told a screen-reader user they had stopped an answer the server
+    // actually dropped, and contradicted the error line beside the region.
+    vi.mocked(fetch).mockResolvedValue(errorResponse(500, "AI service error"));
+
+    renderThread();
+    await ask();
+
+    await waitFor(() => {
+      expect(progressText()).toBe("The assistant couldn't finish this answer. Please try again.");
+    });
+    expect(progressText()).not.toBe("Answer interrupted");
+  });
+
+  it("announces a rate limit in its own words", async () => {
+    vi.mocked(fetch).mockResolvedValue(errorResponse(429, "AI assistant is rate-limited"));
+
+    renderThread();
+    await ask();
+
+    await waitFor(() => {
+      expect(progressText()).toBe("The assistant is temporarily rate-limited. Please try again later.");
     });
   });
 

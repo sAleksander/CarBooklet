@@ -19,7 +19,6 @@
  */
 
 import { isAuthApiError, isAuthError } from "@supabase/supabase-js";
-import type { ErrorMapping } from "./api-errors";
 
 /**
  * Every value `?error=` is allowed to carry. Anything else the page throws away.
@@ -57,13 +56,25 @@ export function isAuthErrorCode(value: string | null): value is AuthErrorCode {
   return value !== null && CODE_SET.has(value);
 }
 
-const BAD_REQUEST: ErrorMapping = { status: 400, message: "Invalid credentials" };
-const TOO_MANY: ErrorMapping = { status: 429, message: "Rate limited" };
-const UNAVAILABLE: ErrorMapping = { status: 503, message: "Auth service unavailable" };
+/**
+ * Deliberately narrower than `api-errors.ts`'s `ErrorMapping`, which also
+ * carries the message the client is allowed to see. No auth route returns a
+ * body — they all redirect — so a message here would be a field with no reader,
+ * and a trap: `email_exists` and `email_not_confirmed` share a status, so one
+ * shared literal would be visibly wrong copy for one of them the moment anyone
+ * started sending it.
+ */
+interface AuthMapping {
+  status: number;
+}
+
+const BAD_REQUEST: AuthMapping = { status: 400 };
+const TOO_MANY: AuthMapping = { status: 429 };
+const UNAVAILABLE: AuthMapping = { status: 503 };
 
 /** The `!supabase` branch has no error object to map, so it names its own. */
-export const NOT_CONFIGURED: ErrorMapping = { status: 503, message: "Supabase is not configured" };
-const SERVER_ERROR: ErrorMapping = { status: 500, message: "Auth error" };
+export const NOT_CONFIGURED: AuthMapping = { status: 503 };
+const SERVER_ERROR: AuthMapping = { status: 500 };
 
 /**
  * GoTrue's code to ours.
@@ -75,13 +86,20 @@ const SERVER_ERROR: ErrorMapping = { status: 500, message: "Auth error" };
  * validation codes collapse for the opposite reason: they are the same problem
  * to the person typing, and three near-identical strings is worse copy.
  *
- * `email_not_confirmed` and `email_exists` are kept distinct in spite of that
- * rule, because both are actionable — one says check your inbox, the other says
- * sign in instead — and an unactionable generic error is its own kind of bad.
- * They do leak existence. `email_exists` leaks it on a signup form, where it is
- * unavoidable and universal. `email_not_confirmed` is unreachable in this
- * project's local config (`enable_confirmations = false`,
- * supabase/config.toml:209) and would only surface against a cloud project.
+ * `email_exists` is kept distinct in spite of that rule, because it is
+ * actionable — it says sign in instead — and on a signup form leaking that an
+ * address is taken is unavoidable and universal.
+ *
+ * `email_not_confirmed` is kept in the set but **collapsed into
+ * `invalid_credentials` on the sign-in surface**, which is what `mapAuthError`'s
+ * `surface` argument exists for. Left distinct there it is a clean enumeration
+ * oracle: one request per address separates an existing-but-unconfirmed account
+ * from an unknown one. An earlier version of this module defended keeping it by
+ * arguing it was unreachable under `enable_confirmations = false`
+ * (supabase/config.toml:209) — but that is the *local* stack. README.md:132
+ * records that Supabase requires confirmation by default and that the operator
+ * turns it off by hand, so on any real deployment the code is reachable and the
+ * oracle is live. A security guarantee must not rest on a dashboard toggle.
  */
 const GOTRUE_CODES = new Map<string, AuthErrorCode>([
   ["invalid_credentials", "invalid_credentials"],
@@ -100,7 +118,7 @@ const GOTRUE_CODES = new Map<string, AuthErrorCode>([
   ["request_timeout", "unavailable"],
 ]);
 
-const STATUS_BY_CODE: Record<AuthErrorCode, ErrorMapping> = {
+const STATUS_BY_CODE: Record<AuthErrorCode, AuthMapping> = {
   invalid_credentials: BAD_REQUEST,
   email_not_confirmed: BAD_REQUEST,
   email_exists: BAD_REQUEST,
@@ -113,11 +131,14 @@ const STATUS_BY_CODE: Record<AuthErrorCode, ErrorMapping> = {
   unknown: SERVER_ERROR,
 };
 
+/** Which form the failure came from. `mapAuthError` answers differently per surface. */
+export type AuthSurface = "signin" | "signup";
+
 export interface MappedAuthError {
   /** Safe to put in a query string. Never a message. */
   code: AuthErrorCode;
   /** For the log line only — no auth route returns a body. */
-  mapping: ErrorMapping;
+  mapping: AuthMapping;
 }
 
 /**
@@ -136,8 +157,11 @@ export interface MappedAuthError {
  * `error-codes.d.ts` warns that the server may return codes outside the union,
  * so an unrecognised value is expected, not impossible.
  */
-export function mapAuthError(err: unknown): MappedAuthError {
-  const code = resolveCode(err);
+export function mapAuthError(err: unknown, surface: AuthSurface): MappedAuthError {
+  let code = resolveCode(err);
+  // See the table's docstring: distinct on signup, collapsed on sign-in, where
+  // it would otherwise answer "does this account exist" for anyone who asks.
+  if (surface === "signin" && code === "email_not_confirmed") code = "invalid_credentials";
   return { code, mapping: STATUS_BY_CODE[code] };
 }
 

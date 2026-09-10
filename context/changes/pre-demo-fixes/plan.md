@@ -232,7 +232,10 @@ The Supabase CLI comes from devDependencies (`supabase`, resolved to 2.98.2 in
 the lockfile), so `npx supabase` works after `npm ci` — no `supabase/setup-cli`
 action needed. Start with the unused services excluded rather than editing
 `supabase/config.toml`, so local dev keeps Studio and the rest:
-`npx supabase start -x studio,realtime,storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor`.
+`npx supabase start -x realtime,storage-api,imgproxy,mailpit,studio,postgres-meta,edge-runtime,logflare,vector,supavisor`.
+_(Corrected 2026-09-10: this originally read `inbucket`, which the CLI renamed
+to `mailpit` — an unknown service name aborts `start`. `kong` must never be
+excluded; it is the `:54321` gateway the tests talk to.)_
 Migrations apply automatically on start.
 
 **Critical**: this job must **not** inherit the repository's `SUPABASE_URL`
@@ -413,10 +416,11 @@ string. This mirrors `src/pages/cars.astro:37,42` exactly.
 **Intent**: One EN and one PL string per code.
 
 **Contract**: A nested `errors` object under the existing `auth` namespace, keyed
-by code, so the resolver is a direct `t(\`auth.errors.${code}\`)`. This is one
-level deeper than the file's usual two-level shape — a deliberate deviation,
-because the object maps 1:1 to the code tuple and the parity test flattens to
-dot-paths regardless. Copy must not distinguish "wrong password" from "no such
+by code, so the resolver is a direct `t(\`auth.errors.${code}\`)`. Three-level
+nesting is already the established convention, not a deviation — 91 of the 191
+leaves in `en.json` are at depth 3 (`entries.fields._`, `cars.form._`,
+`entries.detail._`). _(Corrected 2026-09-10: this contract originally claimed the
+opposite, and the research it came from was wrong.)\* Copy must not distinguish "wrong password" from "no such
 user": the enumeration half of F8 is closed by the wording, not just the
 mechanism.
 
@@ -863,6 +867,32 @@ name.
 - Risk register and quality gates: `context/foundation/test-plan.md:54`, `:87`, `:100`, `:143-156`
 - Closed-set error precedents: `src/pages/cars.astro:37,42` (SSR), `src/components/ai/ChatThread.tsx:145-156` (client)
 - CI edit precedent: `context/archive/2026-08-31-light-dark-mode/plan.md:772-789`
+
+## Addendum — deviations recorded after implementation (2026-09-10)
+
+Written during the implementation review, so the plan stays usable as ground
+truth for the next one.
+
+**The announcement is derived during render, not in a `useEffect`.** Phase 6's
+contract and the "Critical Implementation Details" section both prescribe an
+effect keyed on `pending.active`. That route is closed: `react-hooks`'s
+`set-state-in-effect` rule rejects `setState` in an effect body, and
+react-compiler rejects the ref-in-render comparison the plan warned against. The
+implementation uses React's documented "adjust state during render" pattern —
+a comparison against `useState`, not `useRef` — which also announces a frame
+earlier than an effect would. `ChatThread.tsx:75-88` carries the reasoning.
+
+**The e2e specs changed, though Phase 3 was framed as config-only.** Swapping the
+web server to a production build exposed a latent hydration race in all three
+existing specs; they navigate mid-test and then click an island control. A shared
+`gotoHydrated` helper now enforces the rule `e2e/README.md` already stated. This
+was a forced consequence of the phase, not added scope.
+
+**Phase 4's mapper gained a `surface` argument after review.** `email_not_confirmed`
+is collapsed into `invalid_credentials` on sign-in: kept distinct it is an
+account-existence oracle on any deployment where email confirmation is on, which
+is the cloud default. The original in-code justification cited only the local
+`config.toml` and did not hold in production.
 
 ## Progress
 

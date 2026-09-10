@@ -97,7 +97,7 @@ orchestrator updates Status as artifacts appear on disk.
 | 1   | Bootstrap + AI chat envelope    | Stand up the test runner and prove the chat endpoint grounds only on the owned car, guards auth / no-car / invalid input, and never leaks the key | #1, #2        | unit + integration | complete    | context/changes/testing-bootstrap-ai-chat/     |
 | 2   | Data isolation + CRUD integrity | Every car/entry route rejects non-owned ids; create/edit/delete enforce ownership + server-side validation                                        | #3, #5        | integration        | complete    | context/changes/data-isolation-crud-integrity/ |
 | 3   | Auth & route protection         | Protected routes redirect/401 without a session, including `/entries/[id]`                                                                        | #4            | unit + integration | not started | —                                              |
-| 4   | E2E critical path + CI gate     | One browser flow (sign-in → navigate → ask AI → see visible progress → grounded answer) and wire the suite into CI                                | #6            | e2e + gates        | not started | —                                              |
+| 4   | E2E critical path + CI gate     | One browser flow (sign-in → navigate → ask AI → see visible progress → grounded answer) and wire the suite into CI                                | #6            | e2e + gates        | complete    | context/changes/pre-demo-fixes/                |
 
 **Status vocabulary** (fixed — parser literals):
 

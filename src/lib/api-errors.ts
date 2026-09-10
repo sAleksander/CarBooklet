@@ -157,7 +157,15 @@ export interface ApiErrorContext {
  * Never throws. It runs inside a catch block, and an error handler that can fail
  * turns a diagnosable 500 into an unhandled rejection.
  */
-export function logApiError(err: unknown, context: ApiErrorContext, mapping: ErrorMapping): void {
+// `status` is the only field this function reads; `message` is optional so a
+// subsystem whose failures never reach a response body (see `auth-errors.ts`)
+// need not carry a client message it has no way to send. `ErrorMapping` and the
+// inline literals other routes pass both remain assignable.
+export function logApiError(
+  err: unknown,
+  context: ApiErrorContext,
+  mapping: { status: number; message?: string },
+): void {
   const service = isServiceError(err) ? err : null;
 
   console.error({

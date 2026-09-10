@@ -34,7 +34,7 @@ describe("mapAuthError", () => {
     ];
 
     it.each(cases)("maps %s to %s", (gotrue, httpStatus, expected, mappedStatus) => {
-      const result = mapAuthError(new AuthApiError("whatever GoTrue said", httpStatus, gotrue));
+      const result = mapAuthError(new AuthApiError("whatever GoTrue said", httpStatus, gotrue), "signup");
       expect(result.code).toBe(expected);
       expect(result.mapping.status).toBe(mappedStatus);
     });
@@ -42,8 +42,8 @@ describe("mapAuthError", () => {
     it("does not distinguish a banned user from a wrong password", () => {
       // The enumeration guard, asserted rather than trusted to the table above:
       // if someone adds a `user_banned` copy string later, this fails.
-      const banned = mapAuthError(new AuthApiError("User is banned", 403, "user_banned"));
-      const wrong = mapAuthError(new AuthApiError("Invalid login credentials", 400, "invalid_credentials"));
+      const banned = mapAuthError(new AuthApiError("User is banned", 403, "user_banned"), "signup");
+      const wrong = mapAuthError(new AuthApiError("Invalid login credentials", 400, "invalid_credentials"), "signup");
       expect(banned.code).toBe(wrong.code);
     });
   });
@@ -52,18 +52,18 @@ describe("mapAuthError", () => {
     it("treats a transport failure as unavailable, despite status 0", () => {
       // status 0 is why this branch cannot key on status: a naive
       // `status >= 500` test would call a dead network a client error.
-      const result = mapAuthError(new AuthRetryableFetchError("fetch failed", 0));
+      const result = mapAuthError(new AuthRetryableFetchError("fetch failed", 0), "signup");
       expect(result.code).toBe("unavailable");
       expect(result.mapping.status).toBe(503);
     });
 
     it("treats a 5xx with an unmapped code as unavailable, not unknown", () => {
-      const result = mapAuthError(new AuthApiError("upstream exploded", 502, "some_future_code"));
+      const result = mapAuthError(new AuthApiError("upstream exploded", 502, "some_future_code"), "signup");
       expect(result.code).toBe("unavailable");
     });
 
     it("falls back to unknown for an auth error it cannot place", () => {
-      const result = mapAuthError(new AuthError("mystery", 418, undefined));
+      const result = mapAuthError(new AuthError("mystery", 418, undefined), "signup");
       expect(result.code).toBe("unknown");
       expect(result.mapping.status).toBe(500);
     });
@@ -76,8 +76,37 @@ describe("mapAuthError", () => {
       ["null", null],
       ["undefined", undefined],
     ])("maps %s to unknown", (_label, value) => {
-      expect(mapAuthError(value).code).toBe("unknown");
+      expect(mapAuthError(value, "signup").code).toBe("unknown");
     });
+  });
+});
+
+describe("the sign-in surface collapses the account-existence oracle", () => {
+  // The half of F8 that the mechanism alone does not close. Left distinct on
+  // sign-in, `email_not_confirmed` answers "does this account exist" for
+  // anyone willing to send one request per address. The earlier defence --
+  // that it is unreachable under `enable_confirmations = false` -- held only
+  // for the local stack; README.md:132 records that a cloud project requires
+  // confirmation by default.
+  const unconfirmed = () => new AuthApiError("Email not confirmed", 400, "email_not_confirmed");
+
+  it("answers sign-in identically for an unconfirmed and an unknown account", () => {
+    const a = mapAuthError(unconfirmed(), "signin");
+    const b = mapAuthError(new AuthApiError("Invalid login credentials", 400, "invalid_credentials"), "signin");
+    expect(a.code).toBe("invalid_credentials");
+    expect(a.code).toBe(b.code);
+    expect(a.mapping.status).toBe(b.mapping.status);
+  });
+
+  it("keeps the actionable code on signup, where existence is unavoidable", () => {
+    expect(mapAuthError(unconfirmed(), "signup").code).toBe("email_not_confirmed");
+  });
+
+  it("leaves every other code untouched by the surface", () => {
+    for (const code of ["invalid_credentials", "weak_password", "over_request_rate_limit", "email_exists"]) {
+      const err = new AuthApiError("x", 400, code);
+      expect(mapAuthError(err, "signin").code).toBe(mapAuthError(err, "signup").code);
+    }
   });
 });
 

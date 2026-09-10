@@ -15,6 +15,17 @@
  * swallowed-error-propagation change because it would break the eight
  * `toEqual` assertions in `chat.test.ts`, and this route touches none of them.
  *
+ * What this costs, stated plainly: the converted routes do not only send those
+ * five literals. Several also send zod-derived 400 bodies that ARE specific —
+ * "Brand is required" (`src/pages/api/cars/index.ts`), "Date must be
+ * YYYY-MM-DD" (`src/pages/api/entries/repair.ts`), "Invalid JSON". Every one of
+ * those now collapses into a single `common.invalidRequest`. That is a real
+ * loss of field-level detail, traded for copy the user can actually read in
+ * their own language. It is tolerable because the forms validate client-side
+ * first, so a 400 is close to unreachable through the UI — but if that stops
+ * being true, the fix is a machine code plus a field name in the envelope, not
+ * a return to rendering the server's English.
+ *
  * Returns a key rather than a string so call sites stay `t(...)` and this
  * module needs no opinion about which i18next instance is in play.
  */
