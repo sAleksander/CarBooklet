@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { test, expect } from "./fixtures/app";
+import { test, expect, gotoHydrated } from "./fixtures/app";
 
 /**
  * RISK: test-plan.md §2 R3 — "Cross-user data access (IDOR): a user reads,
@@ -75,7 +75,7 @@ test.describe("R3 — cross-user data access / IDOR (test-plan.md §2)", () => {
     await seedOwnCar(page, ownModel);
 
     // --- Assertion 1: the garage is the signed-in user's, and only theirs -----
-    await page.goto("/cars");
+    await gotoHydrated(page, "/cars");
 
     const ownCard = page.getByRole("listitem").filter({ hasText: ownModel });
     const foreignCard = page.getByRole("listitem").filter({ hasText: foreignUser.car.model });
@@ -91,6 +91,8 @@ test.describe("R3 — cross-user data access / IDOR (test-plan.md §2)", () => {
     //
     // The id is real, the entry exists, and the session is valid. The only
     // reason this must fail is that the row belongs to someone else.
+    // Plain `goto`, not `gotoHydrated`: this assertion needs the Response object,
+    // and the 404 page it lands on is server-rendered with no island to wait for.
     const response = await page.goto(`/entries/repair/${foreignUser.repairEntry.id}`);
 
     // Status, not just DOM: [id].astro sets 404 explicitly, and a redirect to

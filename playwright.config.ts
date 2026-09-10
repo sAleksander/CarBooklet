@@ -43,10 +43,22 @@ export default defineConfig({
     },
   ],
 
+  // Serve the production build, not `astro dev`.
+  //
+  // Two reasons. The suite should exercise what actually ships — bundled,
+  // minified, real hydration timing — and it did not: every spec that clicked
+  // after navigating was racing hydration and only winning because the dev
+  // server was slow. See `gotoHydrated` in e2e/fixtures/app.ts.
+  //
+  // The second reason is operational. `astro dev` boots the Cloudflare adapter
+  // against remote bindings, which is the command implicated in the 2026-09-07
+  // version_upload to the live Worker. CI has no business running it.
+  //
+  // The timeout covers a cold `astro build`, not just server start-up.
   webServer: {
-    command: "npm run dev",
+    command: "npm run build && npm run preview",
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
   },
 });
