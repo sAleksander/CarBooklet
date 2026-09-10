@@ -75,31 +75,40 @@ type="password">` has no implicit ARIA role. `getByLabel` is the tool there,
 
 ## The AI / OpenRouter boundary
 
-E2E hits the **real** OpenRouter model. No `page.route` interception, nothing
-mocked — the decision is fidelity over determinism.
+E2E hits the **real** OpenRouter model by default. No `page.route` interception,
+nothing mocked — the decision is fidelity over determinism, and it still holds
+for any flow whose point is the server round trip.
 
 Know what that buys and costs. It is a genuine end-to-end path. It is also
-non-deterministic in timing, costs free-tier quota, and fails when the model is
-rate-limited (`test-plan.md` §7 already flags mass free-model calls as an
-exposure).
+non-deterministic in timing, costs free-tier quota (50 requests/day, shared with
+the demo), and fails when the model is rate-limited (`test-plan.md` §7 already
+flags mass free-model calls as an exposure).
 
-This matters most for **R6** (AI progress feedback), the risk Phase 4 exists to
-cover, because two things make "progress was visible" hard to assert honestly:
+**`ai-progress.spec.ts` is the one deliberate exception.** It stubs
+`POST /api/ai/chat` with a canned SSE body and never reaches OpenRouter. Three
+reasons, all specific to **R6** (AI progress feedback):
 
-1. `StreamingText.tsx` renders the streaming cursor as
-   `<span className="animate-pulse">▋</span>` — no `role`, no `aria-live`, no
-   accessible name. No role locator can see it.
-2. ~~The composer's submit button reverted from "Sending…" to "Ask" when the
-   response _headers_ arrived, while the stream was still streaming.~~ Fixed by
-   `ai-chat-history`: the button now becomes "Stop" and stays that way for the
-   whole streaming window, so it _is_ a usable progress locator.
+1. What R6 protects is the UI's loading-state transitions. The model's only
+   contribution to that is latency — which is exactly what makes a live
+   assertion a race rather than a test.
+2. `retries: 0` is deliberate, so a rate-limited day would turn the spec red for
+   a reason unrelated to the risk.
+3. `pre-demo-fixes` rules `OPENROUTER_API_KEY` out of CI entirely, so a
+   real-model spec could not run in the `e2e` job at all.
 
-So during the streaming window the only accessible progress signal is the button
-label; the streamed text region itself still has no live-region role.
-With real-model timing on top, an assertion that progress was visible is a race.
-Prefer fixing the UI (`role="status" aria-live="polite"` on the streaming
-region) over reaching for `getByTestId` — the missing role is a real
-accessibility gap, not just a test inconvenience.
+The stub also buys coverage the real model cannot: a turn that is open with no
+tokens yet, which is the exact window a screen-reader user used to get nothing
+in. If you add a spec that asserts on the _answer_ rather than the transitions,
+that one belongs on the real model.
+
+The accessibility gap this section used to describe is now closed.
+`StreamingText.tsx` rendered its cursor as `<span className="animate-pulse">▋</span>`
+with no role, no `aria-live` and no accessible name, so no role locator could see
+it and the composer's "Stop" label was the only accessible progress signal.
+`ChatThread` now carries a persistent `role="status" aria-live="polite"` region,
+named `aiChat.progress`, which announces state transitions only. Locate it by
+role **and name** — the error line is also `role="status"`, and a bare
+`getByRole("status")` fails strict mode whenever both are present.
 
 ## Known UI issues these tests work around
 

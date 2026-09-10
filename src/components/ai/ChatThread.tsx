@@ -62,6 +62,31 @@ function ChatThreadContent({ conversationId, initialMessages }: ChatThreadProps)
     if (viewport) viewport.scrollTop = viewport.scrollHeight;
   }, [messages, pending.text, pending.active]);
 
+  // The accessible progress signal, and the only one a screen reader gets.
+  //
+  // It announces *transitions*, never content. The obvious implementation —
+  // aria-live on the streaming text — would re-announce the whole answer on
+  // every token delta, because `Markdown` re-parses the buffer each time. That
+  // is hundreds of interruptions per reply, which is worse than silence.
+  //
+  // The region lives here rather than inside `StreamingText` for a reason that
+  // is easy to miss: `StreamingText` is conditionally rendered (below), so it is
+  // *removed from the accessibility tree at the exact moment* the turn ends. A
+  // live region cannot announce its own unmounting. This one is mounted for the
+  // life of the island and merely changes its text.
+  //
+  // Derived during render rather than in an effect. React documents this as the
+  // way to adjust state when something changes, an effect would announce a frame
+  // late after a second render pass, and both `react-hooks/set-state-in-effect`
+  // and react-compiler's no-ref-reads-in-render rule close the other routes.
+  const [announcement, setAnnouncement] = useState("");
+  const [announcedFor, setAnnouncedFor] = useState(pending.active);
+
+  if (pending.active !== announcedFor) {
+    setAnnouncedFor(pending.active);
+    setAnnouncement(pending.active ? t("aiChat.responding") : terminalAnnouncement(messages, t));
+  }
+
   const submit = useCallback(() => {
     const trimmed = prompt.trim();
     // The hook ignores a send while a turn is open; clearing the box anyway
@@ -87,6 +112,13 @@ function ChatThreadContent({ conversationId, initialMessages }: ChatThreadProps)
           {pending.active && <StreamingText text={pending.text} active />}
         </div>
       </ScrollArea>
+
+      {/* Named, because `getByRole("status")` would otherwise be ambiguous with
+          the error line below — in Playwright's strict mode and for a screen
+          reader alike. */}
+      <p className="sr-only" role="status" aria-live="polite" aria-label={t("aiChat.progress")}>
+        {announcement}
+      </p>
 
       {error && (
         <p role="status" className="text-sm text-destructive">
@@ -133,6 +165,30 @@ function ChatThreadContent({ conversationId, initialMessages }: ChatThreadProps)
       </form>
     </div>
   );
+}
+
+/**
+ * What to announce when a turn ends.
+ *
+ * The hook has no terminal-reason of its own: `stop()` and a normal `done`
+ * frame both land in `commitPending` and leave an identical `pending`. The only
+ * surviving discriminator is the status on the message it appended — and when
+ * the user aborts before the first token it appends nothing at all, because
+ * `commitPending` returns early on an empty buffer. So "the transcript does not
+ * end in an assistant turn" is itself the interrupted case, and an announcer
+ * keyed on `messages.length` would go silent exactly there.
+ */
+function terminalAnnouncement(messages: ChatMessage[], t: (key: string) => string): string {
+  const last = messages.at(-1);
+  if (last?.role !== "assistant") return t("aiChat.interrupted");
+  switch (last.status) {
+    case "complete":
+      return t("aiChat.responseComplete");
+    case "aborted":
+      return t("aiChat.interrupted");
+    case "error":
+      return t("aiChat.failed");
+  }
 }
 
 /**
