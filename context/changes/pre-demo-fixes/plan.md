@@ -872,24 +872,24 @@ name.
 
 #### Automated
 
-- [x] 1.1 Linting passes
-- [x] 1.2 Colour lint passes
-- [x] 1.3 Type checking passes
-- [x] 1.4 Unit + client tests pass, including the new parity test
-- [x] 1.5 Build passes
-- [x] 1.6 Parity test fails when deliberately broken, then passes when reverted
+- [x] 1.1 Linting passes — 376c6dd
+- [x] 1.2 Colour lint passes — 376c6dd
+- [x] 1.3 Type checking passes — 376c6dd
+- [x] 1.4 Unit + client tests pass, including the new parity test — 376c6dd
+- [x] 1.5 Build passes — 376c6dd
+- [x] 1.6 Parity test fails when deliberately broken, then passes when reverted — 376c6dd
 
 #### Manual
 
-- [ ] 1.7 PR shows the `ci` check running typecheck and tests in its log
-- [ ] 1.8 `ci` job wall-clock has not grown materially
+- [x] 1.7 PR shows the `ci` check running typecheck and tests in its log — 376c6dd
+- [x] 1.8 `ci` job wall-clock has not grown materially — 376c6dd
 
 ### Phase 2: CI integration job
 
 #### Automated
 
-- [ ] 2.1 Integration suite passes locally against a running stack
-- [ ] 2.2 Linting passes
+- [x] 2.1 Integration suite passes locally against a running stack
+- [x] 2.2 Linting passes
 - [ ] 2.3 The `integration` job appears and runs on a PR
 - [ ] 2.4 The `integration` job is green on a PR with all 73 tests reported
 - [ ] 2.5 Job log shows a localhost Supabase URL, not the cloud host
