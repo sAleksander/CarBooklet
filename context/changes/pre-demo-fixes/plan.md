@@ -975,23 +975,23 @@ name.
 
 #### Automated
 
-- [x] 7.1 Build emits no `@astrojs/sitemap` warning
-- [x] 7.2 Linting passes
-- [x] 7.3 Type checking passes
-- [x] 7.4 Unit + client tests pass
-- [x] 7.5 `npm ci` succeeds against the renamed lockfile
-- [x] 7.6 No `10x-astro-starter` remains in package.json, package-lock.json, or src/layouts/
-- [x] 7.7 `wrangler secret list` works without re-exporting the token by hand
+- [x] 7.1 Build emits no `@astrojs/sitemap` warning — 3387f3a
+- [x] 7.2 Linting passes — 3387f3a
+- [x] 7.3 Type checking passes — 3387f3a
+- [x] 7.4 Unit + client tests pass — 3387f3a
+- [x] 7.5 `npm ci` succeeds against the renamed lockfile — 3387f3a
+- [x] 7.6 No `10x-astro-starter` remains in package.json, package-lock.json, or src/layouts/ — 3387f3a
+- [x] 7.7 `wrangler secret list` works without re-exporting the token by hand — 3387f3a
 
 #### Manual
 
-- [x] 7.8 Browser tab shows the product name on a page that omits `title`
-- [x] 7.9 Non-active thread delete: URL unchanged on click, dialog opens naming the clicked thread
-- [x] 7.10 Esc behaviour on the open dialog recorded
-- [x] 7.11 Cancel closes the dialog, list unchanged
-- [x] 7.12 A different row's trash icon shows that row's title
-- [x] 7.13 Confirmed delete: deleting label, full reload, redirect to most recent remaining thread, row gone
-- [x] 7.14 Deleting the currently-open thread lands on the remaining thread, not a 404
-- [x] 7.15 Deleting the last thread lands on `/ai-chat` with the empty state and no dialog
-- [x] 7.16 Hard-refresh: deleted threads stay gone
-- [x] 7.17 DELETE on a nonexistent uuid returns `404 {"error":"Not found"}`
+- [x] 7.8 Browser tab shows the product name on a page that omits `title` — 3387f3a
+- [x] 7.9 Non-active thread delete: URL unchanged on click, dialog opens naming the clicked thread — 3387f3a
+- [x] 7.10 Esc behaviour on the open dialog recorded — 3387f3a
+- [x] 7.11 Cancel closes the dialog, list unchanged — 3387f3a
+- [x] 7.12 A different row's trash icon shows that row's title — 3387f3a
+- [x] 7.13 Confirmed delete: deleting label, full reload, redirect to most recent remaining thread, row gone — 3387f3a
+- [x] 7.14 Deleting the currently-open thread lands on the remaining thread, not a 404 — 3387f3a
+- [x] 7.15 Deleting the last thread lands on `/ai-chat` with the empty state and no dialog — 3387f3a
+- [x] 7.16 Hard-refresh: deleted threads stay gone — 3387f3a
+- [x] 7.17 DELETE on a nonexistent uuid returns `404 {"error":"Not found"}` — 3387f3a

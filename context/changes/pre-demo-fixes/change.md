@@ -1,7 +1,7 @@
 ---
 change_id: pre-demo-fixes
 title: Pre-demo hardening — CI test gate, auth error reflection, streaming a11y, config hygiene
-status: implementing
+status: implemented
 created: 2026-09-07
 updated: 2026-09-10
 archived_at: null
