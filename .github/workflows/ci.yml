@@ -43,7 +43,18 @@ jobs:
       # the rest. `kong` is NOT excluded: it is the :54321 gateway the tests
       # actually talk to. Migrations apply automatically on start.
       - name: Start local Supabase
-        run: npx supabase start -x realtime,storage-api,imgproxy,mailpit,studio,postgres-meta,edge-runtime,logflare,vector,supavisor
+        run: |
+          # `supabase start` ends by printing a status table that contains the
+          # stack's freshly-generated service-role secret. The key is ephemeral
+          # and the stack only ever listens on 127.0.0.1 inside this runner, so
+          # it is worthless to anyone who reads it -- but this log is public and
+          # printing a credential is not a habit worth keeping. Output is held
+          # back unless the start actually fails, where diagnostics matter more
+          # than tidiness, and redacted even then.
+          npx supabase start -x realtime,storage-api,imgproxy,mailpit,studio,postgres-meta,edge-runtime,logflare,vector,supavisor \
+            > "$RUNNER_TEMP/start.log" 2>&1 \
+            || { sed -E 's/(sb_secret_|sb_publishable_)[A-Za-z0-9_-]+/\1<redacted>/g' "$RUNNER_TEMP/start.log"; exit 1; }
+          echo "local stack up"
       # Deliberately NOT `secrets.SUPABASE_URL` — that one points at the cloud
       # project, and `integration/globalSetup.ts` hard-refuses any non-local
       # host. These tests create and delete real users, so that guard is the
