@@ -955,43 +955,43 @@ name.
 
 #### Automated
 
-- [x] 6.1 Linting passes
-- [x] 6.2 Colour lint passes
-- [x] 6.3 Type checking passes
-- [x] 6.4 Unit + client tests pass, including the new component test
-- [x] 6.5 The new R6 spec passes
-- [x] 6.6 The spec makes no OpenRouter request with no `OPENROUTER_API_KEY` set
-- [x] 6.7 The component test fails when the effect is removed, then passes when restored
+- [x] 6.1 Linting passes — 022cd9c
+- [x] 6.2 Colour lint passes — 022cd9c
+- [x] 6.3 Type checking passes — 022cd9c
+- [x] 6.4 Unit + client tests pass, including the new component test — 022cd9c
+- [x] 6.5 The new R6 spec passes — 022cd9c
+- [x] 6.6 The spec makes no OpenRouter request with no `OPENROUTER_API_KEY` set — 022cd9c
+- [x] 6.7 The component test fails when the effect is removed, then passes when restored — 022cd9c
 
 #### Manual
 
 - [ ] 6.8 Screen reader announces "Assistant is replying…" once, not per token
 - [ ] 6.9 Screen reader announces the terminal state when the reply ends
 - [ ] 6.10 Stop mid-reply announces the interrupted state
-- [x] 6.11 The markdown is never read aloud token-by-token
-- [x] 6.12 The caret is not announced
+- [x] 6.11 The markdown is never read aloud token-by-token — 022cd9c
+- [x] 6.12 The caret is not announced — 022cd9c
 
 ### Phase 7: Config hygiene, docs, and the manual checklist
 
 #### Automated
 
-- [ ] 7.1 Build emits no `@astrojs/sitemap` warning
-- [ ] 7.2 Linting passes
-- [ ] 7.3 Type checking passes
-- [ ] 7.4 Unit + client tests pass
-- [ ] 7.5 `npm ci` succeeds against the renamed lockfile
-- [ ] 7.6 No `10x-astro-starter` remains in package.json, package-lock.json, or src/layouts/
-- [ ] 7.7 `wrangler secret list` works without re-exporting the token by hand
+- [x] 7.1 Build emits no `@astrojs/sitemap` warning
+- [x] 7.2 Linting passes
+- [x] 7.3 Type checking passes
+- [x] 7.4 Unit + client tests pass
+- [x] 7.5 `npm ci` succeeds against the renamed lockfile
+- [x] 7.6 No `10x-astro-starter` remains in package.json, package-lock.json, or src/layouts/
+- [x] 7.7 `wrangler secret list` works without re-exporting the token by hand
 
 #### Manual
 
-- [ ] 7.8 Browser tab shows the product name on a page that omits `title`
-- [ ] 7.9 Non-active thread delete: URL unchanged on click, dialog opens naming the clicked thread
-- [ ] 7.10 Esc behaviour on the open dialog recorded
-- [ ] 7.11 Cancel closes the dialog, list unchanged
-- [ ] 7.12 A different row's trash icon shows that row's title
-- [ ] 7.13 Confirmed delete: deleting label, full reload, redirect to most recent remaining thread, row gone
-- [ ] 7.14 Deleting the currently-open thread lands on the remaining thread, not a 404
-- [ ] 7.15 Deleting the last thread lands on `/ai-chat` with the empty state and no dialog
-- [ ] 7.16 Hard-refresh: deleted threads stay gone
-- [ ] 7.17 DELETE on a nonexistent uuid returns `404 {"error":"Not found"}`
+- [x] 7.8 Browser tab shows the product name on a page that omits `title`
+- [x] 7.9 Non-active thread delete: URL unchanged on click, dialog opens naming the clicked thread
+- [x] 7.10 Esc behaviour on the open dialog recorded
+- [x] 7.11 Cancel closes the dialog, list unchanged
+- [x] 7.12 A different row's trash icon shows that row's title
+- [x] 7.13 Confirmed delete: deleting label, full reload, redirect to most recent remaining thread, row gone
+- [x] 7.14 Deleting the currently-open thread lands on the remaining thread, not a 404
+- [x] 7.15 Deleting the last thread lands on `/ai-chat` with the empty state and no dialog
+- [x] 7.16 Hard-refresh: deleted threads stay gone
+- [x] 7.17 DELETE on a nonexistent uuid returns `404 {"error":"Not found"}`

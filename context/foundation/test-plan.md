@@ -122,10 +122,10 @@ is written.
 
 | Layer                 | Tool                                            | Version                | Notes                                                                                                     |
 | --------------------- | ----------------------------------------------- | ---------------------- | --------------------------------------------------------------------------------------------------------- |
-| unit + integration    | Vitest                                          | none yet — see Phase 1 | Vite-native; aligns with the Astro + `@tailwindcss/vite` build already in the repo                        |
+| unit + integration    | Vitest                                          | 3.2.6                  | Vite-native; aligns with the Astro + `@tailwindcss/vite` build already in the repo                        |
 | API / network mocking | MSW (or OpenAI client stub at the network edge) | none yet — see Phase 1 | Mock the OpenRouter HTTP edge only; never mock internal services                                          |
 | Supabase integration  | local Supabase stack (`npx supabase start`)     | n/a                    | Real Postgres + RLS for Phase 2 isolation tests; do not mock the DB for IDOR coverage                     |
-| e2e                   | Playwright                                      | none yet — see Phase 4 | Project's stated E2E path (CLAUDE.md `/10x-e2e`); DOM-snapshot default, vision only for visual-only risks |
+| e2e                   | Playwright                                      | 1.61.1                 | Project's stated E2E path (CLAUDE.md `/10x-e2e`); DOM-snapshot default, vision only for visual-only risks |
 | (optional) AI-native  | not adopted                                     | n/a                    | LLM answer quality is out of scope (§7); no vision/AI-judge layer planned                                 |
 
 **Stack grounding tools (current session):**
@@ -142,18 +142,28 @@ those belong in per-phase `/10x-research`.
 
 ## 5. Quality Gates
 
+> **Corrected 2026-09-10 (`pre-demo-fixes`).** Three rows in this document were
+> stale and are fixed above. §5 claimed typecheck was "already wired —
+> husky/lint-staged + CI"; it was in the pre-commit hook only, and CI ran lint
+> and build and nothing else. §5's unit + integration row had been in force
+> since Phase 1 completed while neither suite ran on a PR. §4 listed Vitest and
+> Playwright as "none yet" long after both were in the repo. CI now runs
+> typecheck, unit + client, integration (Docker Supabase) and e2e; `deploy`
+> gates on the first three but deliberately not on e2e. R6's spec exists and is
+> stubbed — see `e2e/README.md` for why that one reverses the real-model rule.
+
 The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase N" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate                        | Where                | Required?                                         | Catches                                                |
-| --------------------------- | -------------------- | ------------------------------------------------- | ------------------------------------------------------ |
-| lint + typecheck            | local + CI           | required (already wired — husky/lint-staged + CI) | syntactic / type drift                                 |
-| unit + integration          | local + CI           | required after §3 Phase 1                         | logic regressions, AI grounding, ownership, validation |
-| e2e on critical flow        | CI on PR             | required after §3 Phase 4                         | broken sign-in → navigate → AI progress path           |
-| post-edit hook              | local (agent loop)   | optional                                          | regressions at edit time                               |
-| visual diff (deterministic) | CI on PR             | optional                                          | rendering regressions (not prioritized — see §7)       |
-| pre-prod smoke              | between merge + prod | optional                                          | Cloudflare edge / env-specific failures                |
+| Gate                        | Where                | Required?                                       | Catches                                                |
+| --------------------------- | -------------------- | ----------------------------------------------- | ------------------------------------------------------ |
+| lint + typecheck            | local + CI           | required (wired — husky/lint-staged + CI)       | syntactic / type drift                                 |
+| unit + integration          | local + CI           | required (wired — CI `ci` + `integration` jobs) | logic regressions, AI grounding, ownership, validation |
+| e2e on critical flow        | CI on PR             | wired — CI `e2e` job (does not gate `deploy`)   | broken sign-in → navigate → AI progress path           |
+| post-edit hook              | local (agent loop)   | optional                                        | regressions at edit time                               |
+| visual diff (deterministic) | CI on PR             | optional                                        | rendering regressions (not prioritized — see §7)       |
+| pre-prod smoke              | between merge + prod | optional                                        | Cloudflare edge / env-specific failures                |
 
 ## 6. Cookbook Patterns
 
