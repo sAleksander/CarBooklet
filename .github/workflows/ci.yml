@@ -26,9 +26,49 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # The Supabase CLI is a devDependency pinned by package-lock, so `npx`
+      # resolves it straight after `npm ci` — no setup-cli action needed.
+      #
+      # Containers this suite never touches are excluded to cut start-up time.
+      # `config.toml` is deliberately left alone so local dev keeps Studio and
+      # the rest. `kong` is NOT excluded: it is the :54321 gateway the tests
+      # actually talk to. Migrations apply automatically on start.
+      - name: Start local Supabase
+        run: npx supabase start -x realtime,storage-api,imgproxy,mailpit,studio,postgres-meta,edge-runtime,logflare,vector,supavisor
+      # Deliberately NOT `secrets.SUPABASE_URL` — that one points at the cloud
+      # project, and `integration/globalSetup.ts` hard-refuses any non-local
+      # host. These tests create and delete real users, so that guard is the
+      # whole reason reusing the app's own variable names is safe here.
+      #
+      # The key names are printed (never the values) so a CLI rename surfaces
+      # as a readable log line rather than an empty variable three steps later.
+      - name: Export local stack credentials
+        run: |
+          npx supabase status -o env > "$RUNNER_TEMP/stack.env"
+          echo "keys available: $(cut -d= -f1 "$RUNNER_TEMP/stack.env" | tr '\n' ' ')"
+          set -a; . "$RUNNER_TEMP/stack.env"; set +a
+          echo "::add-mask::$ANON_KEY"
+          echo "::add-mask::$SERVICE_ROLE_KEY"
+          echo "resolved SUPABASE_URL=$API_URL"
+          {
+            echo "SUPABASE_URL=$API_URL"
+            echo "SUPABASE_KEY=$ANON_KEY"
+            echo "SUPABASE_SERVICE_ROLE_KEY=$SERVICE_ROLE_KEY"
+          } >> "$GITHUB_ENV"
+      - run: npm run test:integration
+
   deploy:
     runs-on: ubuntu-latest
-    needs: ci
+    needs: [ci, integration]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
