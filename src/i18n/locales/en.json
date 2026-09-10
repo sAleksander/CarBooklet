@@ -230,6 +230,18 @@
     "passwordsMismatch": "Passwords do not match",
     "passwordPlaceholder": "Your password",
     "passwordMinPlaceholder": "Min. {{count}} characters",
-    "confirmPasswordPlaceholder": "Re-enter your password"
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "errors": {
+      "invalid_credentials": "Incorrect email or password",
+      "email_not_confirmed": "Confirm your email address first — check your inbox",
+      "email_exists": "An account with this email already exists. Try signing in instead.",
+      "weak_password": "That password is too weak. Choose a longer one.",
+      "signup_disabled": "New accounts are not being accepted right now",
+      "invalid_email": "Enter a valid email address",
+      "rate_limited": "Too many attempts. Please wait a moment and try again.",
+      "unavailable": "The service is temporarily unavailable. Please try again.",
+      "not_configured": "Authentication is not configured. Please contact the administrator.",
+      "unknown": "Something went wrong. Please try again."
+    }
   }
 }

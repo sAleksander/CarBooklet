@@ -904,36 +904,36 @@ name.
 
 #### Automated
 
-- [x] 3.1 E2E suite passes locally against the preview server
-- [x] 3.2 `npm run preview` serves the built app on port 4321 with the local Supabase env
-- [x] 3.3 Linting passes
-- [x] 3.4 Type checking passes
-- [ ] 3.5 The `e2e` job is green on a PR, reporting 3 specs plus setup
+- [x] 3.1 E2E suite passes locally against the preview server — 7107229
+- [x] 3.2 `npm run preview` serves the built app on port 4321 with the local Supabase env — 7107229
+- [x] 3.3 Linting passes — 7107229
+- [x] 3.4 Type checking passes — 7107229
+- [x] 3.5 The `e2e` job is green on a PR, reporting 3 specs plus setup — 7107229
 
 #### Manual
 
-- [ ] 3.6 Job log shows the preview server, not `astro dev`
-- [ ] 3.7 No Cloudflare API activity attributable to the run
-- [ ] 3.8 `deploy` does not wait on `e2e`
+- [x] 3.6 Job log shows the preview server, not `astro dev` — 7107229
+- [x] 3.7 No Cloudflare API activity attributable to the run — 7107229
+- [x] 3.8 `deploy` does not wait on `e2e` — 7107229
 - [ ] 3.9 A deliberately broken spec turns the check red while `deploy` still runs
 
 ### Phase 4: Auth error codes (F8)
 
 #### Automated
 
-- [ ] 4.1 Linting passes
-- [ ] 4.2 Type checking passes
-- [ ] 4.3 Unit tests pass, including the new mapper tests
-- [ ] 4.4 Locale parity test passes with the new keys
-- [ ] 4.5 E2E sign-in still passes
+- [x] 4.1 Linting passes
+- [x] 4.2 Type checking passes
+- [x] 4.3 Unit tests pass, including the new mapper tests
+- [x] 4.4 Locale parity test passes with the new keys
+- [x] 4.5 E2E sign-in still passes
 
 #### Manual
 
-- [ ] 4.6 `?error=<script>alert(1)</script>` renders no alert box
-- [ ] 4.7 A crafted phishing-style `?error=` value renders nothing
-- [ ] 4.8 Wrong password and non-existent email render identical localized copy
-- [ ] 4.9 Polish locale renders the Polish string
-- [ ] 4.10 One structured `api_error` log line with `surface: "ssr"`, route, code, and no email
+- [x] 4.6 `?error=<script>alert(1)</script>` renders no alert box
+- [x] 4.7 A crafted phishing-style `?error=` value renders nothing
+- [x] 4.8 Wrong password and non-existent email render identical localized copy
+- [x] 4.9 Polish locale renders the Polish string
+- [x] 4.10 One structured `api_error` log line with `surface: "ssr"`, route, code, and no email
 
 ### Phase 5: API error localization (F10)
 

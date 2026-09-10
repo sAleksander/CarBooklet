@@ -3,10 +3,16 @@ import Layout from "@/layouts/Layout.astro";
 import SignUpForm from "@/components/auth/SignUpForm";
 import { getT } from "@/i18n/server";
 import { surface } from "@/lib/theme";
+import { isAuthErrorCode } from "@/lib/auth-errors";
 
 const { lang } = Astro.locals;
 const t = getT(lang);
-const error = Astro.url.searchParams.get("error");
+// Allowlisted, then translated — never rendered as it arrived. An unknown
+// value resolves to null and the alert box does not render at all, which is
+// what closes the phishing surface F8 describes: a crafted link can no longer
+// put its own prose inside this card. Same shape as /cars?error=load_failed.
+const errorCode = Astro.url.searchParams.get("error");
+const error = isAuthErrorCode(errorCode) ? t(`auth.errors.${errorCode}`) : null;
 ---
 
 <Layout title={t("auth.signUp")}>
