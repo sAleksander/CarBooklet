@@ -890,14 +890,14 @@ name.
 
 - [x] 2.1 Integration suite passes locally against a running stack
 - [x] 2.2 Linting passes
-- [ ] 2.3 The `integration` job appears and runs on a PR
-- [ ] 2.4 The `integration` job is green on a PR with all 73 tests reported
-- [ ] 2.5 Job log shows a localhost Supabase URL, not the cloud host
+- [x] 2.3 The `integration` job appears and runs on a PR
+- [x] 2.4 The `integration` job is green on a PR with all 73 tests reported
+- [x] 2.5 Job log shows a localhost Supabase URL, not the cloud host
 
 #### Manual
 
-- [ ] 2.6 `deploy` waits on both `ci` and `integration` in the Actions graph
-- [ ] 2.7 Job wall-clock is acceptable
+- [x] 2.6 `deploy` waits on both `ci` and `integration` in the Actions graph
+- [x] 2.7 Job wall-clock is acceptable
 - [ ] 2.8 A deliberately broken integration assertion turns the PR check red
 
 ### Phase 3: CI e2e job
