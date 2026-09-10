@@ -137,6 +137,16 @@ jobs:
       # `npm run test:e2e` builds and starts the preview server itself, via
       # playwright.config.ts's webServer.
       - run: npm run test:e2e
+      # Without this a red e2e job leaves only reporter lines: the runner is
+      # destroyed with the traces and screenshots still on it.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-results
+          path: |
+            test-results/
+            playwright-report/
+          retention-days: 7
 
   deploy:
     runs-on: ubuntu-latest

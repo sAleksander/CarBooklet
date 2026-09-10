@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act, waitFor, cleanup } from "@testing-library/react";
 import { useConversation } from "@/components/hooks/useConversation";
 import type { ChatMessage } from "@/types";
 
@@ -95,6 +95,12 @@ describe("useConversation", () => {
   });
 
   afterEach(() => {
+    // RTL registers its auto-cleanup only under `globals: true`, which this
+    // project does not set. Without this every `renderHook` container stays in
+    // the document and the hook's unmount effect — which aborts the in-flight
+    // fetch — never runs. Harmless here only because these cases assert on
+    // `result.current` rather than querying the DOM.
+    cleanup();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });

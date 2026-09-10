@@ -82,15 +82,22 @@ test("R6 — a streamed answer announces its start and its end", async ({ signed
   await page.getByRole("textbox", { name: "Ask anything about your car…" }).fill("Which oil does it take?");
   await page.getByRole("button", { name: "Ask" }).click();
 
-  // 1. Progress is announced before a single token has arrived. This is the
-  //    window the old UI had no accessible signal for at all.
   const progress = page.getByRole("status", { name: "Assistant reply status" });
-  await expect(progress).toHaveText("Assistant is replying…");
 
-  // 2. The corroborating visible signal, and the only one that existed before.
-  await expect(page.getByRole("button", { name: "Stop" })).toBeVisible();
+  // `finally`, because a failure inside here would otherwise leave the route
+  // handler parked on `await held` forever: the test would burn its whole
+  // timeout and the failure screenshot would show a pending request rather
+  // than the state that actually broke.
+  try {
+    // 1. Progress is announced before a single token has arrived. This is the
+    //    window the old UI had no accessible signal for at all.
+    await expect(progress).toHaveText("Assistant is replying…");
 
-  release();
+    // 2. The corroborating visible signal, and the only one that existed before.
+    await expect(page.getByRole("button", { name: "Stop" })).toBeVisible();
+  } finally {
+    release();
+  }
 
   // 3. The terminal transition — the half a region living inside StreamingText
   //    could never report, because that component unmounts at this moment.

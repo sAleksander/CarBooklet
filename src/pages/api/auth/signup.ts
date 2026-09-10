@@ -24,7 +24,7 @@ export const POST: APIRoute = async (context) => {
   if (error) {
     // A code, never a message. `error.message` is GoTrue's prose and used to
     // travel to the page verbatim; now it goes only to the operator.
-    const { code, mapping } = mapAuthError(error);
+    const { code, mapping } = mapAuthError(error, "signup");
     // Deliberately no email, here or in `extra`. The trace F8 asks for is
     // route + code + status; an address in a log line is a credential-adjacent
     // value sitting somewhere nobody audits.

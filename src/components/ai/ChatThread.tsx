@@ -84,7 +84,7 @@ function ChatThreadContent({ conversationId, initialMessages }: ChatThreadProps)
 
   if (pending.active !== announcedFor) {
     setAnnouncedFor(pending.active);
-    setAnnouncement(pending.active ? t("aiChat.responding") : terminalAnnouncement(messages, t));
+    setAnnouncement(pending.active ? t("aiChat.responding") : terminalAnnouncement(messages, error, t));
   }
 
   const submit = useCallback(() => {
@@ -177,8 +177,18 @@ function ChatThreadContent({ conversationId, initialMessages }: ChatThreadProps)
  * `commitPending` returns early on an empty buffer. So "the transcript does not
  * end in an assistant turn" is itself the interrupted case, and an announcer
  * keyed on `messages.length` would go silent exactly there.
+ *
+ * `error` is checked first, and that ordering is the whole point. A non-OK
+ * response or a fetch rejection clears `pending` *without* calling
+ * `commitPending` (useConversation.ts:129-153), so the transcript also ends on
+ * the user's own turn — indistinguishable from an abort by shape alone. Reading
+ * the status only would tell a screen-reader user they stopped an answer the
+ * server actually dropped, and contradict the error line beside this region.
+ * `send` clears `error` before every request (useConversation.ts:110), so a
+ * stale failure cannot leak into a later success.
  */
-function terminalAnnouncement(messages: ChatMessage[], t: (key: string) => string): string {
+function terminalAnnouncement(messages: ChatMessage[], error: ChatError | null, t: (key: string) => string): string {
+  if (error) return errorMessage(error, t);
   const last = messages.at(-1);
   if (last?.role !== "assistant") return t("aiChat.interrupted");
   switch (last.status) {
