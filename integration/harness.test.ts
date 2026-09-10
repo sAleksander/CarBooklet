@@ -34,7 +34,7 @@ describe("integration harness", () => {
   });
 
   it("creates two distinct users", () => {
-    expect(users.userA.id).toBe(users.userB.id);
+    expect(users.userA.id).not.toBe(users.userB.id);
     expect(users.userA.email).not.toBe(users.userB.email);
   });
 
