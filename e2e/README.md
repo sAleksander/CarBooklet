@@ -9,9 +9,15 @@ be written.
 ```bash
 docker info                 # Docker must be running
 npx supabase start          # local stack; migrations apply automatically
-npm run test:e2e            # starts `npm run dev` itself via playwright.config.ts
+npm run test:e2e            # builds and starts `npm run preview` itself via playwright.config.ts
 npm run test:e2e:ui         # same, with the Playwright UI
 ```
+
+`.dev.vars` needs `SUPABASE_URL` and `SUPABASE_KEY`. The suite now serves the
+production build through `astro preview`, which is wrangler-backed: the built
+Worker reads its runtime config from `dist/server/.dev.vars`, copied from
+`.dev.vars` at build time. Without it the app builds and then serves a
+missing-config banner, and every spec dies at sign-in.
 
 `.env` needs `SUPABASE_SERVICE_ROLE_KEY` — the **Secret** key from
 `npx supabase status` (newer CLIs print `sb_secret_…` rather than a
@@ -52,12 +58,20 @@ type="password">` has no implicit ARIA role. `getByLabel` is the tool there,
   exactly the data loss it was meant to catch (this bit
   `car-delete-blast-radius.spec.ts` during authoring). Locate rendered content
   by its role — `getByRole("link").filter({ hasText: … })` — not by bare text.
-- **Do not click an island's controls as the first act after `goto`.**
-  `EntriesTabs` is `client:load`; a tab click issued before React hydrates hits
-  the DOM but no handler, and the tab silently does not change. Prefer asserting
-  on the default tab (Repairs) where the data is server-rendered. If a test
-  genuinely needs another tab, retry the click with `expect(...).toPass()` —
+- **Do not click an island's controls as the first act after `goto` — use
+  `gotoHydrated`.** `EntriesTabs` is `client:load`; a tab click issued before
+  React hydrates hits the DOM but no handler, and the tab silently does not
+  change. `gotoHydrated(page, path)` in `fixtures/app.ts` navigates and then
+  waits for every island to mount; use it for every in-test navigation. Prefer
+  asserting on the default tab (Repairs) where the data is server-rendered. If a
+  test genuinely needs another tab, retry the click with `expect(...).toPass()` —
   never a `waitForTimeout`.
+
+  This rule was advisory until the suite moved off `astro dev`. Every spec that
+  navigated and then clicked was racing hydration and winning only because the
+  dev server was slow to answer; all three failed on first contact with a
+  production preview server. If you are tempted to skip the wait because "it
+  passes locally", that is exactly the evidence it was passing on.
 
 ## The AI / OpenRouter boundary
 

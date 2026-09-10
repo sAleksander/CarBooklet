@@ -888,26 +888,26 @@ name.
 
 #### Automated
 
-- [x] 2.1 Integration suite passes locally against a running stack
-- [x] 2.2 Linting passes
-- [x] 2.3 The `integration` job appears and runs on a PR
-- [x] 2.4 The `integration` job is green on a PR with all 73 tests reported
-- [x] 2.5 Job log shows a localhost Supabase URL, not the cloud host
+- [x] 2.1 Integration suite passes locally against a running stack — a7af370
+- [x] 2.2 Linting passes — a7af370
+- [x] 2.3 The `integration` job appears and runs on a PR — a7af370
+- [x] 2.4 The `integration` job is green on a PR with all 73 tests reported — a7af370
+- [x] 2.5 Job log shows a localhost Supabase URL, not the cloud host — a7af370
 
 #### Manual
 
-- [x] 2.6 `deploy` waits on both `ci` and `integration` in the Actions graph
-- [x] 2.7 Job wall-clock is acceptable
-- [ ] 2.8 A deliberately broken integration assertion turns the PR check red
+- [x] 2.6 `deploy` waits on both `ci` and `integration` in the Actions graph — a7af370
+- [x] 2.7 Job wall-clock is acceptable — a7af370
+- [x] 2.8 A deliberately broken integration assertion turns the PR check red — a7af370
 
 ### Phase 3: CI e2e job
 
 #### Automated
 
-- [ ] 3.1 E2E suite passes locally against the preview server
-- [ ] 3.2 `npm run preview` serves the built app on port 4321 with the local Supabase env
-- [ ] 3.3 Linting passes
-- [ ] 3.4 Type checking passes
+- [x] 3.1 E2E suite passes locally against the preview server
+- [x] 3.2 `npm run preview` serves the built app on port 4321 with the local Supabase env
+- [x] 3.3 Linting passes
+- [x] 3.4 Type checking passes
 - [ ] 3.5 The `e2e` job is green on a PR, reporting 3 specs plus setup
 
 #### Manual

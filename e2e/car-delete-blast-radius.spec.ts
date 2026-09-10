@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { test, expect } from "./fixtures/app";
+import { test, expect, gotoHydrated } from "./fixtures/app";
 
 /**
  * RISK: test-plan.md §2 R5 — "Entry/car CRUD regression: edit/delete corrupts
@@ -85,7 +85,7 @@ test.describe("R5 — entry/car CRUD regression (test-plan.md §2)", () => {
     await seedRepair(page, doomed.id, `doomed-repair-${runId}`);
     await seedRepair(page, keeper.id, keeperRepair);
 
-    await page.goto("/cars");
+    await gotoHydrated(page, "/cars");
 
     const doomedCard = page.getByRole("listitem").filter({ hasText: doomedModel });
     const keeperCard = page.getByRole("listitem").filter({ hasText: keeperModel });
@@ -121,7 +121,7 @@ test.describe("R5 — entry/car CRUD regression (test-plan.md §2)", () => {
     await keeperCard.getByRole("button", { name: "Select" }).click();
     await expect(keeperCard.getByRole("button", { name: "Active" })).toBeVisible();
 
-    await page.goto("/entries");
+    await gotoHydrated(page, "/entries");
     await expect(page.getByRole("heading", { name: `Toyota ${keeperModel}` })).toBeVisible();
 
     // Locate the entry by its LINK, not by text. In dev, Astro serializes every

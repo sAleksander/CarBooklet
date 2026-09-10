@@ -46,6 +46,32 @@ function adminClient() {
   });
 }
 
+/**
+ * Navigate, then wait until every island on the destination page has hydrated.
+ *
+ * `page.goto` resolves on load, not on interactive. Astro server-renders each
+ * island with an `ssr` attribute and removes it once the component mounts, so
+ * "no islands left marked `ssr`" is the app's only honest "this page is
+ * interactive now" signal. A CSS locator is correct here despite the role-first
+ * rule: this is a framework marker, not application DOM structure, and no
+ * accessible equivalent exists.
+ *
+ * Use this for every in-test navigation. `e2e/README.md` states the rule --
+ * never touch an island's controls as the first act after `goto` -- and this is
+ * where it is enforced, so the next spec does not have to remember it.
+ *
+ * The race is neither theoretical nor dev-only. It was invisible for as long as
+ * the suite ran against `astro dev`, whose slower responses happened to leave
+ * hydration enough time to finish; every spec that clicked after navigating
+ * failed the moment the suite moved to a production preview server answering in
+ * single-digit milliseconds. The tests were always racing. They were just
+ * winning.
+ */
+export async function gotoHydrated(page: Page, path: string): Promise<void> {
+  await page.goto(path);
+  await expect(page.locator("astro-island[ssr]")).toHaveCount(0, { timeout: 30_000 });
+}
+
 export const test = base.extend<AppFixtures>({
   // Start from an EMPTY browser context, discarding the shared signed-in
   // session that playwright.config.ts hands every test in the chromium project.
@@ -171,7 +197,7 @@ export const test = base.extend<AppFixtures>({
       { name: "theme", value: "dark", url: baseURL },
     ]);
 
-    await page.goto("/auth/signin");
+    await gotoHydrated(page, "/auth/signin");
 
     // `exact: true` is load-bearing. getByLabel matches case-insensitive
     // SUBSTRINGS by default, so a bare "Password" also matches the show/hide
@@ -187,16 +213,7 @@ export const test = base.extend<AppFixtures>({
     // moment earlier. Verifying the typed value does not help: the whole
     // fill-and-check can complete before hydration, and the wipe happens after.
     //
-    // This is the hydration race e2e/README.md documents for island clicks,
-    // one step earlier in the flow, and it widens whenever the dev server is
-    // busy — which is exactly when several workers run in parallel.
-    //
-    // Astro server-renders each island with an `ssr` attribute and removes it
-    // once the component mounts, so "no islands left marked ssr" is the app's
-    // only honest "the form is interactive now" signal. A CSS locator is
-    // correct here despite the role-first rule: this is a framework marker,
-    // not application DOM structure, and no accessible equivalent exists.
-    await expect(page.locator("astro-island[ssr]")).toHaveCount(0, { timeout: 30_000 });
+    // The hydration wait itself lives in `gotoHydrated` above.
 
     await page.getByLabel("Email", { exact: true }).fill(user.email);
     await page.getByLabel("Password", { exact: true }).fill(user.password);

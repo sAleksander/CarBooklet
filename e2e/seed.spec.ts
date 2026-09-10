@@ -1,4 +1,4 @@
-import { test, expect } from "./fixtures/app";
+import { test, expect, gotoHydrated } from "./fixtures/app";
 
 /**
  * SEED TEST — the exemplar every generated E2E test in this repo should imitate.
@@ -38,7 +38,7 @@ test.describe("R5 — entry/car CRUD regression (test-plan.md §2)", () => {
     // Unique: two workers running this test at once must not see each other's car.
     const model = `Corolla-${runId}`;
 
-    await page.goto("/cars");
+    await gotoHydrated(page, "/cars");
 
     // Opens the add form. Careful: the list's trigger and the form's submit
     // button share the accessible name "Add car" (cars.addCar vs
