@@ -232,6 +232,18 @@
     "passwordsMismatch": "Hasła nie są identyczne",
     "passwordPlaceholder": "Twoje hasło",
     "passwordMinPlaceholder": "Min. {{count}} znaków",
-    "confirmPasswordPlaceholder": "Wpisz hasło ponownie"
+    "confirmPasswordPlaceholder": "Wpisz hasło ponownie",
+    "errors": {
+      "invalid_credentials": "Nieprawidłowy e-mail lub hasło",
+      "email_not_confirmed": "Najpierw potwierdź swój adres e-mail — sprawdź skrzynkę",
+      "email_exists": "Konto z tym adresem e-mail już istnieje. Spróbuj się zalogować.",
+      "weak_password": "To hasło jest zbyt słabe. Wybierz dłuższe.",
+      "signup_disabled": "Nowe konta nie są obecnie przyjmowane",
+      "invalid_email": "Podaj prawidłowy adres e-mail",
+      "rate_limited": "Zbyt wiele prób. Odczekaj chwilę i spróbuj ponownie.",
+      "unavailable": "Usługa jest chwilowo niedostępna. Spróbuj ponownie.",
+      "not_configured": "Uwierzytelnianie nie jest skonfigurowane. Skontaktuj się z administratorem.",
+      "unknown": "Coś poszło nie tak. Spróbuj ponownie."
+    }
   }
 }
